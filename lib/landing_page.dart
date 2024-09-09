@@ -21,10 +21,22 @@ class landing_page extends StatefulWidget {
 
 class _landing_pageState extends State<landing_page> {
   //Create a TextEditingController for the input box
-  final TextEditingController _input_controller= TextEditingController();
+  final TextEditingController _input_controller = TextEditingController();
 
   //List to store chat messages, both user and AI
-  final List<String> _messages = [];
+  final List<String> _user_message_list = [];
+
+  //Function for user to send message
+  void _send_messages() {
+    if (_input_controller.text.isNotEmpty || _input_controller.text != null) {
+      setState(() {
+        //Add message to list
+        _user_message_list.insert(0, _input_controller.text);
+      });
+      //Clear message
+      _input_controller.clear();
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -69,15 +81,51 @@ class _landing_pageState extends State<landing_page> {
 
             //Actual content
             Padding(
-              padding: const EdgeInsets.symmetric(vertical: 4.0,horizontal: 4.0),
+              padding:
+                  const EdgeInsets.symmetric(vertical: 4.0, horizontal: 20.0),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.end,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
+                  //List of displayed user messages
+                  Expanded(
+                    //"Message" generater with a builder
+                    child: ListView.builder(
+                      reverse: true, //Start at the bottom
+                      itemCount: _user_message_list.length,
+                      //Message blueprint
+                      itemBuilder: (context, index) {
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 2.0), //Pad messages
+                          child: Container(
+                            padding: EdgeInsets.all(12.0), //Pad message's text
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(14.0),
+                              color: Color.fromRGBO(216, 162, 94, 1.0),
+                            ),
+                            child: Text(
+                              _user_message_list[index],
+                              style: GoogleFonts.handjet(
+                                textStyle: const TextStyle(
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.bold,
+                                  fontStyle: FontStyle.normal,
+                                  color: Colors.black,
+                                ),
+                              ),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+
+                  //Input field and button
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      //Input field
                       Expanded(
                         child: TextField(
                           //Controller to manage user input
@@ -86,7 +134,7 @@ class _landing_pageState extends State<landing_page> {
                           //Decorate user input text
                           style: GoogleFonts.handjet(
                             textStyle: const TextStyle(
-                              fontSize:28,
+                              fontSize: 28,
                               fontWeight: FontWeight.bold,
                               fontStyle: FontStyle.normal,
                               color: Colors.black,
@@ -100,11 +148,10 @@ class _landing_pageState extends State<landing_page> {
                             hintText: "Insert your query",
                             hintStyle: GoogleFonts.handjet(
                               textStyle: TextStyle(
-                                fontSize: 28,
-                                fontStyle: FontStyle.italic,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black
-                              ),
+                                  fontSize: 28,
+                                  fontStyle: FontStyle.italic,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black),
                             ),
                             border: OutlineInputBorder(
                               borderRadius: BorderRadius.all(
@@ -119,7 +166,7 @@ class _landing_pageState extends State<landing_page> {
                         ),
                       ),
 
-                      //Container to create a frame for Icon button
+                      //Icon button, container to create its frame
                       Container(
                         //Round up Iconbutton's container edges
                         decoration: BoxDecoration(
@@ -141,7 +188,9 @@ class _landing_pageState extends State<landing_page> {
                             color: Colors.black,
 
                             //Icon script execution
-                            onPressed: ()async{},
+                            onPressed: () async {
+                              _send_messages();
+                            },
                           ),
                         ),
                       ),
