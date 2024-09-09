@@ -4,9 +4,6 @@ import "package:flutter/material.dart";
 import "package:flutter_dotenv/flutter_dotenv.dart";                   //env var
 import "package:google_fonts/google_fonts.dart";
 import "package:google_generative_ai/google_generative_ai.dart";
-import "package:icons_flutter/icons_flutter.dart" as extra_icons;      //extra icons
-import "package:http/http.dart" as http_rsc;                           //http resources
-import "package:url_launcher/url_launcher.dart";                       //url launcher
 import "package:intl/intl.dart" as interdates;                         //date-time formatting/parsing
 
 //imports
@@ -77,8 +74,8 @@ void show_possible_attack_dialog(BuildContext context) {
       "Ok",
       style: GoogleFonts.handjet(
         textStyle: const TextStyle(
-          fontSize: 20,
-          fontWeight: FontWeight.normal,
+          fontSize: 30,
+          fontWeight: FontWeight.bold,
           fontStyle: FontStyle.normal,
           color: Colors.black,
         ),
@@ -96,8 +93,8 @@ void show_possible_attack_dialog(BuildContext context) {
       "Error 221", //Invalid characters
       style: GoogleFonts.handjet(
         textStyle: const TextStyle(
-          fontSize: 25,
-          fontWeight: FontWeight.normal,
+          fontSize:45,
+          fontWeight: FontWeight.bold,
           fontStyle: FontStyle.normal,
           color: Colors.black,
         ),
@@ -107,8 +104,67 @@ void show_possible_attack_dialog(BuildContext context) {
       "There was an error processing your query, try avoiding special characters",
       style: GoogleFonts.handjet(
         textStyle: const TextStyle(
-          fontSize: 20,
-          fontWeight: FontWeight.normal,
+          fontSize: 25,
+          fontWeight: FontWeight.bold,
+          fontStyle: FontStyle.normal,
+          color: Colors.black,
+        ),
+      ),
+    ),
+    actions: [
+      ok_button,
+    ],
+  );
+
+  //Show the dialog
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return alert;
+    },
+  );
+}
+
+//Alert dialog for API key retrieval error, dont use in final version
+void show_api_key_retrieval_dialog(BuildContext context) {
+  //Declare the buttons of alert
+  Widget ok_button = TextButton(
+    child: Text(
+      "Ok",
+      style: GoogleFonts.handjet(
+        textStyle: const TextStyle(
+          fontSize: 30,
+          fontWeight: FontWeight.bold,
+          fontStyle: FontStyle.normal,
+          color: Colors.black,
+        ),
+      ),
+    ),
+    onPressed: () {
+      Navigator.of(context, rootNavigator: true).pop();
+    },
+  );
+
+  //Set variables as the alert itself
+  var alert = AlertDialog(
+    backgroundColor: const Color.fromRGBO(160, 71, 71,1.0),
+    title: Text(
+      "Error 222", //Invalid characters
+      style: GoogleFonts.handjet(
+        textStyle: const TextStyle(
+          fontSize:45,
+          fontWeight: FontWeight.bold,
+          fontStyle: FontStyle.normal,
+          color: Colors.black,
+        ),
+      ),
+    ),
+    content: Text(
+      "There was an error with API key retrieval",
+      style: GoogleFonts.handjet(
+        textStyle: const TextStyle(
+          fontSize: 25,
+          fontWeight: FontWeight.bold,
           fontStyle: FontStyle.normal,
           color: Colors.black,
         ),

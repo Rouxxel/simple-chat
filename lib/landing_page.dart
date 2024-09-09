@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:cupertino_icons/cupertino_icons.dart';
 import 'package:google_fonts/google_fonts.dart';   //Fonts
 import 'package:icons_flutter/icons_flutter.dart'; //Extra icons
 import 'package:google_generative_ai/google_generative_ai.dart'; //AI import
@@ -27,9 +26,6 @@ class _landing_pageState extends State<landing_page> {
   //List to store chat messages, both user and AI
   final List<Message> _message_list = [];
 
-  //Controller for user or AI message
-  bool _user=true;
-
   //Function for user to send message
   void _send_messages() {
     if (_input_controller.text.isNotEmpty || _input_controller.text != null) {
@@ -39,7 +35,6 @@ class _landing_pageState extends State<landing_page> {
       },);
       //Clear message?, let _ai_response clear the message
       //_input_controller.clear();
-      _user=true;
       print("---User Query succesfully sent---");
     }
   }
@@ -50,7 +45,7 @@ class _landing_pageState extends State<landing_page> {
     String local_key= Obtain_API_key(); //Call api key once
     if(local_key == null || local_key.isEmpty){
       //Manage error
-      //TODO: Create an alert dialog function for this instance
+      show_api_key_retrieval_dialog(context);
       throw Exception("Error in retrieving API key");
     }
     //Declare AI model
@@ -72,8 +67,6 @@ class _landing_pageState extends State<landing_page> {
       },);
       //Clear message
       //_input_controller.clear();
-
-      _user=false;
       print("---AI successfully responded back---");
     };
   }
