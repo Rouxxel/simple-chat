@@ -25,7 +25,7 @@ class _landing_pageState extends State<landing_page> {
   final TextEditingController _input_controller = TextEditingController();
 
   //List to store chat messages, both user and AI
-  final List<String> _message_list = [];
+  final List<Message> _message_list = [];
 
   //Controller for user or AI message
   bool _user=true;
@@ -35,12 +35,12 @@ class _landing_pageState extends State<landing_page> {
     if (_input_controller.text.isNotEmpty || _input_controller.text != null) {
       setState(() {
         //Add message to list
-        _message_list.insert(0, _input_controller.text);
-      });
+        _message_list.insert(0, Message(_input_controller.text,true),);
+      },);
       //Clear message?, let _ai_response clear the message
       //_input_controller.clear();
       _user=true;
-      print("---User Query succesfully sent");
+      print("---User Query succesfully sent---");
     }
   }
 
@@ -68,8 +68,8 @@ class _landing_pageState extends State<landing_page> {
       dynamic ai_text = ai_response.text;
       setState(() {
         //Add message to list
-        _message_list.insert(0, ai_text);
-      });
+        _message_list.insert(0, Message(ai_text,false),);
+      },);
       //Clear message
       //_input_controller.clear();
 
@@ -135,9 +135,16 @@ class _landing_pageState extends State<landing_page> {
                       itemCount: _message_list.length,
                       //Message blueprint
                       itemBuilder: (context, index) {
-                        Color dyna_color= _user? Color.fromRGBO(216, 162, 94, 1.0):
+                        //Declare message with list that has class
+                        final message = _message_list[index];
+
+                        //Declare dynamic color
+                        Color dyna_color= message.user?
+                          Color.fromRGBO(216, 162, 94, 1.0):
                           Color.fromRGBO(238, 223, 122, 1.0);
-                        EdgeInsets dyna_padding= _user? EdgeInsets.fromLTRB(112, 4, 0, 4):
+                        //Declare dynamic Edge Insets
+                        EdgeInsets dyna_padding= message.user?
+                          EdgeInsets.fromLTRB(112, 4, 0, 4):
                           EdgeInsets.fromLTRB(0, 4, 112, 4);
 
                         return Padding(
@@ -149,7 +156,7 @@ class _landing_pageState extends State<landing_page> {
                               color: dyna_color,
                             ),
                             child: Text(
-                              _message_list[index],
+                              message.text,
                               style: GoogleFonts.handjet(
                                 textStyle: const TextStyle(
                                   fontSize: 22,

@@ -11,6 +11,17 @@ import "package:intl/intl.dart" as interdates;                         //date-ti
 
 //imports
 /////////////////////////////////////////////////////////////////////////////
+//Classes
+
+class Message {
+  final String text;
+  final bool user;
+
+  Message(this.text, this.user);
+}
+
+//Classes
+/////////////////////////////////////////////////////////////////////////////
 //Methods
 
 //To retrieve the apikey from .env file
@@ -25,7 +36,7 @@ String Obtain_API_key() {
   return AI_API_key;
 }
 
-//Function for user to send message
+//Function for user to send message, "blueprint"
 /*void send_messages(TextEditingController query, List<String> message_list) {
   if (query.text.isNotEmpty || query.text != null) {
     setState(() {
@@ -117,7 +128,7 @@ void show_possible_attack_dialog(BuildContext context) {
   );
 }
 
-//Test
+//Test AI, don't use for anything else
 Future<void> testai() async{
   final model = GenerativeModel(
     model: 'gemini-1.5-flash',
