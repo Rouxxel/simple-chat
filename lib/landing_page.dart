@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:cupertino_icons/cupertino_icons.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:google_fonts/google_fonts.dart';   //Fonts
 import 'package:icons_flutter/icons_flutter.dart'; //Extra icons
+import 'package:google_generative_ai/google_generative_ai.dart'; //AI import
 
 import 'package:simple_chat/methods.dart';
 
@@ -24,18 +25,57 @@ class _landing_pageState extends State<landing_page> {
   final TextEditingController _input_controller = TextEditingController();
 
   //List to store chat messages, both user and AI
-  final List<String> _user_message_list = [];
+  final List<String> _message_list = [];
+
+  //Controller for user or AI message
+  bool _user=true;
 
   //Function for user to send message
   void _send_messages() {
     if (_input_controller.text.isNotEmpty || _input_controller.text != null) {
       setState(() {
         //Add message to list
-        _user_message_list.insert(0, _input_controller.text);
+        _message_list.insert(0, _input_controller.text);
+      });
+      //Clear message?, let _ai_response clear the message
+      //_input_controller.clear();
+      _user=true;
+      print("---User Query succesfully sent");
+    }
+  }
+
+  //Function for AI to make a response
+  Future<void> _ai_response() async{
+
+    String local_key= Obtain_API_key(); //Call api key once
+    if(local_key == null || local_key.isEmpty){
+      //Manage error
+      //TODO: Create an alert dialog function for this instance
+      throw Exception("Error in retrieving API key");
+    }
+    //Declare AI model
+    final gemini_model = GenerativeModel(
+      model: 'gemini-1.5-flash',
+      apiKey: local_key,
+    );
+
+
+    if (_input_controller.text.isNotEmpty || _input_controller.text != null) {
+      //Extract AI response
+      final ai_response = await
+        gemini_model.generateContent([Content.text(_input_controller.text)]);
+      //Extract the text content from AI response
+      dynamic ai_text = ai_response.text;
+      setState(() {
+        //Add message to list
+        _message_list.insert(0, ai_text);
       });
       //Clear message
-      _input_controller.clear();
-    }
+      //_input_controller.clear();
+
+      _user=false;
+      print("---AI successfully responded back---");
+    };
   }
 
   @override
@@ -82,29 +122,34 @@ class _landing_pageState extends State<landing_page> {
             //Actual content
             Padding(
               padding:
-                  const EdgeInsets.symmetric(vertical: 4.0, horizontal: 20.0),
+                  const EdgeInsets.all(4.0),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.end,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  //List of displayed user messages
+                  //List of displayed user and AI messages
                   Expanded(
                     //"Message" generater with a builder
                     child: ListView.builder(
                       reverse: true, //Start at the bottom
-                      itemCount: _user_message_list.length,
+                      itemCount: _message_list.length,
                       //Message blueprint
                       itemBuilder: (context, index) {
+                        Color dyna_color= _user? Color.fromRGBO(216, 162, 94, 1.0):
+                          Color.fromRGBO(238, 223, 122, 1.0);
+                        EdgeInsets dyna_padding= _user? EdgeInsets.fromLTRB(112, 4, 0, 4):
+                          EdgeInsets.fromLTRB(0, 4, 112, 4);
+
                         return Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 2.0), //Pad messages
+                          padding: dyna_padding, //Pad messages
                           child: Container(
                             padding: EdgeInsets.all(12.0), //Pad message's text
                             decoration: BoxDecoration(
                               borderRadius: BorderRadius.circular(14.0),
-                              color: Color.fromRGBO(216, 162, 94, 1.0),
+                              color: dyna_color,
                             ),
                             child: Text(
-                              _user_message_list[index],
+                              _message_list[index],
                               style: GoogleFonts.handjet(
                                 textStyle: const TextStyle(
                                   fontSize: 22,
@@ -190,6 +235,8 @@ class _landing_pageState extends State<landing_page> {
                             //Icon script execution
                             onPressed: () async {
                               _send_messages();
+                              await _ai_response();
+                              _input_controller.clear();
                             },
                           ),
                         ),

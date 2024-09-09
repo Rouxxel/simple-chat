@@ -43,6 +43,7 @@ dependencies:
   http: ^1.2.2                #To consume internet resources
   url_launcher: ^6.3.0        #Launch URLs
   google_fonts: ^6.2.1        #Easier to manage fonts
+  google_generative_ai: ^0.4.6 #AI itself
 
 dev_dependencies:
   flutter_test:

@@ -3,6 +3,7 @@ import "package:flutter/cupertino.dart";
 import "package:flutter/material.dart";
 import "package:flutter_dotenv/flutter_dotenv.dart";                   //env var
 import "package:google_fonts/google_fonts.dart";
+import "package:google_generative_ai/google_generative_ai.dart";
 import "package:icons_flutter/icons_flutter.dart" as extra_icons;      //extra icons
 import "package:http/http.dart" as http_rsc;                           //http resources
 import "package:url_launcher/url_launcher.dart";                       //url launcher
@@ -10,7 +11,7 @@ import "package:intl/intl.dart" as interdates;                         //date-ti
 
 //imports
 /////////////////////////////////////////////////////////////////////////////
-//Enviromental
+//Methods
 
 //To retrieve the apikey from .env file
 String Obtain_API_key() {
@@ -24,6 +25,19 @@ String Obtain_API_key() {
   return AI_API_key;
 }
 
+//Function for user to send message
+/*void send_messages(TextEditingController query, List<String> message_list) {
+  if (query.text.isNotEmpty || query.text != null) {
+    setState(() {
+      //Add message to list
+      message_list.insert(0, query.text);
+    });
+    //Clear message
+    query.clear();
+  }
+}*/
+
+//To ensure user input is not an attack
 bool Validate_user_input(BuildContext context,String user_input) {
   print("[------validateuserinput function executed------]");
   if (user_input == null || user_input.isEmpty) {
@@ -44,7 +58,7 @@ bool Validate_user_input(BuildContext context,String user_input) {
   }
 }
 
-// Function to display location not found error
+//Alert dialog for possible attack
 void show_possible_attack_dialog(BuildContext context) {
   //Declare the buttons of alert
   Widget ok_button = TextButton(
@@ -101,4 +115,17 @@ void show_possible_attack_dialog(BuildContext context) {
       return alert;
     },
   );
+}
+
+//Test
+Future<void> testai() async{
+  final model = GenerativeModel(
+    model: 'gemini-1.5-flash',
+    apiKey: Obtain_API_key(),
+  );
+  final user_prompt = 'Write a story about a magic backpack.';
+
+  final response = await model.generateContent([Content.text(user_prompt)]);
+  print("---AI response succesful---");
+  print(response.text);
 }
