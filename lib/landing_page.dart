@@ -26,51 +26,6 @@ class _landing_pageState extends State<landing_page> {
   //List to store chat messages, both user and AI
   final List<Message> _message_list = [];
 
-  //Function for user to send message
-  void _send_messages() {
-    if (_input_controller.text.isNotEmpty || _input_controller.text != null) {
-      setState(() {
-        //Add message to list
-        _message_list.insert(0, Message(_input_controller.text,true),);
-      },);
-      //Clear message?, let _ai_response clear the message
-      //_input_controller.clear();
-      print("---User Query succesfully sent---");
-    }
-  }
-
-  //Function for AI to make a response
-  Future<void> _ai_response() async{
-
-    String local_key= Obtain_API_key(); //Call api key once
-    if(local_key == null || local_key.isEmpty){
-      //Manage error
-      show_api_key_retrieval_dialog(context);
-      throw Exception("Error in retrieving API key");
-    }
-    //Declare AI model
-    final gemini_model = GenerativeModel(
-      model: 'gemini-1.5-flash',
-      apiKey: local_key,
-    );
-
-
-    if (_input_controller.text.isNotEmpty || _input_controller.text != null) {
-      //Extract AI response
-      final ai_response = await
-        gemini_model.generateContent([Content.text(_input_controller.text)]);
-      //Extract the text content from AI response
-      dynamic ai_text = ai_response.text;
-      setState(() {
-        //Add message to list
-        _message_list.insert(0, Message(ai_text,false),);
-      },);
-      //Clear message
-      //_input_controller.clear();
-      print("---AI successfully responded back---");
-    };
-  }
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -122,6 +77,7 @@ class _landing_pageState extends State<landing_page> {
                 children: [
                   //List of displayed user and AI messages
                   Expanded(
+
                     //"Message" generater with a builder
                     child: ListView.builder(
                       reverse: true, //Start at the bottom
@@ -234,8 +190,17 @@ class _landing_pageState extends State<landing_page> {
 
                             //Icon script execution
                             onPressed: () async {
-                              _send_messages();
-                              await _ai_response();
+                              send_messages(
+                                  _input_controller,
+                                  _message_list,
+                                  setState);
+
+                              await ai_response(
+                                  context,
+                                  _input_controller,
+                                  _message_list,
+                                  setState);
+
                               _input_controller.clear();
                             },
                           ),
