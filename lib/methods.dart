@@ -4,17 +4,17 @@ import "package:flutter_dotenv/flutter_dotenv.dart"; //env var
 import "package:google_fonts/google_fonts.dart";
 import "package:google_generative_ai/google_generative_ai.dart";
 import "dart:async";
-import "package:intl/intl.dart" as interdates; //date-time formatting/parsing
 
 //imports
 /////////////////////////////////////////////////////////////////////////////
 //Classes
 
 class Message {
-  final String text;
+  String text;
   final bool user;
+  final DateTime time_stamp;
 
-  Message(this.text, this.user);
+  Message(this.text, this.user) : time_stamp = DateTime.now();
 }
 
 //Classes
@@ -85,14 +85,24 @@ Future<void> ai_response(
 
     //Extract the text content from AI response, safely handle possible null
     String ai_text = ai_response?.text.toString() ?? "Error with AI response";
-    //Update UI with inserted message
+
+    //Create a new AI message with an empty string (for gradual typing)
+    Message ai_message = Message("", false);
     set_state_callback(() {
-      //Add message to list
-      message_list.insert(0, Message(ai_text, false));
-    },
-    );
-    //Clear message?, clear it outside functions
-    //_input_controller.clear();
+      //Add the empty message to the list first
+      message_list.insert(0, ai_message);
+    });
+
+    //Add characters one by one with a delay to simulate typing
+    for (int i = 0; i < ai_text.length; i=i+1) {
+      await Future.delayed(const Duration(milliseconds: 1)); // Adjust speed here
+
+      //Update the message text character by character
+      set_state_callback(() {
+        ai_message.text = ai_message.text + ai_text[i];
+      });
+    }
+
     print("---AI successfully responded back---");
   } catch (er) {
     print("Error: $er");
@@ -106,7 +116,7 @@ Future<void> ai_response(
 //To ensure user input is not an attack
 bool validate_user_input(BuildContext context, String user_input) {
   print("[------validateuserinput function executed------]");
-  if (user_input == null || user_input.isEmpty) {
+  if (user_input.isEmpty) {
     throw ArgumentError("Input is empty");
   }
 

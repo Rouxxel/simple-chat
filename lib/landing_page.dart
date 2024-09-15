@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';   //Fonts
 import 'package:icons_flutter/icons_flutter.dart'; //Extra icons
-import 'package:google_generative_ai/google_generative_ai.dart'; //AI import
+import 'package:intl/intl.dart'; //For date and time formatting
 
 import 'package:simple_chat/methods.dart';
 
@@ -58,13 +58,11 @@ class _landing_pageState extends State<landing_page> {
         body: Stack(
           children: [
             //Background image
-            Container(
-              child: Image.asset(
-                "images/background.jpeg",
-                fit: BoxFit.cover,
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height,
-              ),
+            Image.asset(
+              "images/background.jpeg",
+              fit: BoxFit.cover,
+              width: MediaQuery.of(context).size.width,
+              height: MediaQuery.of(context).size.height,
             ),
 
             //Actual content
@@ -98,23 +96,55 @@ class _landing_pageState extends State<landing_page> {
 
                         return Padding(
                           padding: dyna_padding, //Pad messages
-                          child: Container(
-                            padding: EdgeInsets.all(12.0), //Pad message's text
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(14.0),
-                              color: dyna_color,
-                            ),
-                            child: Text(
-                              message.text,
-                              style: GoogleFonts.handjet(
-                                textStyle: const TextStyle(
-                                  fontSize: 22,
-                                  fontWeight: FontWeight.bold,
-                                  fontStyle: FontStyle.normal,
-                                  color: Colors.black,
+                          child: Column(
+                              crossAxisAlignment: message.user ?
+                                CrossAxisAlignment.end :
+                                CrossAxisAlignment.start,
+                              //mainAxisAlignment: MainAxisAlignment.end,
+
+                          children: [
+                              //Container for each message
+                              Container(
+                                padding: EdgeInsets.all(12.0), //Pad message's text
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(14.0),
+                                  color: dyna_color,
+                                ),
+                                //Inner column for message/timestamp
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+
+                                    //Actual message text
+                                    Text(
+                                      message.text,
+                                      style: GoogleFonts.openSans(
+                                        textStyle: const TextStyle(
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold,
+                                          fontStyle: FontStyle.normal,
+                                          color: Colors.black,
+                                        ),
+                                      ),
+                                    ),
+
+                                    //Timestamp of message
+                                    Text(
+                                      //Format the timestamp as '12:30pm, 23/09/2024'
+                                      DateFormat('hh:mma, dd/MM/yyyy').format(message.time_stamp).toLowerCase(),
+                                      style: GoogleFonts.openSans(
+                                        textStyle: const TextStyle(
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.normal,
+                                          fontStyle: FontStyle.italic,
+                                          color: Color.fromRGBO(33, 33, 33, 1.0),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
-                            ),
+                            ],
                           ),
                         );
                       },
@@ -133,7 +163,7 @@ class _landing_pageState extends State<landing_page> {
                           controller: _input_controller,
 
                           //Decorate user input text
-                          style: GoogleFonts.handjet(
+                          style: GoogleFonts.openSans(
                             textStyle: const TextStyle(
                               fontSize: 28,
                               fontWeight: FontWeight.bold,
@@ -147,7 +177,7 @@ class _landing_pageState extends State<landing_page> {
                             filled: true,
                             fillColor: Color.fromRGBO(216, 162, 94, 1.0),
                             hintText: "Insert your query",
-                            hintStyle: GoogleFonts.handjet(
+                            hintStyle: GoogleFonts.openSans(
                               textStyle: TextStyle(
                                   fontSize: 28,
                                   fontStyle: FontStyle.italic,
@@ -190,18 +220,21 @@ class _landing_pageState extends State<landing_page> {
 
                             //Icon script execution
                             onPressed: () async {
-                              send_messages(
-                                  _input_controller,
-                                  _message_list,
-                                  setState);
+                              //Ensure the controller is not empty
+                              if(_input_controller.text.isNotEmpty){
+                                send_messages(
+                                    _input_controller,
+                                    _message_list,
+                                    setState);
 
-                              await ai_response(
-                                  context,
-                                  _input_controller,
-                                  _message_list,
-                                  setState);
+                                await ai_response(
+                                    context,
+                                    _input_controller,
+                                    _message_list,
+                                    setState);
 
-                              _input_controller.clear();
+                                _input_controller.clear();
+                              }
                             },
                           ),
                         ),
