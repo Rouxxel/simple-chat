@@ -3,13 +3,10 @@ import 'package:google_fonts/google_fonts.dart';   //Fonts
 import 'package:icons_flutter/icons_flutter.dart'; //Extra icons
 import 'package:intl/intl.dart'; //For date and time formatting
 
-import 'package:simple_chat/methods.dart';
+import 'package:simple_chat/methods_functions/methods.dart';
+import 'package:simple_chat/classes/classes.dart';
 
 //imports
-/////////////////////////////////////////////////////////////////////////////
-//global variables
-
-//global variables
 /////////////////////////////////////////////////////////////////////////////
 //screen itself
 class landing_page extends StatefulWidget {
@@ -36,20 +33,31 @@ class _landing_pageState extends State<landing_page> {
         //Top App bar
         appBar: AppBar(
           backgroundColor: const Color.fromRGBO(160, 71, 71, 1.0),
-
-          //App name title
           title: Align(
             alignment: Alignment.centerLeft,
-            child: Text(
-              "- Simple Chat -",
-              style: GoogleFonts.bebasNeue(
-                textStyle: const TextStyle(
-                  fontSize: 35,
-                  fontWeight: FontWeight.normal,
-                  fontStyle: FontStyle.normal,
-                  color: Colors.black,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min, // Prevents the AppBar from expanding too much
+              children: [
+                Text(
+                  "- Simple AI Chat -",
+                  style: GoogleFonts.bebasNeue(
+                    textStyle: const TextStyle(
+                      fontSize: 35,
+                      fontWeight: FontWeight.normal,
+                      fontStyle: FontStyle.normal,
+                      color: Colors.black,
+                    ),
+                  ),
                 ),
-              ),
+                Text(
+                  "Google Gemini 1.5 Flash API powered",
+                  style: const TextStyle(
+                    fontSize: 9,
+                    color: Colors.black,
+                  ),
+                ),
+              ],
             ),
           ),
         ),
@@ -68,7 +76,7 @@ class _landing_pageState extends State<landing_page> {
             //Actual content
             Padding(
               padding:
-                  const EdgeInsets.all(4.0),
+                  const EdgeInsets.all(6.0),
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.end,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -76,7 +84,7 @@ class _landing_pageState extends State<landing_page> {
                   //List of displayed user and AI messages
                   Expanded(
 
-                    //"Message" generater with a builder
+                    //"Message" generator with a builder
                     child: ListView.builder(
                       reverse: true, //Start at the bottom
                       itemCount: _message_list.length,
@@ -105,7 +113,7 @@ class _landing_pageState extends State<landing_page> {
                           children: [
                               //Container for each message
                               Container(
-                                padding: EdgeInsets.all(12.0), //Pad message's text
+                                padding: EdgeInsets.all(12.0), //Pad message's text in container
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(14.0),
                                   color: dyna_color,
@@ -120,7 +128,7 @@ class _landing_pageState extends State<landing_page> {
                                       message.text,
                                       style: GoogleFonts.openSans(
                                         textStyle: const TextStyle(
-                                          fontSize: 20,
+                                          fontSize: 18,
                                           fontWeight: FontWeight.bold,
                                           fontStyle: FontStyle.normal,
                                           color: Colors.black,
@@ -134,7 +142,7 @@ class _landing_pageState extends State<landing_page> {
                                       DateFormat('hh:mma, dd/MM/yyyy').format(message.time_stamp).toLowerCase(),
                                       style: GoogleFonts.openSans(
                                         textStyle: const TextStyle(
-                                          fontSize: 16,
+                                          fontSize: 10,
                                           fontWeight: FontWeight.normal,
                                           fontStyle: FontStyle.italic,
                                           color: Color.fromRGBO(33, 33, 33, 1.0),
@@ -165,7 +173,7 @@ class _landing_pageState extends State<landing_page> {
                           //Decorate user input text
                           style: GoogleFonts.openSans(
                             textStyle: const TextStyle(
-                              fontSize: 28,
+                              fontSize: 20,
                               fontWeight: FontWeight.bold,
                               fontStyle: FontStyle.normal,
                               color: Colors.black,
@@ -175,18 +183,18 @@ class _landing_pageState extends State<landing_page> {
                           //Decorate input box and hint text
                           decoration: InputDecoration(
                             filled: true,
-                            fillColor: Color.fromRGBO(216, 162, 94, 1.0),
-                            hintText: "Insert your query",
+                            fillColor: const Color.fromRGBO(216, 162, 94, 1.0),
+                            hintText: "Say hello!!!",
                             hintStyle: GoogleFonts.openSans(
-                              textStyle: TextStyle(
-                                  fontSize: 28,
+                              textStyle: const TextStyle(
+                                  fontSize: 20,
                                   fontStyle: FontStyle.italic,
                                   fontWeight: FontWeight.bold,
                                   color: Colors.black),
                             ),
-                            border: OutlineInputBorder(
+                            border: const OutlineInputBorder(
                               borderRadius: BorderRadius.all(
-                                Radius.circular(14.0),
+                                Radius.circular(20.0),
                               ),
                               /*borderSide: BorderSide( //TODO: why is the border color not being updated?
                                 color: Colors.pinkAccent,
@@ -201,11 +209,11 @@ class _landing_pageState extends State<landing_page> {
                       Container(
                         //Round up Iconbutton's container edges
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(14.0),
-                          color: Color.fromRGBO(216, 162, 94, 1.0),
+                          borderRadius: BorderRadius.circular(20.0),
+                          color: const Color.fromRGBO(216, 162, 94, 1.0),
                         ),
-                        height: 74,
-                        width: 74,
+                        height: 62,
+                        width: 62,
 
                         //Search icon
                         child: Center(
@@ -215,27 +223,33 @@ class _landing_pageState extends State<landing_page> {
                               MaterialIcons.send,
                             ),
                             alignment: Alignment.center,
-                            iconSize: 50,
+                            iconSize: 40,
                             color: Colors.black,
 
                             //Icon script execution
                             onPressed: () async {
-                              //Ensure the controller is not empty
-                              if(_input_controller.text.isNotEmpty){
-                                send_messages(
-                                    _input_controller,
-                                    _message_list,
-                                    setState);
+                              final userInput = _input_controller.text;
 
-                                await ai_response(
-                                    context,
-                                    _input_controller,
-                                    _message_list,
-                                    setState);
+                              //First validate the input
+                              if (validate_user_input(context, userInput) &&
+                                  userInput.isNotEmpty) {
+                                //Create a message and send it
+                                Message message = Message(userInput, true);
+                                message.send_messages(_input_controller, _message_list, setState);
+
+                                //Then get AI response
+                                await message.ai_query_and_response(
+                                  context,
+                                  _input_controller,
+                                  _message_list,
+                                  setState,
+                                );
 
                                 _input_controller.clear();
+                              } else {
+                                print("Message not sent due to invalid input.");
                               }
-                            },
+                            }
                           ),
                         ),
                       ),

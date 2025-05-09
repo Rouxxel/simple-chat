@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:simple_chat/landing_page.dart';
+import 'package:simple_chat/screens_pages/landing_page.dart';
 
 //imports
 /////////////////////////////////////////////////////////////////////////////
