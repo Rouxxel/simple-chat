@@ -50,9 +50,9 @@ class _landing_pageState extends State<landing_page> {
                     ),
                   ),
                 ),
-                Text(
+                const Text(
                   "Google Gemini 1.5 Flash API powered",
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 9,
                     color: Colors.black,
                   ),
@@ -113,7 +113,7 @@ class _landing_pageState extends State<landing_page> {
                           children: [
                               //Container for each message
                               Container(
-                                padding: EdgeInsets.all(12.0), //Pad message's text in container
+                                padding: const EdgeInsets.all(12.0), //Pad message's text in container
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.circular(14.0),
                                   color: dyna_color,

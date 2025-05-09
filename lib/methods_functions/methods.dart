@@ -16,14 +16,14 @@ import "package:simple_chat/utils/alert_dialog_list.dart";
 //API key retrieval--------------------------------------------------
 //To retrieve the apikey from .env file
 String obtain_API_key() {
-  String? AI_API_key = dotenv.env['ai_api_key'];
-  if (AI_API_key == null) {
+  String? ai_API_key = dotenv.env['ai_api_key'];
+  if (ai_API_key == null) {
     throw Exception('API key not found');
   }
 
   print("---API key succesfully found---");
   //Return the API key
-  return AI_API_key;
+  return ai_API_key;
 }
 
 //Data validation----------------------------------------------------
@@ -48,7 +48,7 @@ bool validate_user_input(BuildContext context, String user_input) {
   }
 
   // Additional Checks for potential attack patterns (e.g., SQL Injection, XSS, etc.)
-  if (_containsSuspiciousPatterns(user_input)) {
+  if (_contains_suspicious_patterns(user_input)) {
     // If suspicious patterns are found, show warning and return false
     show_possible_attack_dialog(context);
     print("Possible attack detected");
@@ -60,7 +60,7 @@ bool validate_user_input(BuildContext context, String user_input) {
 }
 
 //Function to check for suspicious patterns like SQL injection, XSS, etc.
-bool _containsSuspiciousPatterns(String input) {
+bool _contains_suspicious_patterns(String input) {
   // Check for common attack patterns (e.g., SQL Injection, XSS, etc.)
   final suspiciousPatterns = [
   r"SELECT.*FROM",  // SQL SELECT statement pattern
@@ -80,14 +80,16 @@ bool _containsSuspiciousPatterns(String input) {
   return false;  // No suspicious pattern found
 }
 
-//
-//
-Future<Map<String, dynamic>?> readDataFromJson(String filePath, {bool exitOnError = true}) async {
+//Config file management------------------------------------
+//To extract data from json file
+Map<String, dynamic>? read_data_json(
+    String filePath,
+    {bool exitOnError = true}) {
   try {
     final file = File(filePath);
-    final contents = await file.readAsString();
-    final Map<String, dynamic> jsonData = jsonDecode(contents);
-    return jsonData;
+    final contents = file.readAsStringSync();  // Synchronous method
+    final Map<String, dynamic> json_data = jsonDecode(contents);
+    return json_data;
   } on FileSystemException {
     print("Error: The file '$filePath' was not found.");
     if (exitOnError) exit(1);
@@ -99,9 +101,14 @@ Future<Map<String, dynamic>?> readDataFromJson(String filePath, {bool exitOnErro
   }
 }
 
+//Helper function to convert hex string to Color
+Color hex_to_color(String hex) {
+  return Color(int.parse(hex.replaceFirst('#', '0x')));
+}
+
 //Testing different methods and others------------------------------
 //Test AI, don't use for anything else
-Future<void> testai() async {
+Future<void> test_ai() async {
   final model = GenerativeModel(
     model: 'gemini-1.5-flash',
     apiKey: obtain_API_key(),
