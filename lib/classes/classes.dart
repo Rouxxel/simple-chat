@@ -22,13 +22,14 @@ class Message {
   //Function for user to send message
   void send_messages(TextEditingController input_controller,
       List<Message> message_list, Function set_state_callback) {
+    log_handler.d("[------send_messages function executing------]");
     if (input_controller.text.isNotEmpty) {
       set_state_callback(() {
         //Add message to list
         message_list.insert(0, Message(input_controller.text, true));
       },
       );
-      print("---User Query succesfully sent---");
+      log_handler.d("---User Query succesfully sent---");
     }
   }
 
@@ -38,7 +39,7 @@ class Message {
       TextEditingController input_controller,
       List<Message> message_list,
       Function set_state_callback) async {
-
+    log_handler.d("[------ai_query_and_response function executing------]");
     String local_key = obtain_API_key(); //Call api key once
     if (local_key.isEmpty) {
       //Manage error
@@ -96,9 +97,9 @@ class Message {
         });
       }
 
-      print("---AI successfully responded back---");
+      log_handler.d("---AI successfully responded back---");
     } catch (er) {
-      print("Error: $er");
+      log_handler.w("Error: $er");
 
       //Display AI response error
       show_ai_response_error(context);

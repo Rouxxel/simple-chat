@@ -5,9 +5,13 @@ import "package:google_generative_ai/google_generative_ai.dart";
 import "dart:async";
 import "dart:convert";
 import "dart:io";
+import 'package:logger/logger.dart';
 
 //Import alert dialogs
 import "package:simple_chat/utils/alert_dialog_list.dart";
+
+//Initialize logger
+var log_handler = Logger();
 
 //imports
 /////////////////////////////////////////////////////////////////////////////
@@ -20,8 +24,8 @@ String obtain_API_key() {
   if (ai_API_key == null) {
     throw Exception('API key not found');
   }
-
-  print("---API key succesfully found---");
+  log_handler.d("[------obtain_API_key function executing------]");
+  log_handler.d("---API key successfully found---");
   //Return the API key
   return ai_API_key;
 }
@@ -29,7 +33,7 @@ String obtain_API_key() {
 //Data validation----------------------------------------------------
 //To ensure user input is not an attack
 bool validate_user_input(BuildContext context, String user_input) {
-  print("[------validateuserinput function executed------]");
+  log_handler.d("[------validate_user_input function executing------]");
 
   // Check if input is empty
   if (user_input.isEmpty) {
@@ -43,7 +47,7 @@ bool validate_user_input(BuildContext context, String user_input) {
   if (!valid_chars.hasMatch(user_input)) {
     // Handle invalid input (could be potential attack)
     show_possible_attack_dialog(context);
-    print("Invalid user input");
+    log_handler.w("Invalid user input");
     return false;
   }
 
@@ -51,16 +55,17 @@ bool validate_user_input(BuildContext context, String user_input) {
   if (_contains_suspicious_patterns(user_input)) {
     // If suspicious patterns are found, show warning and return false
     show_possible_attack_dialog(context);
-    print("Possible attack detected");
+    log_handler.w("Possible attack detected");
     return false;
   }
 
-  print("Valid user input");
+  log_handler.d("Valid user input");
   return true;
 }
 
 //Function to check for suspicious patterns like SQL injection, XSS, etc.
 bool _contains_suspicious_patterns(String input) {
+  log_handler.d("[------_contains_suspicious_patterns function executing------]");
   // Check for common attack patterns (e.g., SQL Injection, XSS, etc.)
   final suspiciousPatterns = [
   r"SELECT.*FROM",  // SQL SELECT statement pattern
@@ -73,29 +78,31 @@ bool _contains_suspicious_patterns(String input) {
   for (var pattern in suspiciousPatterns) {
   final regex = RegExp(pattern, caseSensitive: false);
   if (regex.hasMatch(input)) {
-  return true;  // Found suspicious pattern
+    log_handler.w("Found suspicious pattern");
+    return true;  // Found suspicious pattern
+    }
   }
-  }
-
+  log_handler.d("No suspicious pattern found");
   return false;  // No suspicious pattern found
 }
 
 //Config file management------------------------------------
 //To extract data from json file
 Map<String, dynamic>? read_data_json(
-    String filePath,
+    String file_path,
     {bool exitOnError = true}) {
+  log_handler.d("[------read_data_json function executing------]");
   try {
-    final file = File(filePath);
+    final file = File(file_path);
     final contents = file.readAsStringSync();  // Synchronous method
     final Map<String, dynamic> json_data = jsonDecode(contents);
     return json_data;
   } on FileSystemException {
-    print("Error: The file '$filePath' was not found.");
+    log_handler.w("Error: The file '$file_path' was not found.");
     if (exitOnError) exit(1);
     return null;
   } on FormatException {
-    print("Error: The file '$filePath' is not a valid JSON file.");
+    log_handler.w("Error: The file '$file_path' is not a valid JSON file.");
     if (exitOnError) exit(1);
     return null;
   }
@@ -103,6 +110,7 @@ Map<String, dynamic>? read_data_json(
 
 //Helper function to convert hex string to Color
 Color hex_to_color(String hex) {
+  log_handler.d("[------hex_to_color function executing------]");
   return Color(int.parse(hex.replaceFirst('#', '0x')));
 }
 
@@ -116,6 +124,6 @@ Future<void> test_ai() async {
   final user_prompt = 'Write a story about a magic backpack.';
 
   final response = await model.generateContent([Content.text(user_prompt)]);
-  print("---AI response succesful---");
-  print(response.text);
+  log_handler.d("---AI response succesful---");
+  log_handler.d(response.text);
 }
