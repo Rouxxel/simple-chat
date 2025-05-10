@@ -247,7 +247,7 @@ class _landing_pageState extends State<landing_page> {
 
                                 _input_controller.clear();
                               } else {
-                                print("Message not sent due to invalid input.");
+                                log_handler.w("Message not sent due to invalid input.");
                               }
                             }
                           ),
