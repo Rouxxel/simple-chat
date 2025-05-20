@@ -117,8 +117,8 @@ class _landing_pageState extends State<landing_page> {
                           const Color.fromRGBO(238, 223, 122, 1.0);
                         //Declare dynamic Edge Insets
                         EdgeInsets dyna_padding= message.user?
-                          const EdgeInsets.fromLTRB(60, 4, 0, 4):
-                          const EdgeInsets.fromLTRB(0, 4, 60, 4);
+                          const EdgeInsets.fromLTRB(50, 4, 0, 4):
+                          const EdgeInsets.fromLTRB(0, 4, 50, 4);
 
                         return Padding(
                           padding: dyna_padding, //Pad messages
@@ -144,24 +144,24 @@ class _landing_pageState extends State<landing_page> {
                                     MarkdownBody(
                                       data: message.text,
                                       styleSheet: MarkdownStyleSheet(
-                                        p: GoogleFonts.openSans(
+                                        p: GoogleFonts.roboto(
                                           textStyle: const TextStyle(fontSize: 18, color: Colors.black),
                                         ),
-                                        em: GoogleFonts.openSans(
+                                        em: GoogleFonts.roboto(
                                           textStyle: const TextStyle(
                                             fontSize: 18,
                                             fontStyle: FontStyle.italic,
                                             color: Colors.black,
                                           ),
                                         ),
-                                        strong: GoogleFonts.openSans(
+                                        strong: GoogleFonts.roboto(
                                           textStyle: const TextStyle(
                                             fontSize: 18,
                                             fontWeight: FontWeight.bold,
                                             color: Colors.black,
                                           ),
                                         ),
-                                        del: GoogleFonts.openSans(
+                                        del: GoogleFonts.roboto(
                                           textStyle: const TextStyle(
                                             fontSize: 18,
                                             decoration: TextDecoration.lineThrough,
@@ -175,21 +175,21 @@ class _landing_pageState extends State<landing_page> {
                                             backgroundColor: Color(0xFFEFEFEF),
                                           ),
                                         ),
-                                        blockquote: GoogleFonts.openSans(
+                                        blockquote: GoogleFonts.roboto(
                                           textStyle: const TextStyle(
                                             fontSize: 18,
                                             fontStyle: FontStyle.italic,
                                             color: Colors.grey,
                                           ),
                                         ),
-                                        h1: GoogleFonts.openSans(
+                                        h1: GoogleFonts.roboto(
                                           textStyle: const TextStyle(
                                             fontSize: 24,
                                             fontWeight: FontWeight.bold,
                                             color: Colors.black,
                                           ),
                                         ),
-                                        h2: GoogleFonts.openSans(
+                                        h2: GoogleFonts.roboto(
                                           textStyle: const TextStyle(
                                             fontSize: 22,
                                             fontWeight: FontWeight.bold,
@@ -205,7 +205,7 @@ class _landing_pageState extends State<landing_page> {
                                     Text(
                                       //Format the timestamp as '12:30pm, 23/09/2024'
                                       DateFormat('hh:mma, dd/MM/yyyy').format(message.time_stamp).toLowerCase(),
-                                      style: GoogleFonts.openSans(
+                                      style: GoogleFonts.roboto(
                                         textStyle: const TextStyle(
                                           fontSize: 10,
                                           fontWeight: FontWeight.normal,
@@ -233,7 +233,7 @@ class _landing_pageState extends State<landing_page> {
                         child: TextField(
                           controller: _input_controller,
                           readOnly: _is_processing,
-                          style: GoogleFonts.openSans(
+                          style: GoogleFonts.roboto(
                             textStyle: TextStyle(
                               fontSize: 18,               // match markdown paragraph font size
                               fontWeight: FontWeight.normal,  // normal weight like markdown p
@@ -245,7 +245,7 @@ class _landing_pageState extends State<landing_page> {
                             filled: true,
                             fillColor: const Color.fromRGBO(216, 162, 94, 1.0),
                             hintText: _is_processing ? '' : (_first_query_done ? "" : "Say hello..."),
-                            hintStyle: GoogleFonts.openSans(
+                            hintStyle: GoogleFonts.roboto(
                               textStyle: const TextStyle(
                                 fontSize: 18,
                                 fontStyle: FontStyle.italic,
