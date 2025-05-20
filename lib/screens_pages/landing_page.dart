@@ -23,6 +23,10 @@ class _landing_pageState extends State<landing_page> {
   //List to store chat messages, both user and AI
   final List<Message> _message_list = [];
 
+  //Boolean controller for send button and input controller hiding
+  bool _is_processing = false;
+  bool _first_query_done = false;
+
   //Add the personality of the AI
   @override
   void initState() {
@@ -171,7 +175,6 @@ class _landing_pageState extends State<landing_page> {
                       },
                     ),
                   ),
-
                   //Input field and button
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -180,77 +183,64 @@ class _landing_pageState extends State<landing_page> {
                       //Input field
                       Expanded(
                         child: TextField(
-                          //Controller to manage user input
                           controller: _input_controller,
-
-                          //Decorate user input text
+                          readOnly: _is_processing, //Prevent typing
                           style: GoogleFonts.openSans(
-                            textStyle: const TextStyle(
+                            textStyle: TextStyle(
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
                               fontStyle: FontStyle.normal,
-                              color: Colors.black,
+                              color: _is_processing ? Colors.transparent : Colors.black, //Hide text while processing
                             ),
                           ),
-
-                          //Decorate input box and hint text
                           decoration: InputDecoration(
                             filled: true,
                             fillColor: const Color.fromRGBO(216, 162, 94, 1.0),
-                            hintText: "Say hello!!!",
+                            hintText: _is_processing ? '' : (_first_query_done ? "" : "Say hello..."), //Hide hint text too
                             hintStyle: GoogleFonts.openSans(
                               textStyle: const TextStyle(
-                                  fontSize: 20,
-                                  fontStyle: FontStyle.italic,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black),
+                                fontSize: 20,
+                                fontStyle: FontStyle.italic,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
+                              ),
                             ),
                             border: const OutlineInputBorder(
                               borderRadius: BorderRadius.all(
                                 Radius.circular(20.0),
                               ),
-                              /*borderSide: BorderSide( //TODO: why is the border color not being updated?
-                                color: Colors.pinkAccent,
-                                width: 15.0,
-                              ),*/
                             ),
                           ),
+                          cursorColor: Colors.black,
                         ),
                       ),
 
-                      //Icon button, container to create its frame
+                      //Send Button
                       Container(
-                        //Round up Iconbutton's container edges
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(20.0),
                           color: const Color.fromRGBO(216, 162, 94, 1.0),
                         ),
                         height: 62,
                         width: 62,
-
-                        //Search icon
                         child: Center(
                           child: IconButton(
-                            //Icon decoration
-                            icon: const Icon(
-                              MaterialIcons.send,
-                            ),
+                            icon: const Icon(MaterialIcons.send),
                             alignment: Alignment.center,
                             iconSize: 40,
                             color: Colors.black,
-
-                            //Icon script execution
-                            onPressed: () async {
+                            onPressed: _is_processing
+                                ? null //Disable button while processing
+                                : () async {
                               final userInput = _input_controller.text;
 
-                              //First validate the input
                               if (validate_user_input(context, userInput) &&
                                   userInput.isNotEmpty) {
-                                //Create a message and send it
+                                setState(() => _is_processing = true); //Start processing
+
                                 Message message = Message(userInput, true);
                                 message.send_messages(_input_controller, _message_list, setState);
 
-                                //Then get AI response
                                 await message.ai_query_and_response(
                                   context,
                                   _input_controller,
@@ -259,10 +249,12 @@ class _landing_pageState extends State<landing_page> {
                                 );
 
                                 _input_controller.clear();
+                                setState(() => _first_query_done = true);
+                                setState(() => _is_processing = false); //End processing
                               } else {
                                 log_handler.w("Message not sent due to invalid input.");
                               }
-                            }
+                            },
                           ),
                         ),
                       ),
