@@ -23,6 +23,19 @@ class _landing_pageState extends State<landing_page> {
   //List to store chat messages, both user and AI
   final List<Message> _message_list = [];
 
+  //Add the personality of the AI
+  @override
+  void initState() {
+    super.initState();
+    //Inject system prompt as first AI message (used for memory context)
+    const String system_prompt =
+        "You are 'Simple Chat', an AI assistant who responds with the manner and refinement of a British butler. "
+        "Use polite, formal language, and maintain a respectful tone. "
+        "Only introduce yourself if asked, and focus on being mediumly concise, helpful, and eloquent.";
+
+    _message_list.add(Message(system_prompt, false)); //false because it represent AI message
+  }
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -87,7 +100,7 @@ class _landing_pageState extends State<landing_page> {
                     //"Message" generator with a builder
                     child: ListView.builder(
                       reverse: true, //Start at the bottom
-                      itemCount: _message_list.length,
+                      itemCount: _message_list.length -1,
                       //Message blueprint
                       itemBuilder: (context, index) {
                         //Declare message with list that has class

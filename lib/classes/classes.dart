@@ -42,34 +42,39 @@ class Message {
     log_handler.d("[------ai_query_and_response function executing------]");
     String local_key = obtain_API_key(); //Call api key once
     if (local_key.isEmpty) {
-      //Manage error
       show_api_key_retrieval_error_dialog(context);
       throw Exception("Error in retrieving API key");
     }
-
-    //Try to make API call
     try {
-      //Declare AI model
-      final gemini_model = await GenerativeModel(
+      final gemini_model = GenerativeModel(
         model: 'gemini-1.5-flash',
         apiKey: local_key,
       );
 
-      //Declare ai response to be updated
-      dynamic ai_response=null;
+      dynamic ai_response;
       if (input_controller.text.isNotEmpty) {
-        const String system_prompt = "You are a chatbot named Simple Chat. "
-                                    "Act like a British butler and use a formal, "
-                                    "refined vocabulary. ";
+        //OLD VERSION TO Build conversation memory for current session
+        // const String system_prompt = "You are 'Simple Chat', an AI assistant who "
+        //     "responds with the manner and refinement of "
+        //     "a British butler. Use polite, formal language, "
+        //     "and maintain a respectful tone. You may "
+        //     "occasionally use British expressions, but avoid "
+        //     "beginning every response with greetings or "
+        //     "repeating the user's name unless it's contextually "
+        //     "appropriate. Only introduce yourself if asked, "
+        //     "and focus on being concise, helpful, and eloquent.";
+        //
+        // //Build conversation memory for current session
+        // String history = build_conversation_context(message_list);
+        // String new_prompt = "$system_prompt\n$history\nUser: ${input_controller.text}\nAI:";
 
-        //Update input_controller
-        String text_to_ai = system_prompt + input_controller.text;
-        //Original text to be sent to AI
-        //input_controller.text = system_prompt + input_controller.text;
-        
-        //Extract AI response, with a time limit to respond
+        //Build conversation memory for current session
+        String history = build_conversation_context(message_list);
+        String new_prompt = "$history\nUser: ${input_controller.text}\nAI:";
+
+        //Send full memory context to the AI along with new query
         ai_response = await gemini_model
-            .generateContent([Content.text(text_to_ai)])
+            .generateContent([Content.text(new_prompt)])
             .timeout(Duration(seconds: 7), onTimeout: () {
           show_ai_took_too_long_error(context);
           throw TimeoutException('AI response took too long');
@@ -77,33 +82,24 @@ class Message {
         );
       }
 
-      //Extract the text content from AI response, safely handle possible null
+      //Extract and animate AI response
       String ai_text = ai_response?.text.toString() ?? "Error with AI response";
-
-      //Create a new AI message with an empty string (for gradual typing)
       Message ai_message = Message("", false);
       set_state_callback(() {
-        //Add the empty message to the list first
         message_list.insert(0, ai_message);
       });
 
-      //Add characters one by one with a delay to simulate typing
-      for (int i = 0; i < ai_text.length; i=i+1) {
-        await Future.delayed(const Duration(milliseconds: 1)); // Adjust speed here
-
-        //Update the message text character by character
+      for (int i = 0; i < ai_text.length; i++) {
+        await Future.delayed(const Duration(milliseconds: 1));
         set_state_callback(() {
-          ai_message.text = ai_message.text + ai_text[i];
+          ai_message.text += ai_text[i];
         });
       }
 
       log_handler.d("---AI successfully responded back---");
     } catch (er) {
       log_handler.e("Error: $er");
-
-      //Display AI response error
       show_ai_response_error(context);
     }
   }
-
 }

@@ -1,5 +1,3 @@
-import "dart:math";
-
 import "package:flutter/cupertino.dart";
 import "package:flutter/material.dart";
 import "package:flutter_dotenv/flutter_dotenv.dart"; //env var
@@ -11,6 +9,8 @@ import 'package:logger/logger.dart';
 
 //Import alert dialogs
 import "package:simple_chat/utils/alert_dialog_list.dart";
+
+import "package:simple_chat/classes/classes.dart";
 
 //Initialize logger
 var log_handler= Logger();
@@ -31,6 +31,20 @@ String obtain_API_key() {
   log_handler.d("---API key successfully found---");
   //Return the API key
   return ai_API_key;
+}
+
+//AI session memory
+//Re-read the whole conversation so far
+String build_conversation_context(List<Message> messages) {
+  final buffer = StringBuffer();
+  for (var msg in messages) {
+    if (msg.user) {
+      buffer.writeln("User: ${msg.text}");
+    } else {
+      buffer.writeln("AI: ${msg.text}");
+    }
+  }
+  return buffer.toString();
 }
 
 //Data validation----------------------------------------------------
