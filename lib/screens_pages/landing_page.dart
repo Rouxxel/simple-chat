@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';   //Fonts
 import 'package:icons_flutter/icons_flutter.dart'; //Extra icons
 import 'package:intl/intl.dart'; //For date and time formatting
+import 'package:flutter_markdown/flutter_markdown.dart'; //For markdown
 
 import 'package:simple_chat/methods_functions/methods.dart';
 import 'package:simple_chat/classes/classes.dart';
@@ -21,7 +22,7 @@ class _landing_pageState extends State<landing_page> {
   final TextEditingController _input_controller = TextEditingController();
 
   //List to store chat messages, both user and AI
-  final List<Message> _message_list = [];
+  List<Message> _message_list = [];
 
   //Boolean controller for send button and input controller hiding
   bool _is_processing = false;
@@ -33,7 +34,7 @@ class _landing_pageState extends State<landing_page> {
     super.initState();
     //Inject system prompt as first AI message (used for memory context)
     const String system_prompt =
-        "You are 'Simple Chat', an AI assistant who responds with the manner and refinement of a British butler. "
+        "Your name is 'Simple Chat', an AI assistant who responds with the manner and refinement of a British butler. "
         "Use polite, formal language, and maintain a respectful tone. "
         "Only introduce yourself if asked, and focus on being mediumly concise, helpful, and eloquent.";
 
@@ -112,12 +113,12 @@ class _landing_pageState extends State<landing_page> {
 
                         //Declare dynamic color
                         Color dyna_color= message.user?
-                          Color.fromRGBO(216, 162, 94, 1.0):
-                          Color.fromRGBO(238, 223, 122, 1.0);
+                          const Color.fromRGBO(216, 162, 94, 1.0):
+                          const Color.fromRGBO(238, 223, 122, 1.0);
                         //Declare dynamic Edge Insets
                         EdgeInsets dyna_padding= message.user?
-                          EdgeInsets.fromLTRB(112, 4, 0, 4):
-                          EdgeInsets.fromLTRB(0, 4, 112, 4);
+                          const EdgeInsets.fromLTRB(60, 4, 0, 4):
+                          const EdgeInsets.fromLTRB(0, 4, 60, 4);
 
                         return Padding(
                           padding: dyna_padding, //Pad messages
@@ -139,17 +140,64 @@ class _landing_pageState extends State<landing_page> {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
-
                                     //Actual message text
-                                    Text(
-                                      message.text,
-                                      style: GoogleFonts.openSans(
-                                        textStyle: const TextStyle(
-                                          fontSize: 18,
-                                          fontWeight: FontWeight.bold,
-                                          fontStyle: FontStyle.normal,
-                                          color: Colors.black,
+                                    MarkdownBody(
+                                      data: message.text,
+                                      styleSheet: MarkdownStyleSheet(
+                                        p: GoogleFonts.openSans(
+                                          textStyle: const TextStyle(fontSize: 18, color: Colors.black),
                                         ),
+                                        em: GoogleFonts.openSans(
+                                          textStyle: const TextStyle(
+                                            fontSize: 18,
+                                            fontStyle: FontStyle.italic,
+                                            color: Colors.black,
+                                          ),
+                                        ),
+                                        strong: GoogleFonts.openSans(
+                                          textStyle: const TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.black,
+                                          ),
+                                        ),
+                                        del: GoogleFonts.openSans(
+                                          textStyle: const TextStyle(
+                                            fontSize: 18,
+                                            decoration: TextDecoration.lineThrough,
+                                            color: Colors.black54,
+                                          ),
+                                        ),
+                                        code: GoogleFonts.robotoMono(
+                                          textStyle: const TextStyle(
+                                            fontSize: 16,
+                                            color: Colors.black87,
+                                            backgroundColor: Color(0xFFEFEFEF),
+                                          ),
+                                        ),
+                                        blockquote: GoogleFonts.openSans(
+                                          textStyle: const TextStyle(
+                                            fontSize: 18,
+                                            fontStyle: FontStyle.italic,
+                                            color: Colors.grey,
+                                          ),
+                                        ),
+                                        h1: GoogleFonts.openSans(
+                                          textStyle: const TextStyle(
+                                            fontSize: 24,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.black,
+                                          ),
+                                        ),
+                                        h2: GoogleFonts.openSans(
+                                          textStyle: const TextStyle(
+                                            fontSize: 22,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.black87,
+                                          ),
+                                        ),
+
+                                        //Add more header styles in this level
                                       ),
                                     ),
 
@@ -184,25 +232,25 @@ class _landing_pageState extends State<landing_page> {
                       Expanded(
                         child: TextField(
                           controller: _input_controller,
-                          readOnly: _is_processing, //Prevent typing
+                          readOnly: _is_processing,
                           style: GoogleFonts.openSans(
                             textStyle: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              fontStyle: FontStyle.normal,
-                              color: _is_processing ? Colors.transparent : Colors.black, //Hide text while processing
+                              fontSize: 18,               // match markdown paragraph font size
+                              fontWeight: FontWeight.normal,  // normal weight like markdown p
+                              fontStyle: FontStyle.normal, // normal style (not italic by default)
+                              color: _is_processing ? Colors.transparent : Colors.black,
                             ),
                           ),
                           decoration: InputDecoration(
                             filled: true,
                             fillColor: const Color.fromRGBO(216, 162, 94, 1.0),
-                            hintText: _is_processing ? '' : (_first_query_done ? "" : "Say hello..."), //Hide hint text too
+                            hintText: _is_processing ? '' : (_first_query_done ? "" : "Say hello..."),
                             hintStyle: GoogleFonts.openSans(
                               textStyle: const TextStyle(
-                                fontSize: 20,
+                                fontSize: 18,
                                 fontStyle: FontStyle.italic,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black,
+                                fontWeight: FontWeight.normal,
+                                color: Colors.black54,
                               ),
                             ),
                             border: const OutlineInputBorder(
@@ -248,9 +296,12 @@ class _landing_pageState extends State<landing_page> {
                                   setState,
                                 );
 
+                                //Update accordingly
                                 _input_controller.clear();
-                                setState(() => _first_query_done = true);
-                                setState(() => _is_processing = false); //End processing
+                                setState(() {
+                                  _first_query_done = true;
+                                  _is_processing = false;
+                                });//End processing
                               } else {
                                 log_handler.w("Message not sent due to invalid input.");
                               }
