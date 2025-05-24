@@ -69,7 +69,7 @@ class _landing_pageState extends State<landing_page> {
                   ),
                 ),
                 const Text(
-                  "Google Gemini 1.5 Flash API powered",
+                  "Google Gemini 2.0 Flash API powered",
                   style: TextStyle(
                     fontSize: 9,
                     color: Colors.black,
