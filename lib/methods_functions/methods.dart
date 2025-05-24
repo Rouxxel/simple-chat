@@ -52,27 +52,19 @@ String build_conversation_context(List<Message> messages) {
 bool validate_user_input(BuildContext context, String user_input) {
   log_handler.d("[------validate_user_input function executing------]");
 
-  // Check if input is empty
-  if (user_input.isEmpty) {
+  //Check if input is empty
+  if (user_input.trim().isEmpty) {
     throw ArgumentError("Input is empty");
   }
 
-  // Limit the valid characters by user (same as your original RegExp)
-  final valid_chars = RegExp(r'^[a-zA-Z0-9\s\-\?\.\,\!\:\"]+$');
+  //Normalize and sanitize user input
+  final sanitized_input = sanitize_input(user_input);
+  log_handler.d("Sanitized input: $sanitized_input");
 
-  // Check if input matches allowed characters
-  if (!valid_chars.hasMatch(user_input)) {
-    // Handle invalid input (could be potential attack)
+  //Check for suspicious patterns (e.g., SQL Injection, XSS, etc.)
+  if (contains_suspicious_patterns(sanitized_input)) {
     show_possible_attack_dialog(context);
-    log_handler.w("Invalid user input");
-    return false;
-  }
-
-  // Additional Checks for potential attack patterns (e.g., SQL Injection, XSS, etc.)
-  if (_contains_suspicious_patterns(user_input)) {
-    // If suspicious patterns are found, show warning and return false
-    show_possible_attack_dialog(context);
-    log_handler.w("Possible attack detected");
+    log_handler.w("Possible attack detected in sanitized input");
     return false;
   }
 
@@ -80,27 +72,34 @@ bool validate_user_input(BuildContext context, String user_input) {
   return true;
 }
 
+//Normalize and sanitize input for safe use in HTML or UI
+String sanitize_input(String input) {
+  //Remove invisible/control characters
+  String cleaned = input.replaceAll(RegExp(r'[\x00-\x1F\x7F]'), '');
+  //Escape for HTML output
+  return const HtmlEscape(HtmlEscapeMode.element).convert(cleaned.trim());
+}
+
 //Function to check for suspicious patterns like SQL injection, XSS, etc.
-bool _contains_suspicious_patterns(String input) {
+bool contains_suspicious_patterns(String input) {
   log_handler.d("[------_contains_suspicious_patterns function executing------]");
-  // Check for common attack patterns (e.g., SQL Injection, XSS, etc.)
   final suspiciousPatterns = [
-  r"SELECT.*FROM",  // SQL SELECT statement pattern
-  r"DROP.*TABLE",   // SQL DROP command pattern
-  r"<script.*>.*</script>", // Basic XSS attempt
-  r"(\b|\s)(union|select|insert|delete|drop|update)(\s|\b)", // SQL keywords
-  r"<.*?>",  // Potential XSS tags
+    r"SELECT\s+.*\s+FROM",                  //SQL SELECT statement pattern
+    r"DROP\s+TABLE",                        //SQL DROP command pattern
+    r"<script.*?>.*?</script>",            //Basic XSS attempt countermeasure
+    r"(\b|\s)(union|select|insert|delete|drop|update)(\s|\b)", //SQL keywords
+    r"<.*?>",                               //Any HTML tag
   ];
 
   for (var pattern in suspiciousPatterns) {
-  final regex = RegExp(pattern, caseSensitive: false);
-  if (regex.hasMatch(input)) {
-    log_handler.w("Suspicious patter found");
-    return true;  // Found suspicious pattern
+    final regex = RegExp(pattern, caseSensitive: false, dotAll: true);
+    if (regex.hasMatch(input)) {
+      log_handler.w("Suspicious pattern found: $pattern");
+      return true;
     }
   }
   log_handler.d("No suspicious pattern found");
-  return false;  // No suspicious pattern found
+  return false;
 }
 
 //Config file management------------------------------------
