@@ -52,17 +52,17 @@ String build_conversation_context(List<Message> messages) {
 bool validate_user_input(BuildContext context, String user_input) {
   log_handler.d("[------validate_user_input function executing------]");
 
-  //Check if input is empty
+  //Check if input is empty or only whitespace
   if (user_input.trim().isEmpty) {
     throw ArgumentError("Input is empty");
   }
 
   //Normalize and sanitize user input
-  final sanitized_input = sanitize_input(user_input);
+  final sanitized_input = _sanitize_input(user_input);
   log_handler.d("Sanitized input: $sanitized_input");
 
-  //Check for suspicious patterns (e.g., SQL Injection, XSS, etc.)
-  if (contains_suspicious_patterns(sanitized_input)) {
+  //Check for suspicious content (excluding math blocks)
+  if (_contains_suspicious_patterns(sanitized_input)) {
     show_possible_attack_dialog(context);
     log_handler.w("Possible attack detected in sanitized input");
     return false;
@@ -73,27 +73,53 @@ bool validate_user_input(BuildContext context, String user_input) {
 }
 
 //Normalize and sanitize input for safe use in HTML or UI
-String sanitize_input(String input) {
+String _sanitize_input(String input) {
   //Remove invisible/control characters
   String cleaned = input.replaceAll(RegExp(r'[\x00-\x1F\x7F]'), '');
-  //Escape for HTML output
-  return const HtmlEscape(HtmlEscapeMode.element).convert(cleaned.trim());
+
+  //Find LaTeX-style math blocks ($...$)
+  final latex_regex = RegExp(r'\$(.+?)\$', dotAll: true);
+  final buffer = StringBuffer();
+  int lastMatchEnd = 0;
+
+  for (final match in latex_regex.allMatches(cleaned)) {
+    //Escape text before math
+    final beforeMath = cleaned.substring(lastMatchEnd, match.start);
+    buffer.write(const HtmlEscape(HtmlEscapeMode.element).convert(beforeMath));
+
+    //Preserve math block as-is
+    buffer.write(match.group(0)); // Keep $...$ untouched
+
+    lastMatchEnd = match.end;
+  }
+
+  //Escape and append remaining text after last math block
+  if (lastMatchEnd < cleaned.length) {
+    final remaining = cleaned.substring(lastMatchEnd);
+    buffer.write(const HtmlEscape(HtmlEscapeMode.element).convert(remaining));
+  }
+  return buffer.toString().trim();
 }
 
 //Function to check for suspicious patterns like SQL injection, XSS, etc.
-bool contains_suspicious_patterns(String input) {
+bool _contains_suspicious_patterns(String input) {
   log_handler.d("[------_contains_suspicious_patterns function executing------]");
-  final suspiciousPatterns = [
-    r"SELECT\s+.*\s+FROM",                  //SQL SELECT statement pattern
-    r"DROP\s+TABLE",                        //SQL DROP command pattern
-    r"<script.*?>.*?</script>",            //Basic XSS attempt countermeasure
+
+  //Remove LaTeX math blocks ($...$) before checking for dangerous patterns
+  final cleaned_input = input.replaceAll(RegExp(r'\$(.+?)\$', dotAll: true), '');
+
+  //Define suspicious patterns
+  final suspicious_patterns = [
+    r"SELECT\s+.*\s+FROM",                   //SQL SELECT
+    r"DROP\s+TABLE",                         //SQL DROP
+    r"<script.*?>.*?</script>",             //XSS Script tag
     r"(\b|\s)(union|select|insert|delete|drop|update)(\s|\b)", //SQL keywords
-    r"<.*?>",                               //Any HTML tag
+    r"<.*?>",                                //Any HTML tags
   ];
 
-  for (var pattern in suspiciousPatterns) {
+  for (final pattern in suspicious_patterns) {
     final regex = RegExp(pattern, caseSensitive: false, dotAll: true);
-    if (regex.hasMatch(input)) {
+    if (regex.hasMatch(cleaned_input)) {
       log_handler.w("Suspicious pattern found: $pattern");
       return true;
     }
