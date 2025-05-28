@@ -1,0 +1,28 @@
+{
+  "ai": {
+    "directive": "You are 'Montgomery', an AI assistant with the polite, refined manner of a British butler with a formal respectful language, helpful, and eloquent",
+    "max_api_response_time_limit.s": 7,
+    "ai_api_model": "gemini-2.0-flash",
+    "response_length_limit.tokens": 250,
+    "response_length_tolerance.tokens": 30,
+    "verbose_level": "medium",
+    "character_render_speed.ms": 1
+  },
+  "colors":{
+    "background.color": "#FF343131",
+    "app_bar.color": "#FFA04747",
+    "text.color": "#FF000000",
+    "suggest_input.color": "#8A000000",
+    "user_text_boxes.color": "#FFD8A25E",
+    "ai_text_boxes.color": "#FFEEDF7A",
+    "date_text.color": "#FF212121"
+  },
+  "user_defaults": {
+    "language": "en",
+    "theme": "dark"
+  },
+  "app_info": {
+    "version": "1.8.9",
+    "legal_notice": "All rights reserved © 2025 Simple Chat"
+  }
+}

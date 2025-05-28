@@ -1,3 +1,5 @@
+import "dart:io";
+
 import "package:flutter/cupertino.dart";
 import "package:flutter/material.dart";
 import "package:google_generative_ai/google_generative_ai.dart";
@@ -5,6 +7,7 @@ import "dart:async";
 
 //Import methods
 import 'package:simple_chat/methods_functions/methods.dart';
+import 'package:simple_chat/configurations/config_invoke.dart';
 //Import alert dialogs
 import "package:simple_chat/utils/alert_dialog_list.dart";
 
@@ -27,8 +30,7 @@ class Message {
       set_state_callback(() {
         //Add message to list
         message_list.insert(0, Message(input_controller.text, true));
-      },
-      );
+      },);
       log_handler.d("---User Query successfully sent---");
     }
   }
@@ -47,7 +49,7 @@ class Message {
     }
     try {
       final gemini_model = GenerativeModel(
-        model: 'gemini-1.5-flash',
+        model: config_data.ai_api_model,
         apiKey: local_key,
       );
 
@@ -75,11 +77,10 @@ class Message {
         //Send full memory context to the AI along with new query
         ai_response = await gemini_model
             .generateContent([Content.text(new_prompt)])
-            .timeout(Duration(seconds: 7), onTimeout: () {
+            .timeout(Duration(seconds: config_data.max_api_response_time_limit), onTimeout: () {
           show_ai_took_too_long_error(context);
           throw TimeoutException('AI response took too long');
-        },
-        );
+        },);
       }
 
       //Extract and animate AI response
@@ -89,10 +90,10 @@ class Message {
         message_list.insert(0, ai_message);
       });
 
-      for (int i = 0; i < ai_text.length; i++) {
-        await Future.delayed(const Duration(milliseconds: 1));
+      for (int i = 0; i < ai_text.length; i = i + 1) {
+        await Future.delayed(Duration(milliseconds: config_data.character_render_speed_ms));
         set_state_callback(() {
-          ai_message.text += ai_text[i];
+          ai_message.text = ai_message.text + ai_text[i];
         });
       }
 

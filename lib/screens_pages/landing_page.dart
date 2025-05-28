@@ -6,6 +6,7 @@ import 'package:flutter_markdown/flutter_markdown.dart'; //For markdown
 
 import 'package:simple_chat/methods_functions/methods.dart';
 import 'package:simple_chat/classes/classes.dart';
+import 'package:simple_chat/configurations/config_invoke.dart';
 
 //imports
 /////////////////////////////////////////////////////////////////////////////
@@ -33,10 +34,12 @@ class _landing_pageState extends State<landing_page> {
   void initState() {
     super.initState();
     //Inject system prompt as first AI message (used for memory context)
-    const String system_prompt =
-        "Your name is 'Simple Chat', an AI assistant who responds with the manner and refinement of a British butler. "
-        "Use polite, formal language, and maintain a respectful tone. "
-        "Only introduce yourself if asked, and focus on being mediumly concise, helpful, and eloquent.";
+    //Comment out as required to test or configure. NEVER CONFIGURE .directive
+    String system_prompt = "${config_data.directive}. "
+        "Verbose level: ${config_data.verbose}. "
+        "Limit responses: ${config_data.response_length_limit} tokens, "
+        "with a tolerance of ${config_data.response_length_tolerance} extra tokens."
+    ;
 
     _message_list.add(Message(system_prompt, false)); //false because it represent AI message
   }
@@ -46,11 +49,11 @@ class _landing_pageState extends State<landing_page> {
     return MaterialApp(
       home: Scaffold(
         //Background color
-        backgroundColor: const Color.fromRGBO(52, 49, 49, 1.0),
+        backgroundColor: config_data.background_color,
 
         //Top App bar
         appBar: AppBar(
-          backgroundColor: const Color.fromRGBO(160, 71, 71, 1.0),
+          backgroundColor: config_data.app_bar_color,
           title: Align(
             alignment: Alignment.centerLeft,
             child: Column(
@@ -60,19 +63,19 @@ class _landing_pageState extends State<landing_page> {
                 Text(
                   "- Simple AI Chat -",
                   style: GoogleFonts.bebasNeue(
-                    textStyle: const TextStyle(
+                    textStyle: TextStyle(
                       fontSize: 35,
                       fontWeight: FontWeight.normal,
                       fontStyle: FontStyle.normal,
-                      color: Colors.black,
+                      color: config_data.text_color,
                     ),
                   ),
                 ),
-                const Text(
+                Text(
                   "Google Gemini 2.0 Flash API powered",
                   style: TextStyle(
                     fontSize: 9,
-                    color: Colors.black,
+                    color: config_data.text_color,
                   ),
                 ),
               ],
@@ -113,8 +116,8 @@ class _landing_pageState extends State<landing_page> {
 
                         //Declare dynamic color
                         Color dyna_color= message.user?
-                          const Color.fromRGBO(216, 162, 94, 1.0):
-                          const Color.fromRGBO(238, 223, 122, 1.0);
+                          config_data.user_text_box_color:
+                          config_data.ai_text_box_color;
                         //Declare dynamic Edge Insets
                         EdgeInsets dyna_padding= message.user?
                           const EdgeInsets.fromLTRB(50, 4, 0, 4):
@@ -145,7 +148,10 @@ class _landing_pageState extends State<landing_page> {
                                       data: message.text,
                                       styleSheet: MarkdownStyleSheet(
                                         p: GoogleFonts.roboto(
-                                          textStyle: const TextStyle(fontSize: 18, color: Colors.black),
+                                          textStyle: const TextStyle(
+                                              fontSize: 18,
+                                              color: Colors.black
+                                          ),
                                         ),
                                         em: GoogleFonts.roboto(
                                           textStyle: const TextStyle(
@@ -206,11 +212,11 @@ class _landing_pageState extends State<landing_page> {
                                       //Format the timestamp as '12:30pm, 23/09/2024'
                                       DateFormat('hh:mma, dd/MM/yyyy').format(message.time_stamp).toLowerCase(),
                                       style: GoogleFonts.roboto(
-                                        textStyle: const TextStyle(
+                                        textStyle: TextStyle(
                                           fontSize: 10,
                                           fontWeight: FontWeight.normal,
                                           fontStyle: FontStyle.italic,
-                                          color: Color.fromRGBO(33, 33, 33, 1.0),
+                                          color: config_data.date_text_color,
                                         ),
                                       ),
                                     ),
@@ -243,14 +249,14 @@ class _landing_pageState extends State<landing_page> {
                           ),
                           decoration: InputDecoration(
                             filled: true,
-                            fillColor: const Color.fromRGBO(216, 162, 94, 1.0),
+                            fillColor: config_data.user_text_box_color,
                             hintText: _is_processing ? '' : (_first_query_done ? "" : "Say hello..."),
                             hintStyle: GoogleFonts.roboto(
-                              textStyle: const TextStyle(
+                              textStyle: TextStyle(
                                 fontSize: 18,
                                 fontStyle: FontStyle.italic,
                                 fontWeight: FontWeight.normal,
-                                color: Colors.black54,
+                                color: config_data.suggest_input_color,
                               ),
                             ),
                             border: const OutlineInputBorder(

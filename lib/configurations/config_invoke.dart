@@ -1,0 +1,127 @@
+import 'dart:convert';
+import 'package:flutter/material.dart';
+import 'package:simple_chat/methods_functions/methods.dart';
+import 'package:flutter/services.dart'; // For rootBundle
+
+//Config file management------------------------------------
+//Async asset JSON loader
+Future<Map<String, dynamic>?> read_data_json_asset(String file_path) async {
+  log_handler.d("[------read_data_json_asset function executing------]");
+  try {
+    final contents = await rootBundle.loadString(file_path);
+    final Map<String, dynamic> json_data = jsonDecode(contents);
+    return json_data;
+
+  } on FlutterError catch (er) {
+    log_handler.e("Error loading asset '$file_path': $er");
+    return null;
+
+  } on FormatException {
+    log_handler.e("Error: The asset '$file_path' is not a valid JSON file.");
+    return null;
+  }
+}
+
+//Helper function to convert hex string to Color
+Color hex_to_color(String hex) {
+  log_handler.d("[------hex_to_color function executing------]");
+  return Color(int.parse(hex.replaceFirst('#', '0x')));
+}
+
+//Extract configuration values
+class app_configuration {
+  final String directive;
+  final int response_length_limit;
+  final int response_length_tolerance;
+  final String ai_api_model;
+  final int max_api_response_time_limit;
+  final String verbose;
+  final int character_render_speed_ms;
+
+  final Color background_color;
+  final Color app_bar_color;
+  final Color text_color;
+  final Color suggest_input_color;
+  final Color user_text_box_color;
+  final Color ai_text_box_color;
+  final Color date_text_color;
+
+  final String user_language;
+  final String user_theme;
+
+  final String app_version;
+  final String legal_notice;
+
+  app_configuration({
+    required this.directive,
+    required this.response_length_limit,
+    required this.response_length_tolerance,
+    required this.ai_api_model,
+    required this.max_api_response_time_limit,
+    required this.verbose,
+    required this.character_render_speed_ms,
+
+    required this.background_color,
+    required this.app_bar_color,
+    required this.text_color,
+    required this.suggest_input_color,
+    required this.user_text_box_color,
+    required this.ai_text_box_color,
+    required this.date_text_color,
+
+    required this.user_language,
+    required this.user_theme,
+
+    required this.app_version,
+    required this.legal_notice,
+  });
+
+  factory app_configuration.fromJson(Map<String, dynamic> json) {
+    final ai = json['ai'] ?? {};
+    final colors = json['colors'] ?? {};
+    final user_defaults = json['user_defaults'] ?? {};
+    final app_info = json['app_info'] ?? {};
+
+    return app_configuration(
+      directive: ai['directive'] ?? '',
+      max_api_response_time_limit: ai['max_api_response_time_limit.s'] ?? 5,
+      ai_api_model: ai["ai_api_model"],
+      response_length_limit: ai['response_length_limit.tokens'] ?? 100,
+      response_length_tolerance: ai['response_length_tolerance.tokens'] ?? 10,
+      verbose: ai['verbose_level'] ?? 'medium',
+      character_render_speed_ms: ai['character_render_speed.ms'] ?? 10,
+
+      background_color: hex_to_color(colors['background.color'] ?? '#FFFFFFFF'),
+      app_bar_color: hex_to_color(colors['app_bar.color'] ?? '#FFFFFFFF'),
+      text_color: hex_to_color(colors['text.color'] ?? '#FF000000'),
+      suggest_input_color: hex_to_color(colors['suggest_input.color'] ?? '#FF000000'),
+      user_text_box_color: hex_to_color(colors['user_text_boxes.color'] ?? '#FFFFFFFF'),
+      ai_text_box_color: hex_to_color(colors['ai_text_boxes.color'] ?? '#FFFFFFFF'),
+      date_text_color: hex_to_color(colors['date_text.color'] ?? '#FF000000'),
+
+      user_language: user_defaults['language'] ?? 'en',
+      user_theme: user_defaults['theme'] ?? 'light',
+
+      app_version: app_info['version'] ?? '1.0.0',
+      legal_notice: app_info['legal_notice'] ?? '',
+    );
+  }
+}
+
+//To load configuration once
+late app_configuration config_data;
+late Map<String, dynamic> raw_config_json;
+
+//Load config once
+Future<void> load_app_config(String file_path) async {
+  final json_data = await read_data_json_asset(file_path);
+
+  if (json_data != null) {
+    raw_config_json = json_data;
+    config_data = app_configuration.fromJson(json_data);
+    log_handler.d("Configuration loaded successfully.");
+
+  } else {
+    log_handler.e("Failed to load configuration.");
+  }
+}
