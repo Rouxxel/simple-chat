@@ -1,10 +1,8 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:simple_chat/methods_functions/methods.dart';
 import 'package:simple_chat/screens_pages/landing_page.dart';
 import 'package:simple_chat/configurations/config_invoke.dart';
+import 'package:simple_chat/utils/logger_config.dart';
 
 //imports
 /////////////////////////////////////////////////////////////////////////////
@@ -17,8 +15,13 @@ void main() async{
   //Load configuration
   await initialize_config();
 
+  WidgetsFlutterBinding.ensureInitialized();
+  await init_logger();
+
+  log_handler?.i("Logger initialized!");
+
   //Check loaded configuration (I know its horrible coding)
-  log_handler.i(
+  log_handler?.i(
       'directive: ${config_data.directive}\n'
           'default_directive: ${config_data.default_directive}\n'
           'response_length_limit: ${config_data.response_length_limit}\n'

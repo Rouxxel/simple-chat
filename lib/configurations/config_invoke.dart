@@ -1,9 +1,10 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:simple_chat/methods_functions/methods.dart';
 import 'package:flutter/services.dart'; // For rootBundle
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
+
+import 'package:simple_chat/utils/logger_config.dart';
 
 //Extract configuration values
 class app_configuration {
@@ -104,25 +105,25 @@ class app_configuration {
 //Config file management------------------------------------
 //Async asset JSON loader
 Future<Map<String, dynamic>?> read_data_json_asset(String file_path) async {
-  log_handler.d("[------read_data_json_asset function executing------]");
+  log_handler?.d("[------read_data_json_asset function executing------]");
   try {
     final contents = await rootBundle.loadString(file_path);
     final Map<String, dynamic> json_data = jsonDecode(contents);
     return json_data;
 
   } on FlutterError catch (er) {
-    log_handler.e("Error loading asset '$file_path': $er");
+    log_handler?.e("Error loading asset '$file_path': $er");
     return null;
 
   } on FormatException {
-    log_handler.e("Error: The asset '$file_path' is not a valid JSON file.");
+    log_handler?.e("Error: The asset '$file_path' is not a valid JSON file.");
     return null;
   }
 }
 
 //Helper function to convert hex string to Color
 Color hex_to_color(String hex) {
-  log_handler.d("[------hex_to_color function executing------]");
+  log_handler?.d("[------hex_to_color function executing------]");
   return Color(int.parse(hex.replaceFirst('#', '0x')));
 }
 
@@ -151,5 +152,5 @@ Future<void> initialize_config() async {
 
   raw_config_json = json_data;
   config_data = app_configuration.fromJson(json_data);
-  log_handler.d("Configuration loaded from local file.");
+  log_handler?.d("Configuration loaded from local file.");
 }

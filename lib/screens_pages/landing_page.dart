@@ -7,6 +7,7 @@ import 'package:flutter_markdown/flutter_markdown.dart'; //For markdown
 import 'package:simple_chat/methods_functions/methods.dart';
 import 'package:simple_chat/classes/classes.dart';
 import 'package:simple_chat/configurations/config_invoke.dart';
+import 'package:simple_chat/utils/logger_config.dart';
 
 //Other screens
 import 'package:simple_chat/screens_pages/settings_page.dart';
@@ -56,8 +57,8 @@ class _landing_pageState extends State<landing_page> {
       }
     });
 
-    log_handler.i("Loaded directory: ${_message_list[0].text}");
-    log_handler.i("Loaded messages:\n${_message_list.map((m) => m.text).join('\n')}");
+    log_handler?.i("Loaded directory: ${_message_list[0].text}");
+    log_handler?.i("Loaded messages:\n${_message_list.map((m) => m.text).join('\n')}");
   }
 
   @override
@@ -348,7 +349,7 @@ class _landing_pageState extends State<landing_page> {
                                   _is_processing = false;
                                 });//End processing
                               } else {
-                                log_handler.w("Message not sent due to invalid input.");
+                                log_handler?.w("Message not sent due to invalid input.");
                               }
                             },
                           ),

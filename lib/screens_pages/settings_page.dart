@@ -7,6 +7,8 @@ import 'package:simple_chat/configurations/config_invoke.dart';
 import 'package:simple_chat/utils/alert_dialog_list.dart';
 import 'package:simple_chat/utils/colorimetry_blueprints.dart';
 
+import 'package:simple_chat/utils/logger_config.dart';
+
 class settings extends StatefulWidget {
   const settings({super.key});
 
@@ -218,7 +220,7 @@ class _settingsState extends State<settings> {
                                           setState(() {
                                             _verbose_level_controller = "low";
                                           });
-                                          log_handler.i(
+                                          log_handler?.i(
                                               "low button pressed, verbose: ${_verbose_level_controller}");
                                         },
                                         child: Container(
@@ -266,7 +268,7 @@ class _settingsState extends State<settings> {
                                             _verbose_level_controller =
                                                 "medium";
                                           });
-                                          log_handler.i(
+                                          log_handler?.i(
                                               "medium button pressed, verbose: ${_verbose_level_controller}");
                                         },
                                         child: Container(
@@ -309,7 +311,7 @@ class _settingsState extends State<settings> {
                                           setState(() {
                                             _verbose_level_controller = "high";
                                           });
-                                          log_handler.i(
+                                          log_handler?.i(
                                               "high button pressed, verbose: ${_verbose_level_controller}");
                                         },
                                         child: Container(
@@ -618,7 +620,7 @@ class _settingsState extends State<settings> {
                         await update_directive(
                             context, _personality_controller.text);
                       } else {
-                        log_handler.w(
+                        log_handler?.w(
                             "Skipped updating directive due to invalid input.");
                       }
                       //Save AI verbose level
@@ -636,13 +638,13 @@ class _settingsState extends State<settings> {
                         await update_user_language(
                             context, _language_controller.text);
                       } else {
-                        log_handler.w(
+                        log_handler?.w(
                             "Skipped updating language due to invalid input.");
                       }
 
                       //Reload config_data for runtime changes
                       config_data = app_configuration.fromJson(raw_config_json);
-                      log_handler.i("Save button pressed\n"
+                      log_handler?.i("Save button pressed\n"
                           "Saved directory: ${config_data.directive}\n"
                           "Saved verbose: ${config_data.verbose}\n"
                           "Saved Background color: ${config_data.background_color}\n"

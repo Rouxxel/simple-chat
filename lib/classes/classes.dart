@@ -1,5 +1,3 @@
-import "dart:io";
-
 import "package:flutter/cupertino.dart";
 import "package:flutter/material.dart";
 import "package:google_generative_ai/google_generative_ai.dart";
@@ -8,6 +6,7 @@ import "dart:async";
 //Import methods
 import 'package:simple_chat/methods_functions/methods.dart';
 import 'package:simple_chat/configurations/config_invoke.dart';
+import 'package:simple_chat/utils/logger_config.dart';
 //Import alert dialogs
 import "package:simple_chat/utils/alert_dialog_list.dart";
 
@@ -25,13 +24,13 @@ class Message {
   //Function for user to send message
   void send_messages(TextEditingController input_controller,
       List<Message> message_list, Function set_state_callback) {
-    log_handler.d("[------send_messages function executing------]");
+    log_handler?.d("[------send_messages function executing------]");
     if (input_controller.text.isNotEmpty) {
       set_state_callback(() {
         //Add message to list
         message_list.insert(0, Message(input_controller.text, true));
       },);
-      log_handler.d("---User Query successfully sent---");
+      log_handler?.d("---User Query successfully sent---");
     }
   }
 
@@ -41,7 +40,7 @@ class Message {
       TextEditingController input_controller,
       List<Message> message_list,
       Function set_state_callback) async {
-    log_handler.d("[------ai_query_and_response function executing------]");
+    log_handler?.d("[------ai_query_and_response function executing------]");
     String local_key = obtain_API_key(); //Call api key once
     if (local_key.isEmpty) {
       show_api_key_retrieval_error_dialog(context);
@@ -97,9 +96,9 @@ class Message {
         });
       }
 
-      log_handler.d("---AI successfully responded back---");
+      log_handler?.d("---AI successfully responded back---");
     } catch (er) {
-      log_handler.e("Error: $er");
+      log_handler?.e("Error: $er");
       show_ai_response_error(context);
     }
   }

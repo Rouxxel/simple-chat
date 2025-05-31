@@ -4,16 +4,13 @@ import "package:flutter_dotenv/flutter_dotenv.dart"; //env var
 import "package:google_generative_ai/google_generative_ai.dart";
 import "dart:async";
 import "dart:convert";
-import 'package:logger/logger.dart';
 
 //Import alert dialogs and others
 import "package:simple_chat/utils/alert_dialog_list.dart";
 import 'package:simple_chat/configurations/config_invoke.dart';
 import "package:simple_chat/classes/classes.dart";
 import 'package:simple_chat/utils/colorimetry_blueprints.dart';
-
-//Initialize logger
-var log_handler= Logger();
+import 'package:simple_chat/utils/logger_config.dart';
 
 //imports
 /////////////////////////////////////////////////////////////////////////////
@@ -22,13 +19,13 @@ var log_handler= Logger();
 //API key retrieval--------------------------------------------------
 //To retrieve the apikey from .env file
 String obtain_API_key() {
-  log_handler.d("[------obtain_API_key function executing------]");
+  log_handler?.d("[------obtain_API_key function executing------]");
   String? ai_API_key = dotenv.env['ai_api_key'];
   if (ai_API_key == null) {
     throw Exception('API key not found');
   }
 
-  log_handler.d("---API key successfully found---");
+  log_handler?.d("---API key successfully found---");
   //Return the API key
   return ai_API_key;
 }
@@ -50,7 +47,7 @@ String build_conversation_context(List<Message> messages) {
 //Data validation----------------------------------------------------
 //To ensure user input is not an attack
 bool validate_user_input(BuildContext context, String user_input) {
-  log_handler.d("[------validate_user_input function executing------]");
+  log_handler?.d("[------validate_user_input function executing------]");
 
   //Check if input is empty or only whitespace
   if (user_input.trim().isEmpty) {
@@ -59,16 +56,16 @@ bool validate_user_input(BuildContext context, String user_input) {
 
   //Normalize and sanitize user input
   final sanitized_input = _sanitize_input(user_input);
-  log_handler.d("Sanitized input: $sanitized_input");
+  log_handler?.d("Sanitized input: $sanitized_input");
 
   //Check for suspicious content (excluding math blocks)
   if (_contains_suspicious_patterns(sanitized_input)) {
     show_possible_attack_dialog(context);
-    log_handler.w("Possible attack detected in sanitized input");
+    log_handler?.w("Possible attack detected in sanitized input");
     return false;
   }
 
-  log_handler.d("Valid user input");
+  log_handler?.d("Valid user input");
   return true;
 }
 
@@ -103,7 +100,7 @@ String _sanitize_input(String input) {
 
 //Function to check for suspicious patterns like SQL injection, XSS, etc.
 bool _contains_suspicious_patterns(String input) {
-  log_handler.d("[------_contains_suspicious_patterns function executing------]");
+  log_handler?.d("[------_contains_suspicious_patterns function executing------]");
 
   //Remove LaTeX math blocks ($...$) before checking for dangerous patterns
   final cleaned_input = input.replaceAll(RegExp(r'\$(.+?)\$', dotAll: true), '');
@@ -120,18 +117,18 @@ bool _contains_suspicious_patterns(String input) {
   for (final pattern in suspicious_patterns) {
     final regex = RegExp(pattern, caseSensitive: false, dotAll: true);
     if (regex.hasMatch(cleaned_input)) {
-      log_handler.w("Suspicious pattern found: $pattern");
+      log_handler?.w("Suspicious pattern found: $pattern");
       return true;
     }
   }
-  log_handler.d("No suspicious pattern found");
+  log_handler?.d("No suspicious pattern found");
   return false;
 }
 
 //Testing different methods and others------------------------------
 //Test AI, don't use for anything else
 Future<void> test_ai() async {
-  log_handler.d("[------test_ai function executing------]");
+  log_handler?.d("[------test_ai function executing------]");
   final model = GenerativeModel(
     model: 'gemini-1.5-flash',
     apiKey: obtain_API_key(),
@@ -139,15 +136,15 @@ Future<void> test_ai() async {
   final user_prompt = 'Write a story about a magic backpack.';
 
   final response = await model.generateContent([Content.text(user_prompt)]);
-  log_handler.d("---AI response succesful---");
-  log_handler.d(response.text);
+  log_handler?.d("---AI response succesful---");
+  log_handler?.d(response.text);
 }
 
 //Configuration and settings methods--------------------------------------------------
 //Update main directory of the AI
 Future<void> update_directive(BuildContext context, String? new_directive, {int min_length = 20}) async {
   if (new_directive == null || new_directive.trim().isEmpty || new_directive.trim().length < min_length) {
-    log_handler.w("Attempted to update directive with null, empty, or too short string. Update skipped.");
+    log_handler?.w("Attempted to update directive with null, empty, or too short string. Update skipped.");
     return;
   }
 
@@ -155,11 +152,11 @@ Future<void> update_directive(BuildContext context, String? new_directive, {int 
   try {
     final is_valid = validate_user_input(context, new_directive);
     if (!is_valid) {
-      log_handler.w("Directive failed validation. Update skipped.");
+      log_handler?.w("Directive failed validation. Update skipped.");
       return;
     }
   } on ArgumentError catch (e) {
-    log_handler.w("Directive validation threw ArgumentError: ${e.message}. Update skipped.");
+    log_handler?.w("Directive validation threw ArgumentError: ${e.message}. Update skipped.");
     return;
   }
 
@@ -186,7 +183,7 @@ Future<void> update_color_value(String section_key, String color_name) async {
       .toLowerCase()
       .replaceAll(RegExp(r'[\s_\-]+'), '');
   if (!color_name_to_hex_map.containsKey(normalized_color_name)) {
-    log_handler.w("Not supported color name provided: '$color_name'. Update skipped.");
+    log_handler?.w("Not supported color name provided: '$color_name'. Update skipped.");
     return;
   }
 
@@ -195,16 +192,16 @@ Future<void> update_color_value(String section_key, String color_name) async {
   if (raw_config_json['colors'].containsKey(section_key)) {
     raw_config_json['colors'][section_key] = hex_color;
     await file.writeAsString(jsonEncode(raw_config_json));
-    log_handler.d("Color for '$section_key' updated to $hex_color.");
+    log_handler?.d("Color for '$section_key' updated to $hex_color.");
   } else {
-    log_handler.w("Section key '$section_key' not found in 'colors'. Update skipped.");
+    log_handler?.w("Section key '$section_key' not found in 'colors'. Update skipped.");
   }
 }
 
 //Update user language
 Future<void> update_user_language(BuildContext context, String? new_language, {int min_length = 2}) async {
   if (new_language == null || new_language.trim().isEmpty || new_language.trim().length < min_length) {
-    log_handler.w("Attempted to update language with null, empty, or too short string. Update skipped.");
+    log_handler?.w("Attempted to update language with null, empty, or too short string. Update skipped.");
     return;
   }
 
@@ -212,11 +209,11 @@ Future<void> update_user_language(BuildContext context, String? new_language, {i
   try {
     final is_valid = validate_user_input(context, new_language);
     if (!is_valid) {
-      log_handler.w("Language failed validation. Update skipped.");
+      log_handler?.w("Language failed validation. Update skipped.");
       return;
     }
   } on ArgumentError catch (e) {
-    log_handler.w("Language validation threw ArgumentError: ${e.message}. Update skipped.");
+    log_handler?.w("Language validation threw ArgumentError: ${e.message}. Update skipped.");
     return;
   }
 
