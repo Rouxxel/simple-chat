@@ -19,6 +19,10 @@ class settings extends StatefulWidget {
 }
 
 class _settingsState extends State<settings> {
+  //Create a TextEditingController for the input box
+  final TextEditingController _personality_controller = TextEditingController();
+  final String _verbose_level_controller = config_data.verbose.toLowerCase();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -70,7 +74,6 @@ class _settingsState extends State<settings> {
       body: Padding(
         padding: EdgeInsets.all(15),
         child: Column(
-
           //Move children to the left
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -87,23 +90,264 @@ class _settingsState extends State<settings> {
               ),
             ),
 
-          //List of settings
-          Expanded(
-            //Listview
-            child: ListView(
-              children: [
-                //AI section
-                Container(
-                  color: Colors.yellow,
-                  child: Padding(
-                    //
-                    padding: EdgeInsets.fromLTRB(16,0,16,0),
-                    child: Column(
+            //List of settings
+            Expanded(
+              //Listview
+              child: ListView(
+                children: [
+                  //AI section
+                  Container(
+                    decoration: BoxDecoration(
+                      color: config_data.ai_text_box_color, // Background color
+                      borderRadius:
+                          BorderRadius.circular(12), // Smooth (rounded) edges
+                      border: Border.all(
+                          color: config_data.ai_text_box_color, width: 3),
+                    ),
+                    child: Padding(
                       //
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                      padding: EdgeInsets.fromLTRB(16, 0, 16, 0),
+                      child: Column(
+                        //
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "AI",
+                            style: GoogleFonts.bebasNeue(
+                              textStyle: TextStyle(
+                                fontSize: 35,
+                                fontWeight: FontWeight.normal,
+                                fontStyle: FontStyle.normal,
+                                color: config_data.text_color,
+                              ),
+                            ),
+                          ),
+
+                          //Main directory
+                          Padding(
+                            padding: EdgeInsets.fromLTRB(16, 0, 0, 0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                //Title
+                                Text(
+                                  "Personality",
+                                  style: GoogleFonts.roboto(
+                                    textStyle: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 18,
+                                      color: config_data.text_color,
+                                    ),
+                                  ),
+                                ),
+                                //Textfield for personality
+                                TextField(
+                                  controller: _personality_controller,
+                                  style: GoogleFonts.roboto(
+                                    textStyle: TextStyle(
+                                      fontSize:
+                                          18, // match markdown paragraph font size
+                                      fontWeight: FontWeight
+                                          .normal, // normal weight like markdown p
+                                      fontStyle: FontStyle
+                                          .normal, // normal style (not italic by default)
+                                      color: config_data.text_color,
+                                    ),
+                                  ),
+                                  maxLines: 8, // Allows up to 8 lines
+                                  minLines: 4, // Starts with 4 lines of height
+                                  maxLength:
+                                      150, // Limit the number of characters
+                                  decoration: InputDecoration(
+                                    filled: true,
+                                    fillColor: config_data.user_text_box_color,
+                                    hintText: config_data.directive,
+                                    hintStyle: GoogleFonts.roboto(
+                                      textStyle: TextStyle(
+                                        fontSize: 18,
+                                        fontStyle: FontStyle.italic,
+                                        fontWeight: FontWeight.normal,
+                                        color: config_data.suggest_input_color,
+                                      ),
+                                    ),
+                                    border: const OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                        Radius.circular(5.0),
+                                      ),
+                                    ),
+                                  ),
+                                  cursorColor: Colors.black,
+                                ),
+                              ],
+                            ),
+                          ),
+
+                          //Verbose level
+                          Padding(
+                            padding: EdgeInsets.fromLTRB(16, 0, 0, 16),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                //Title
+                                Text(
+                                  "Verbose level",
+                                  style: GoogleFonts.roboto(
+                                    textStyle: TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 18,
+                                      color: config_data.text_color,
+                                    ),
+                                  ),
+                                ),
+                                //Option buttons
+                                Row(
+                                  children: [
+                                    // Low Button
+                                    Expanded(
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          print("Low pressed");
+                                        },
+                                        child: Container(
+                                          padding: EdgeInsets.symmetric(
+                                              vertical: 12),
+                                          decoration: BoxDecoration(
+                                            color: _verbose_level_controller ==
+                                                    "low"
+                                                ? config_data.app_bar_color
+                                                : config_data.background_color,
+                                            borderRadius: BorderRadius.only(
+                                              topLeft: Radius.circular(10),
+                                              bottomLeft: Radius.circular(10),
+                                            ),
+                                            border: Border.all(
+                                              color: Colors.black,
+                                              width: 2,
+                                            ),
+                                          ),
+                                          alignment: Alignment.center,
+                                          child: Text(
+                                            "Low",
+                                            style: TextStyle(
+                                                color:
+                                                    _verbose_level_controller ==
+                                                            "low"
+                                                        ? Colors.white
+                                                        : config_data
+                                                            .text_color,
+                                                fontWeight:
+                                                    _verbose_level_controller ==
+                                                            "low"
+                                                        ? FontWeight.bold
+                                                        : FontWeight.normal),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+
+                                    // Medium Button
+                                    Expanded(
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          print("Medium pressed");
+                                        },
+                                        child: Container(
+                                          padding: EdgeInsets.symmetric(
+                                              vertical: 12),
+                                          decoration: BoxDecoration(
+                                            color: _verbose_level_controller ==
+                                                    "medium"
+                                                ? config_data.app_bar_color
+                                                : config_data.background_color,
+                                            border: Border.all(
+                                              color: Colors.black,
+                                              width: 2,
+                                            ),
+                                          ),
+                                          alignment: Alignment.center,
+                                          child: Text(
+                                            "Medium",
+                                            style: TextStyle(
+                                                color:
+                                                    _verbose_level_controller ==
+                                                            "medium"
+                                                        ? Colors.white
+                                                        : config_data
+                                                            .text_color,
+                                                fontWeight:
+                                                    _verbose_level_controller ==
+                                                            "medium"
+                                                        ? FontWeight.bold
+                                                        : FontWeight.normal),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+
+                                    // High Button
+                                    Expanded(
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          print("High pressed");
+                                        },
+                                        child: Container(
+                                          padding: EdgeInsets.symmetric(
+                                              vertical: 12),
+                                          decoration: BoxDecoration(
+                                            color: _verbose_level_controller ==
+                                                    "high"
+                                                ? config_data.app_bar_color
+                                                : config_data.background_color,
+                                            borderRadius: BorderRadius.only(
+                                              topRight: Radius.circular(10),
+                                              bottomRight: Radius.circular(10),
+                                            ),
+                                            border: Border.all(
+                                              color: Colors.black,
+                                              width: 2,
+                                            ),
+                                          ),
+                                          alignment: Alignment.center,
+                                          child: Text(
+                                            "High",
+                                            style: TextStyle(
+                                                color:
+                                                    _verbose_level_controller ==
+                                                            "high"
+                                                        ? Colors.white
+                                                        : config_data
+                                                            .text_color,
+                                                fontWeight:
+                                                    _verbose_level_controller ==
+                                                            "high"
+                                                        ? FontWeight.bold
+                                                        : FontWeight.normal),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  SizedBox(
+                    width: double.infinity,
+                    height: 20,
+                  ),
+
+                  //Color section
+                  Container(
+                    color: Colors.red,
+                    child: Column(
                       children: [
                         Text(
-                            "AI",
+                          "Colorimetry",
                           style: GoogleFonts.bebasNeue(
                             textStyle: TextStyle(
                               fontSize: 35,
@@ -113,169 +357,16 @@ class _settingsState extends State<settings> {
                             ),
                           ),
                         ),
-
-                        //Main directory
-                        Padding(
-                          padding: EdgeInsets.fromLTRB(16,0,0,0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              //Title
-                              Text(
-                                  "Personality",
-                              style: GoogleFonts.roboto(
-                                textStyle: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 18,
-                                    color: config_data.text_color,
-                                  ),
-                                ),
-                              ),
-                              //Textfield for personality
-                              TextField(
-                                //controller: _input_controller,
-                                //readOnly: _is_processing,
-                                style: GoogleFonts.roboto(
-                                  textStyle: TextStyle(
-                                    fontSize: 18,               // match markdown paragraph font size
-                                    fontWeight: FontWeight.normal,  // normal weight like markdown p
-                                    fontStyle: FontStyle.normal, // normal style (not italic by default)
-                                    //color: _is_processing ? Colors.transparent : config_data.text_color,
-                                  ),
-                                ),
-                                maxLines: 8, // Allows up to 8 lines
-                                minLines: 4, // Starts with 4 lines of height
-                                decoration: InputDecoration(
-                                  filled: true,
-                                  fillColor: config_data.user_text_box_color,
-                                  //hintText: _is_processing ? '' : (_first_query_done ? "" : "Say hello..."),
-                                  hintStyle: GoogleFonts.roboto(
-                                    textStyle: TextStyle(
-                                      fontSize: 18,
-                                      fontStyle: FontStyle.italic,
-                                      fontWeight: FontWeight.normal,
-                                      color: config_data.suggest_input_color,
-                                    ),
-                                  ),
-                                  border: const OutlineInputBorder(
-                                    borderRadius: BorderRadius.all(
-                                      Radius.circular(5.0),
-                                    ),
-                                  ),
-                                ),
-                                cursorColor: Colors.black,
-                              ),
-                            ],
-                          ),
-                        ),
-
-                        //Verbose level
-                        Padding(
-                          padding: EdgeInsets.fromLTRB(16,0,0,0),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              //Title
-                              Text(
-                                  "Verbose level",
-                                style: GoogleFonts.roboto(
-                                  textStyle: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 18,
-                                    color: config_data.text_color,
-                                  ),
-                                ),
-                              ),
-                              //Option buttons
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: GestureDetector(
-                                      onTap: () {
-                                        print("Low pressed");
-                                      },
-                                      child: Container(
-                                        padding: EdgeInsets.symmetric(vertical: 12),
-                                        decoration: BoxDecoration(
-                                          color: Colors.grey[300],
-                                          borderRadius: BorderRadius.only(
-                                            topLeft: Radius.circular(4),
-                                            bottomLeft: Radius.circular(4),
-                                          ),
-                                        ),
-                                        alignment: Alignment.center,
-                                        child: Text("Low"),
-                                      ),
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: GestureDetector(
-                                      onTap: () {
-                                        print("Medium pressed");
-                                      },
-                                      child: Container(
-                                        padding: EdgeInsets.symmetric(vertical: 12),
-                                        color: Colors.grey[400], // no radius here to keep edges flat
-                                        alignment: Alignment.center,
-                                        child: Text("Medium"),
-                                      ),
-                                    ),
-                                  ),
-                                  Expanded(
-                                    child: GestureDetector(
-                                      onTap: () {
-                                        print("High pressed");
-                                      },
-                                      child: Container(
-                                        padding: EdgeInsets.symmetric(vertical: 12),
-                                        decoration: BoxDecoration(
-                                          color: Colors.grey[500],
-                                          borderRadius: BorderRadius.only(
-                                            topRight: Radius.circular(4),
-                                            bottomRight: Radius.circular(4),
-                                          ),
-                                        ),
-                                        alignment: Alignment.center,
-                                        child: Text("High"),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
+                        Text("Background color"),
+                        Text("Bar colors"),
+                        Text("User text box color"),
+                        Text("AI text box color"),
                       ],
                     ),
                   ),
-                ),
-
-                //Color section
-                Container(
-                  color: Colors.red,
-                  child: Column(
-                    children: [
-                      Text(
-                          "Colorimetry",
-                        style: GoogleFonts.bebasNeue(
-                          textStyle: TextStyle(
-                            fontSize: 35,
-                            fontWeight: FontWeight.normal,
-                            fontStyle: FontStyle.normal,
-                            color: config_data.text_color,
-                          ),
-                        ),
-                      ),
-                      Text("Background color"),
-                      Text("Bar colors"),
-                      Text("User text box color"),
-                      Text("AI text box color"),
-                    ],
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
           ],
         ),
       ),
@@ -283,9 +374,7 @@ class _settingsState extends State<settings> {
       //Bottom bar
       bottomNavigationBar: BottomAppBar(
         color: config_data.app_bar_color,
-
         child: Row(
-
           children: [],
         ),
       ),
