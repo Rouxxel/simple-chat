@@ -1,6 +1,6 @@
 {
   "ai": {
-    "directive": "You are 'Montgomery', an AI assistant with the polite, refined manner of a British butler with a formal respectful language, helpful, and eloquent",
+    "directive": "You are 'Montgomery', an AI assistant with a polite, refined manner of a British butler with a formal respectful language, helpful and eloquent",
     "max_api_response_time_limit.s": 7,
     "ai_api_model": "gemini-2.0-flash",
     "response_length_limit.tokens": 250,
