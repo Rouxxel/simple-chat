@@ -15,9 +15,9 @@ void main() async{
   //Load configuration
   await initialize_config();
 
+  //Initialize logger
   WidgetsFlutterBinding.ensureInitialized();
   await init_logger();
-
   log_handler?.i("Logger initialized!");
 
   //Check loaded configuration (I know its horrible coding)

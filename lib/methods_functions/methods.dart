@@ -4,6 +4,9 @@ import "package:flutter_dotenv/flutter_dotenv.dart"; //env var
 import "package:google_generative_ai/google_generative_ai.dart";
 import "dart:async";
 import "dart:convert";
+import 'dart:io';
+import 'package:flutter_email_sender/flutter_email_sender.dart';
+import 'package:path_provider/path_provider.dart';
 
 //Import alert dialogs and others
 import "package:simple_chat/utils/alert_dialog_list.dart";
@@ -221,4 +224,65 @@ Future<void> update_user_language(BuildContext context, String? new_language, {i
 
   raw_config_json['user_defaults']['language'] = new_language.trim();
   await file.writeAsString(jsonEncode(raw_config_json));
+}
+
+//Email sender
+Future<void> send_feedback_by_email(BuildContext context, String feedback) async {
+  try {
+    // Get app document directory
+    final directory = await getApplicationDocumentsDirectory();
+    final files = directory.listSync();
+
+    // Filter for .log files
+    final generated_files = files
+        .whereType<File>()
+        .where((file) => file.path.endsWith('.log'))
+        .toList();
+
+    if (generated_files.isEmpty) {
+      show_one_feedback_per_session(context);
+      log_handler?.w("No generated files found.");
+      return;
+    }
+
+    // Rename .log files to .txt
+    final renamed_files = <String>[];
+    for (var file in generated_files) {
+      final newPath = file.path.replaceAll('.log', '.txt');
+      final renamedFile = await file.copy(newPath);
+      renamed_files.add(renamedFile.path);
+    }
+
+    // Create email with renamed attachments
+    final Email email = Email(
+      body: feedback,
+      subject: 'Simple AI Chat Feedback',
+      recipients: [''], //Do not hardcode mails
+      attachmentPaths: renamed_files,
+      isHTML: false,
+    );
+
+    await FlutterEmailSender.send(email);
+
+    // Delete original and renamed files
+    for (var file in generated_files) {
+      try {
+        await file.delete();
+        log_handler?.i('Deleted original file: ${file.path}');
+      } catch (e) {
+        log_handler?.e('Error deleting original file ${file.path}: $e');
+      }
+    }
+
+    for (var path in renamed_files) {
+      try {
+        await File(path).delete();
+        log_handler?.i('Deleted renamed file: $path');
+      } catch (e) {
+        log_handler?.e('Error deleting renamed file $path: $e');
+      }
+    }
+  } catch (e) {
+    log_handler?.e('Error sending feedback email: $e');
+  }
 }

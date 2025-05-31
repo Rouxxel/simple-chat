@@ -1,6 +1,7 @@
 import "package:flutter/cupertino.dart";
 import "package:flutter/material.dart";
 import "package:google_fonts/google_fonts.dart";
+import "package:simple_chat/configurations/config_invoke.dart";
 
 //Alert dialogs------------------------------------------------------
 //Alert dialog for possible attack
@@ -25,7 +26,7 @@ void show_possible_attack_dialog(BuildContext context) {
 
   //Set variables as the alert itself
   var alert = AlertDialog(
-    backgroundColor: const Color.fromRGBO(160, 71, 71, 1.0),
+    backgroundColor: config_data.app_bar_color,
     title: Text(
       "Error 221", //Invalid characters
       style: GoogleFonts.handjet(
@@ -84,7 +85,7 @@ void show_api_key_retrieval_error_dialog(BuildContext context) {
 
   //Set variables as the alert itself
   var alert = AlertDialog(
-    backgroundColor: const Color.fromRGBO(160, 71, 71, 1.0),
+    backgroundColor: config_data.app_bar_color,
     title: Text(
       "Error 222", //Invalid characters
       style: GoogleFonts.handjet(
@@ -143,7 +144,7 @@ void show_ai_response_error(BuildContext context) {
 
   //Set variables as the alert itself
   var alert = AlertDialog(
-    backgroundColor: const Color.fromRGBO(160, 71, 71, 1.0),
+    backgroundColor: config_data.app_bar_color,
     title: Text(
       "Error 224",
       style: GoogleFonts.handjet(
@@ -202,7 +203,7 @@ void show_ai_took_too_long_error(BuildContext context) {
 
   //Set variables as the alert itself
   var alert = AlertDialog(
-    backgroundColor: const Color.fromRGBO(160, 71, 71, 1.0),
+    backgroundColor: config_data.app_bar_color,
     title: Text(
       "Error 227",
       style: GoogleFonts.handjet(
@@ -261,7 +262,7 @@ void show_changes_saved(BuildContext context) {
 
   //Set variables as the alert itself
   var alert = AlertDialog(
-    backgroundColor: const Color.fromRGBO(160, 71, 71, 1.0),
+    backgroundColor: config_data.app_bar_color,
     title: Text(
       "Changes saved!!!",
       style: GoogleFonts.handjet(
@@ -320,7 +321,7 @@ void show_feature_in_progress(BuildContext context) {
 
   //Set variables as the alert itself
   var alert = AlertDialog(
-    backgroundColor: const Color.fromRGBO(160, 71, 71, 1.0),
+    backgroundColor: config_data.app_bar_color,
     title: Text(
       "Feature in progress...",
       style: GoogleFonts.handjet(
@@ -357,3 +358,123 @@ void show_feature_in_progress(BuildContext context) {
     },
   );
 }
+
+//Alert to show feedback sent
+void show_feedback_sent(BuildContext context) {
+  //Declare the buttons of alert
+  Widget ok_button = TextButton(
+    child: Text(
+      "Ok",
+      style: GoogleFonts.handjet(
+        textStyle: const TextStyle(
+          fontSize: 30,
+          fontWeight: FontWeight.bold,
+          fontStyle: FontStyle.normal,
+          color: Colors.black,
+        ),
+      ),
+    ),
+    onPressed: () {
+      Navigator.of(context, rootNavigator: true).pop();
+    },
+  );
+
+  //Set variables as the alert itself
+  var alert = AlertDialog(
+    backgroundColor: config_data.app_bar_color,
+    title: Text(
+      "Feedback Sent!!!",
+      style: GoogleFonts.handjet(
+        textStyle: const TextStyle(
+          fontSize: 45,
+          fontWeight: FontWeight.bold,
+          fontStyle: FontStyle.normal,
+          color: Colors.black,
+        ),
+      ),
+    ),
+    content: Text(
+      "Your Feedback has been sent through the email/s you selected",
+      style: GoogleFonts.handjet(
+        textStyle: const TextStyle(
+          fontSize: 25,
+          fontWeight: FontWeight.bold,
+          fontStyle: FontStyle.normal,
+          color: Colors.black,
+        ),
+      ),
+    ),
+    actions: [
+      ok_button,
+    ],
+  );
+
+  //Show the dialog
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return alert;
+    },
+  );
+}
+
+//Alert to show only one feedback per session
+void show_one_feedback_per_session(BuildContext context) {
+  //Declare the buttons of alert
+  Widget ok_button = TextButton(
+    child: Text(
+      "Ok",
+      style: GoogleFonts.handjet(
+        textStyle: const TextStyle(
+          fontSize: 30,
+          fontWeight: FontWeight.bold,
+          fontStyle: FontStyle.normal,
+          color: Colors.black,
+        ),
+      ),
+    ),
+    onPressed: () {
+      Navigator.of(context, rootNavigator: true).pop();
+    },
+  );
+
+  //Set variables as the alert itself
+  var alert = AlertDialog(
+    backgroundColor: config_data.app_bar_color,
+    title: Text(
+      "Feedback limit reached",
+      style: GoogleFonts.handjet(
+        textStyle: const TextStyle(
+          fontSize: 45,
+          fontWeight: FontWeight.bold,
+          fontStyle: FontStyle.normal,
+          color: Colors.black,
+        ),
+      ),
+    ),
+    content: Text(
+      "Sorry, you can only send your feedback once per session, please restart "
+          "the app to send your feedbakck.",
+      style: GoogleFonts.handjet(
+        textStyle: const TextStyle(
+          fontSize: 25,
+          fontWeight: FontWeight.bold,
+          fontStyle: FontStyle.normal,
+          color: Colors.black,
+        ),
+      ),
+    ),
+    actions: [
+      ok_button,
+    ],
+  );
+
+  //Show the dialog
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return alert;
+    },
+  );
+}
+

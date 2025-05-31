@@ -47,6 +47,7 @@ dependencies:
   logger: ^2.5.0               #Logger
   flutter_markdown: ^0.6.11    #Markdown
   path_provider: ^2.1.1        #Provide paths
+  flutter_email_sender: ^6.0.1 #Email sender
 
 dev_dependencies:
   flutter_test:

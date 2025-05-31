@@ -6,6 +6,9 @@
     <key>NsLocationWhenInUseUsageDescription</key>
     <String>This App needs to access to location</String>
 
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>To attach log files to email</string>
+
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>

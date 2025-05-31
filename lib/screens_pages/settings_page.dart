@@ -32,6 +32,8 @@ class _settingsState extends State<settings> {
   List<FileSystemEntity> saved_images = [];
   final TextEditingController _background_image_controller = TextEditingController();
 
+  final TextEditingController _feedback_controller = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -567,6 +569,7 @@ class _settingsState extends State<settings> {
                                   child: GestureDetector(
                                     onTap: () async {
                                       //TODO: add functionality to change background image
+                                      log_handler?.i("Update background image pressed despite big ahh warning");
                                       show_feature_in_progress(context);
                                     },
                                     child: Container(
@@ -580,6 +583,123 @@ class _settingsState extends State<settings> {
                                           style: GoogleFonts.bebasNeue(
                                             textStyle: TextStyle(
                                               fontSize: 35,
+                                              fontWeight: FontWeight.normal,
+                                              fontStyle: FontStyle.normal,
+                                              color: config_data.text_color,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  SizedBox(
+                    width: double.infinity,
+                    height: 15,
+                  ),
+
+                  //Feedback image
+                  Container(
+                    decoration: BoxDecoration(
+                      color: config_data.ai_text_box_color, // Background color
+                      borderRadius:
+                      BorderRadius.circular(12), // Smooth (rounded) edges
+                      border: Border.all(
+                          color: config_data.ai_text_box_color, width: 3),
+                    ),
+                    child: Padding(
+                      padding: EdgeInsets.fromLTRB(16, 0, 16, 0),
+                      child: Column(
+                        //Background image title
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Feedback",
+                            style: GoogleFonts.bebasNeue(
+                              textStyle: TextStyle(
+                                fontSize: 35,
+                                fontWeight: FontWeight.normal,
+                                fontStyle: FontStyle.normal,
+                                color: config_data.text_color,
+                              ),
+                            ),
+                          ),
+
+                          //Send feedback
+                          Padding(
+                            padding: EdgeInsets.fromLTRB(16, 0, 0, 16),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                //Textfield for feedback
+                                TextField(
+                                  controller: _feedback_controller,
+                                  style: GoogleFonts.roboto(
+                                    textStyle: TextStyle(
+                                      fontSize:
+                                      18, // match markdown paragraph font size
+                                      fontWeight: FontWeight
+                                          .normal, // normal weight like markdown p
+                                      fontStyle: FontStyle
+                                          .normal, // normal style (not italic by default)
+                                      color: config_data.text_color,
+                                    ),
+                                  ),
+                                  maxLines: 8, // Allows up to 8 lines
+                                  minLines: 4, // Starts with 4 lines of height
+                                  maxLength: 300, // Limit the number of characters
+                                  decoration: InputDecoration(
+                                    filled: true,
+                                    fillColor: config_data.user_text_box_color,
+                                    hintText:
+                                    "Example: This app is not good, please delete "
+                                        "the source code, the repo and Android Studio.",
+                                    hintStyle: GoogleFonts.roboto(
+                                      textStyle: TextStyle(
+                                        fontSize: 18,
+                                        fontStyle: FontStyle.italic,
+                                        fontWeight: FontWeight.normal,
+                                        color: config_data.suggest_input_color,
+                                      ),
+                                    ),
+                                    border: const OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                        Radius.circular(5.0),
+                                      ),
+                                    ),
+                                  ),
+                                  cursorColor: Colors.black,
+                                ),
+                                SizedBox(
+                                  width: double.infinity,
+                                  height: 45,
+                                  child: GestureDetector(
+                                    onDoubleTap: () async {
+                                      setState(() async {
+                                        //Send feedback
+                                         await send_feedback_by_email(context,_feedback_controller.text);
+                                      });
+                                      show_feedback_sent(context);
+                                    },
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        color: config_data.background_color,
+                                        borderRadius: BorderRadius.circular(16),
+                                      ),
+                                      child: Center(
+                                        child: Text(
+                                          "Send feedback",
+                                          style: GoogleFonts.bebasNeue(
+                                            textStyle: TextStyle(
+                                              fontSize: 25,
                                               fontWeight: FontWeight.normal,
                                               fontStyle: FontStyle.normal,
                                               color: config_data.text_color,
