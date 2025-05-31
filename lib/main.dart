@@ -37,6 +37,8 @@ void main() async{
           'user_language: ${config_data.user_language}\n'
           'default_language: ${config_data.default_language}\n'
           'user_theme: ${config_data.user_theme}\n'
+          'default_image_path: ${config_data.default_image_path}\n'
+          'image_path: ${config_data.image_path}\n'
           'app_version: ${config_data.app_version}\n'
           'legal_notice: ${config_data.legal_notice}'
   );

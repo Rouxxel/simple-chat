@@ -23,6 +23,10 @@
     "default_language": "English",
     "theme": "dark"
   },
+  "images": {
+    "default_image.path": "images/background.jpeg",
+    "image.path": "images/background.jpeg"
+  },
   "app_info": {
     "version": "2.2.4",
     "legal_notice": "All rights reserved © 2025 Simple Chat"

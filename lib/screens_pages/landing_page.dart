@@ -120,10 +120,17 @@ class _landing_pageState extends State<landing_page> {
           children: [
             //Background image
             Image.asset(
-              "images/background.jpeg",
+              config_data.image_path,
               fit: BoxFit.cover,
               width: MediaQuery.of(context).size.width,
               height: MediaQuery.of(context).size.height,
+              errorBuilder: (context, error, stackTrace) {
+                return Container(
+                  color: config_data.background_color,  // fallback color or widget
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height,
+                );
+              },
             ),
 
             //Actual content

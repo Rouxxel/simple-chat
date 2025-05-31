@@ -28,6 +28,9 @@ class app_configuration {
   final String default_language;
   final String user_theme;
 
+  final String default_image_path;
+  final String image_path;
+
   final String app_version;
   final String legal_notice;
 
@@ -53,6 +56,9 @@ class app_configuration {
     required this.default_language,
     required this.user_theme,
 
+    required this.default_image_path,
+    required this.image_path,
+
     required this.app_version,
     required this.legal_notice,
   });
@@ -61,6 +67,7 @@ class app_configuration {
     final ai = json['ai'] ?? {};
     final colors = json['colors'] ?? {};
     final user_defaults = json['user_defaults'] ?? {};
+    final image_paths = json['images'] ?? {};
     final app_info = json['app_info'] ?? {};
 
     return app_configuration(
@@ -84,6 +91,9 @@ class app_configuration {
       user_language: user_defaults['language'] ?? 'en',
       default_language: user_defaults['default_language'] ?? 'en',
       user_theme: user_defaults['theme'] ?? 'light',
+
+      default_image_path: image_paths["default_image.path"] ?? '',
+      image_path: image_paths["image.path"] ?? '',
 
       app_version: app_info['version'] ?? '1.0.0',
       legal_notice: app_info['legal_notice'] ?? '',

@@ -491,8 +491,7 @@ class _settingsState extends State<settings> {
                                       color: config_data.text_color,
                                     ),
                                   ),
-                                 // Starts with 4 lines of height
-                                  maxLength:30, // Limit the number of characters
+                                  maxLength:20, // Limit the number of characters
                                   decoration: InputDecoration(
                                     filled: true,
                                     fillColor: config_data.user_text_box_color,
