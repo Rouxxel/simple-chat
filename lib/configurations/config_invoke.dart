@@ -5,31 +5,6 @@ import 'package:flutter/services.dart'; // For rootBundle
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 
-//Config file management------------------------------------
-//Async asset JSON loader
-Future<Map<String, dynamic>?> read_data_json_asset(String file_path) async {
-  log_handler.d("[------read_data_json_asset function executing------]");
-  try {
-    final contents = await rootBundle.loadString(file_path);
-    final Map<String, dynamic> json_data = jsonDecode(contents);
-    return json_data;
-
-  } on FlutterError catch (er) {
-    log_handler.e("Error loading asset '$file_path': $er");
-    return null;
-
-  } on FormatException {
-    log_handler.e("Error: The asset '$file_path' is not a valid JSON file.");
-    return null;
-  }
-}
-
-//Helper function to convert hex string to Color
-Color hex_to_color(String hex) {
-  log_handler.d("[------hex_to_color function executing------]");
-  return Color(int.parse(hex.replaceFirst('#', '0x')));
-}
-
 //Extract configuration values
 class app_configuration {
   final String directive;
@@ -113,6 +88,85 @@ class app_configuration {
   }
 }
 
+//Config file management------------------------------------
+//Async asset JSON loader
+Future<Map<String, dynamic>?> read_data_json_asset(String file_path) async {
+  log_handler.d("[------read_data_json_asset function executing------]");
+  try {
+    final contents = await rootBundle.loadString(file_path);
+    final Map<String, dynamic> json_data = jsonDecode(contents);
+    return json_data;
+
+  } on FlutterError catch (er) {
+    log_handler.e("Error loading asset '$file_path': $er");
+    return null;
+
+  } on FormatException {
+    log_handler.e("Error: The asset '$file_path' is not a valid JSON file.");
+    return null;
+  }
+}
+
+//Helper function to convert hex string to Color
+Color hex_to_color(String hex) {
+  log_handler.d("[------hex_to_color function executing------]");
+  return Color(int.parse(hex.replaceFirst('#', '0x')));
+}
+
+//Helper HashMap to convert strings to hex
+Map<String, String> color_name_to_hex_map = {
+  'red': '#FFFF0000',
+  'green': '#FF00FF00',
+  'blue': '#FF0000FF',
+  'yellow': '#FFFFFF00',
+  'black': '#FF000000',
+  'white': '#FFFFFFFF',
+  'grey': '#FF888888',
+  'gray': '#FF888888',
+  'fuchsia': '#FFFF00FF',
+  'cyan': '#FF00FFFF',
+  'magenta': '#FFFF00FF',
+  'orange': '#FFFFA500',
+  'purple': '#FF800080',
+  'pink': '#FFFFC0CB',
+  'brown': '#FFA52A2A',
+  'lime': '#FF00FF00',
+  'lightgreen': '#FF90EE90',
+  'lightblue': '#FFADD8E6',
+  'darkred': '#FF8B0000',
+  'darkblue': '#FF00008B',
+  'aqua': '#FF00FFFF',
+  'navy': '#FF000080',
+  'teal': '#FF008080',
+  'maroon': '#FF800000',
+  'olive': '#FF808000',
+  'silver': '#FFC0C0C0',
+  'gold': '#FFFFD700',
+  'beige': '#FFF5F5DC',
+  'ivory': '#FFFFFFF0',
+  'coral': '#FFFF7F50',
+  'salmon': '#FFFA8072',
+  'khaki': '#FFF0E68C',
+  'turquoise': '#FF40E0D0',
+  'indigo': '#FF4B0082',
+  'violet': '#FFEE82EE',
+  'orchid': '#FFDA70D6',
+  'plum': '#FFDDA0DD',
+  'crimson': '#FFDC143C',
+  'skyblue': '#FF87CEEB',
+  'deepskyblue': '#FF00BFFF',
+  'dodgerblue': '#FF1E90FF',
+  'slategray': '#FF708090',
+  'darkgray': '#FFA9A9A9',
+  'lightgray': '#FFD3D3D3',
+  'seagreen': '#FF2E8B57',
+  'forestgreen': '#FF228B22',
+  'mintcream': '#FFF5FFFA',
+  'snow': '#FFFFFAFA',
+  'chocolate': '#FFD2691E',
+  //Add more here
+};
+
 //To load configuration once
 late app_configuration config_data;
 late Map<String, dynamic> raw_config_json;
@@ -123,6 +177,7 @@ Future<File> get_local_config_file() async {
   return File('${dir.path}/config_file.json');
 }
 
+//Initialize config
 Future<void> initialize_config() async {
   final localFile = await get_local_config_file();
 

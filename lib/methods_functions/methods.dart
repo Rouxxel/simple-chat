@@ -176,3 +176,26 @@ Future<void> update_verbose_level(String new_verbose_level) async {
   await file.writeAsString(jsonEncode(raw_config_json));
 }
 
+//Update color values
+Future<void> update_color_value(String section_key, String color_name) async {
+  final file = await get_local_config_file();
+
+  //Force string to be lowercase and delete whitespaces
+  final normalized_color_name = color_name
+      .toLowerCase()
+      .replaceAll(RegExp(r'[\s_\-]+'), '');
+  if (!color_name_to_hex_map.containsKey(normalized_color_name)) {
+    log_handler.w("Not supported color name provided: '$color_name'. Update skipped.");
+    return;
+  }
+
+  final hex_color = color_name_to_hex_map[normalized_color_name];
+
+  if (raw_config_json['colors'].containsKey(section_key)) {
+    raw_config_json['colors'][section_key] = hex_color;
+    await file.writeAsString(jsonEncode(raw_config_json));
+    log_handler.d("Color for '$section_key' updated to $hex_color.");
+  } else {
+    log_handler.w("Section key '$section_key' not found in 'colors'. Update skipped.");
+  }
+}

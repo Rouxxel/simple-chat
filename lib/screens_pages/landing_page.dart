@@ -9,7 +9,7 @@ import 'package:simple_chat/classes/classes.dart';
 import 'package:simple_chat/configurations/config_invoke.dart';
 
 //Other screens
-import 'package:simple_chat/screens_pages/settings.dart';
+import 'package:simple_chat/screens_pages/settings_page.dart';
 
 //imports
 /////////////////////////////////////////////////////////////////////////////

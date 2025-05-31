@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart'; //Fonts
 import 'package:simple_chat/methods_functions/methods.dart';
 import 'package:simple_chat/configurations/config_invoke.dart';
 import 'package:simple_chat/utils/alert_dialog_list.dart';
+import 'package:simple_chat/utils/colorimetry_blueprints.dart';
 
 class settings extends StatefulWidget {
   const settings({super.key});
@@ -16,6 +17,11 @@ class _settingsState extends State<settings> {
   //Create a TextEditingController for the input box
   final TextEditingController _personality_controller = TextEditingController();
   String _verbose_level_controller = config_data.verbose.toLowerCase();
+
+  final TextEditingController _background_color_controller = TextEditingController();
+  final TextEditingController _bar_colors_controller = TextEditingController();
+  final TextEditingController _user_textbox_color_controller = TextEditingController();
+  final TextEditingController _ai_textbox_color_controller = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -347,30 +353,87 @@ class _settingsState extends State<settings> {
 
                   SizedBox(
                     width: double.infinity,
-                    height: 20,
+                    height: 15,
                   ),
 
                   //Color section
                   Container(
-                    color: Colors.red,
-                    child: Column(
-                      children: [
-                        Text(
-                          "Colorimetry",
-                          style: GoogleFonts.bebasNeue(
-                            textStyle: TextStyle(
-                              fontSize: 35,
-                              fontWeight: FontWeight.normal,
-                              fontStyle: FontStyle.normal,
-                              color: config_data.text_color,
+                    decoration: BoxDecoration(
+                      color: config_data.ai_text_box_color, //Background color
+                      borderRadius:
+                      BorderRadius.circular(12), //Smooth (rounded) edges
+                      border: Border.all(
+                          color: config_data.ai_text_box_color, width: 3
+                      ),
+                    ),
+                    child: Padding(
+                      padding: EdgeInsets.fromLTRB(16, 0, 16, 0),
+                      child: Column(
+                        //Colorimetry title
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Colorimetry",
+                            style: GoogleFonts.bebasNeue(
+                              textStyle: TextStyle(
+                                fontSize: 35,
+                                fontWeight: FontWeight.normal,
+                                fontStyle: FontStyle.normal,
+                                color: config_data.text_color,
+                              ),
                             ),
                           ),
-                        ),
-                        Text("Background color"),
-                        Text("Bar colors"),
-                        Text("User text box color"),
-                        Text("AI text box color"),
-                      ],
+
+                          //Color options
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(16, 0, 0, 6),
+                            child: Container(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  LabeledTextField(
+                                    label: "Background color",
+                                    controller: _background_color_controller,
+                                    hint_text: "Ivory",
+                                    text_color: config_data.text_color,
+                                    fill_color: config_data.user_text_box_color,
+                                    hint_color: config_data.suggest_input_color,
+                                  ),
+                                  SizedBox(height: 10),
+                                  LabeledTextField(
+                                    label: "Bar colors",
+                                    controller: _bar_colors_controller,
+                                    hint_text: "Indian Red",
+                                    text_color: config_data.text_color,
+                                    fill_color: config_data.user_text_box_color,
+                                    hint_color: config_data.suggest_input_color,
+                                  ),
+                                  SizedBox(height: 10),
+                                  LabeledTextField(
+                                    label: "Your textbox color",
+                                    controller: _user_textbox_color_controller,
+                                    hint_text: "Tan",
+                                    text_color: config_data.text_color,
+                                    fill_color: config_data.user_text_box_color,
+                                    hint_color: config_data.suggest_input_color,
+                                  ),
+                                  SizedBox(height: 10),
+                                  LabeledTextField(
+                                    label: "AI textbox color",
+                                    controller: _ai_textbox_color_controller,
+                                    hint_text: "Light Yellow",
+                                    text_color: config_data.text_color,
+                                    fill_color: config_data.user_text_box_color,
+                                    hint_color: config_data.suggest_input_color,
+                                  ),
+                                  SizedBox(height: 10),
+                                ],
+                              )
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ],
@@ -401,6 +464,12 @@ class _settingsState extends State<settings> {
                       }
                       //Save AI verbose level
                       await update_verbose_level(_verbose_level_controller);
+
+                      //Save colorimetry
+                      await update_color_value("background.color", _background_color_controller.text);
+                      await update_color_value("app_bar.color", _bar_colors_controller.text);
+                      await update_color_value("user_text_boxes.color", _user_textbox_color_controller.text);
+                      await update_color_value("ai_text_boxes.color", _ai_textbox_color_controller.text);
 
                       //Reload config_data for runtime changes
                       config_data = app_configuration.fromJson(raw_config_json);
