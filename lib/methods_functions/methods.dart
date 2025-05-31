@@ -199,3 +199,29 @@ Future<void> update_color_value(String section_key, String color_name) async {
     log_handler.w("Section key '$section_key' not found in 'colors'. Update skipped.");
   }
 }
+
+//Update user language
+Future<void> update_user_language(BuildContext context, String? new_language, {int min_length = 2}) async {
+  if (new_language == null || new_language.trim().isEmpty || new_language.trim().length < min_length) {
+    log_handler.w("Attempted to update language with null, empty, or too short string. Update skipped.");
+    return;
+  }
+
+  //Validate user input, if false, don't proceed
+  try {
+    final is_valid = validate_user_input(context, new_language);
+    if (!is_valid) {
+      log_handler.w("Language failed validation. Update skipped.");
+      return;
+    }
+  } on ArgumentError catch (e) {
+    log_handler.w("Language validation threw ArgumentError: ${e.message}. Update skipped.");
+    return;
+  }
+
+  final file = await get_local_config_file();
+
+  raw_config_json['user_defaults']['language'] = new_language.trim();
+  await file.writeAsString(jsonEncode(raw_config_json));
+}
+

@@ -20,10 +20,11 @@
   },
   "user_defaults": {
     "language": "English",
+    "default_language": "English",
     "theme": "dark"
   },
   "app_info": {
-    "version": "2.1.1",
+    "version": "2.2.4",
     "legal_notice": "All rights reserved © 2025 Simple Chat"
   }
 }

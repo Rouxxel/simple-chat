@@ -23,6 +23,8 @@ class _settingsState extends State<settings> {
   final TextEditingController _user_textbox_color_controller = TextEditingController();
   final TextEditingController _ai_textbox_color_controller = TextEditingController();
 
+  final TextEditingController _language = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -436,6 +438,90 @@ class _settingsState extends State<settings> {
                       ),
                     ),
                   ),
+
+                  SizedBox(
+                    width: double.infinity,
+                    height: 15,
+                  ),
+
+                  //Language
+                  Container(
+                    decoration: BoxDecoration(
+                      color: config_data.ai_text_box_color, // Background color
+                      borderRadius:
+                      BorderRadius.circular(12), // Smooth (rounded) edges
+                      border: Border.all(
+                          color: config_data.ai_text_box_color, width: 3),
+                    ),
+                    child: Padding(
+                      padding: EdgeInsets.fromLTRB(16, 0, 16, 0),
+                      child: Column(
+                        //Language title
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Language",
+                            style: GoogleFonts.bebasNeue(
+                              textStyle: TextStyle(
+                                fontSize: 35,
+                                fontWeight: FontWeight.normal,
+                                fontStyle: FontStyle.normal,
+                                color: config_data.text_color,
+                              ),
+                            ),
+                          ),
+
+                          //Language input field
+                          Padding(
+                            padding: EdgeInsets.fromLTRB(16, 0, 0, 0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                //Textfield for personality
+                                TextField(
+                                  controller: _language,
+                                  style: GoogleFonts.roboto(
+                                    textStyle: TextStyle(
+                                      fontSize:
+                                      18, // match markdown paragraph font size
+                                      fontWeight: FontWeight
+                                          .normal, // normal weight like markdown p
+                                      fontStyle: FontStyle
+                                          .normal, // normal style (not italic by default)
+                                      color: config_data.text_color,
+                                    ),
+                                  ),
+                                 // Starts with 4 lines of height
+                                  maxLength:30, // Limit the number of characters
+                                  decoration: InputDecoration(
+                                    filled: true,
+                                    fillColor: config_data.user_text_box_color,
+                                    hintText:
+                                    "Example: ${config_data.default_language}",
+                                    hintStyle: GoogleFonts.roboto(
+                                      textStyle: TextStyle(
+                                        fontSize: 18,
+                                        fontStyle: FontStyle.italic,
+                                        fontWeight: FontWeight.normal,
+                                        color: config_data.suggest_input_color,
+                                      ),
+                                    ),
+                                    border: const OutlineInputBorder(
+                                      borderRadius: BorderRadius.all(
+                                        Radius.circular(5.0),
+                                      ),
+                                    ),
+                                  ),
+                                  cursorColor: Colors.black,
+                                ),
+                              ],
+                            ),
+                          ),
+
+                        ],
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -453,7 +539,7 @@ class _settingsState extends State<settings> {
                 onTap: () async {
                   setState(
                     () async {
-                      //Only save AI directory of input is not empty
+                      //Only save AI directory if input is not empty
                       if (_personality_controller.text.isNotEmpty &&
                           _personality_controller.text.length >= 20) {
                         await update_directive(
@@ -471,11 +557,27 @@ class _settingsState extends State<settings> {
                       await update_color_value("user_text_boxes.color", _user_textbox_color_controller.text);
                       await update_color_value("ai_text_boxes.color", _ai_textbox_color_controller.text);
 
+                      //Only save Language if input is not empty
+                      if (_language.text.isNotEmpty &&
+                          _language.text.length >= 2) {
+                        await update_user_language(
+                            context, _language.text);
+                      } else {
+                        log_handler.w(
+                            "Skipped updating language due to invalid input.");
+                      }
+
                       //Reload config_data for runtime changes
                       config_data = app_configuration.fromJson(raw_config_json);
                       log_handler.i("Save button pressed\n"
                           "Saved directory: ${config_data.directive}\n"
-                          "Saved verbose: ${config_data.verbose}\n");
+                          "Saved verbose: ${config_data.verbose}\n"
+                          "Saved Background color: ${config_data.background_color}\n"
+                          "Saved Bar colors: ${config_data.app_bar_color}\n"
+                          "Saved User textbox color: ${config_data.user_text_box_color}\n"
+                          "Saved AI textbox color: ${config_data.ai_text_box_color}\n"
+                          "Saved language: ${config_data.user_language}\n"
+                      );
                       show_changes_saved(context);
                     },
                   );

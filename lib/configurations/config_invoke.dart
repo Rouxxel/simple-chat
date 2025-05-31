@@ -25,6 +25,7 @@ class app_configuration {
   final Color date_text_color;
 
   final String user_language;
+  final String default_language;
   final String user_theme;
 
   final String app_version;
@@ -49,6 +50,7 @@ class app_configuration {
     required this.date_text_color,
 
     required this.user_language,
+    required this.default_language,
     required this.user_theme,
 
     required this.app_version,
@@ -80,6 +82,7 @@ class app_configuration {
       date_text_color: hex_to_color(colors['date_text.color'] ?? '#FF000000'),
 
       user_language: user_defaults['language'] ?? 'en',
+      default_language: user_defaults['default_language'] ?? 'en',
       user_theme: user_defaults['theme'] ?? 'light',
 
       app_version: app_info['version'] ?? '1.0.0',

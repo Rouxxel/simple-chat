@@ -35,6 +35,7 @@ void main() async{
           'ai_text_box_color: ${config_data.ai_text_box_color}\n'
           'date_text_color: ${config_data.date_text_color}\n'
           'user_language: ${config_data.user_language}\n'
+          'default_language: ${config_data.default_language}\n'
           'user_theme: ${config_data.user_theme}\n'
           'app_version: ${config_data.app_version}\n'
           'legal_notice: ${config_data.legal_notice}'
