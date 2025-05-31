@@ -224,4 +224,3 @@ Future<void> update_user_language(BuildContext context, String? new_language, {i
   raw_config_json['user_defaults']['language'] = new_language.trim();
   await file.writeAsString(jsonEncode(raw_config_json));
 }
-

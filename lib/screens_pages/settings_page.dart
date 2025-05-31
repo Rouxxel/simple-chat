@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart'; //Fonts
 
@@ -23,7 +24,10 @@ class _settingsState extends State<settings> {
   final TextEditingController _user_textbox_color_controller = TextEditingController();
   final TextEditingController _ai_textbox_color_controller = TextEditingController();
 
-  final TextEditingController _language = TextEditingController();
+  final TextEditingController _language_controller = TextEditingController();
+
+  List<FileSystemEntity> saved_images = [];
+  final TextEditingController _background_image_controller = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -474,49 +478,117 @@ class _settingsState extends State<settings> {
                           //Language input field
                           Padding(
                             padding: EdgeInsets.fromLTRB(16, 0, 0, 0),
+                            child: TextField(
+                              controller: _language_controller,
+                              style: GoogleFonts.roboto(
+                                textStyle: TextStyle(
+                                  fontSize:
+                                  18, // match markdown paragraph font size
+                                  fontWeight: FontWeight
+                                      .normal, // normal weight like markdown p
+                                  fontStyle: FontStyle
+                                      .normal, // normal style (not italic by default)
+                                  color: config_data.text_color,
+                                ),
+                              ),
+                              maxLength:20, // Limit the number of characters
+                              decoration: InputDecoration(
+                                filled: true,
+                                fillColor: config_data.user_text_box_color,
+                                hintText:
+                                "Example: ${config_data.default_language}",
+                                hintStyle: GoogleFonts.roboto(
+                                  textStyle: TextStyle(
+                                    fontSize: 18,
+                                    fontStyle: FontStyle.italic,
+                                    fontWeight: FontWeight.normal,
+                                    color: config_data.suggest_input_color,
+                                  ),
+                                ),
+                                border: const OutlineInputBorder(
+                                  borderRadius: BorderRadius.all(
+                                    Radius.circular(5.0),
+                                  ),
+                                ),
+                              ),
+                              cursorColor: Colors.black,
+                            ),
+                          ),
+
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  SizedBox(
+                    width: double.infinity,
+                    height: 15,
+                  ),
+
+                  //Background image
+                  Container(
+                    decoration: BoxDecoration(
+                      color: config_data.ai_text_box_color, // Background color
+                      borderRadius:
+                      BorderRadius.circular(12), // Smooth (rounded) edges
+                      border: Border.all(
+                          color: config_data.ai_text_box_color, width: 3),
+                    ),
+                    child: Padding(
+                      padding: EdgeInsets.fromLTRB(16, 0, 16, 0),
+                      child: Column(
+                        //Background image title
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Background image",
+                            style: GoogleFonts.bebasNeue(
+                              textStyle: TextStyle(
+                                fontSize: 35,
+                                fontWeight: FontWeight.normal,
+                                fontStyle: FontStyle.normal,
+                                color: config_data.text_color,
+                              ),
+                            ),
+                          ),
+
+                          //Upload image and change background image
+                          Padding(
+                            padding: EdgeInsets.fromLTRB(16, 0, 0, 16),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                //Textfield for personality
-                                TextField(
-                                  controller: _language,
-                                  style: GoogleFonts.roboto(
-                                    textStyle: TextStyle(
-                                      fontSize:
-                                      18, // match markdown paragraph font size
-                                      fontWeight: FontWeight
-                                          .normal, // normal weight like markdown p
-                                      fontStyle: FontStyle
-                                          .normal, // normal style (not italic by default)
-                                      color: config_data.text_color,
-                                    ),
-                                  ),
-                                  maxLength:20, // Limit the number of characters
-                                  decoration: InputDecoration(
-                                    filled: true,
-                                    fillColor: config_data.user_text_box_color,
-                                    hintText:
-                                    "Example: ${config_data.default_language}",
-                                    hintStyle: GoogleFonts.roboto(
-                                      textStyle: TextStyle(
-                                        fontSize: 18,
-                                        fontStyle: FontStyle.italic,
-                                        fontWeight: FontWeight.normal,
-                                        color: config_data.suggest_input_color,
+                                SizedBox(
+                                  width: double.infinity,
+                                  height: 45,
+                                  child: GestureDetector(
+                                    onDoubleTap: () async {
+                                      //TODO: add functionality to change background image
+                                    },
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        color: config_data.background_color,
+                                        borderRadius: BorderRadius.circular(16),
                                       ),
-                                    ),
-                                    border: const OutlineInputBorder(
-                                      borderRadius: BorderRadius.all(
-                                        Radius.circular(5.0),
+                                      child: Center(
+                                        child: Text(
+                                          "-Non-functional yet-",
+                                          style: GoogleFonts.bebasNeue(
+                                            textStyle: TextStyle(
+                                              fontSize: 35,
+                                              fontWeight: FontWeight.normal,
+                                              fontStyle: FontStyle.normal,
+                                              color: config_data.text_color,
+                                            ),
+                                          ),
+                                        ),
                                       ),
                                     ),
                                   ),
-                                  cursorColor: Colors.black,
                                 ),
                               ],
                             ),
                           ),
-
                         ],
                       ),
                     ),
@@ -557,10 +629,10 @@ class _settingsState extends State<settings> {
                       await update_color_value("ai_text_boxes.color", _ai_textbox_color_controller.text);
 
                       //Only save Language if input is not empty
-                      if (_language.text.isNotEmpty &&
-                          _language.text.length >= 2) {
+                      if (_language_controller.text.isNotEmpty &&
+                          _language_controller.text.length >= 2) {
                         await update_user_language(
-                            context, _language.text);
+                            context, _language_controller.text);
                       } else {
                         log_handler.w(
                             "Skipped updating language due to invalid input.");
