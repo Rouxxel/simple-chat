@@ -26,6 +26,7 @@ class _settingsState extends State<settings> {
 
   final TextEditingController _language_controller = TextEditingController();
 
+  //TODO: to be used to change background image
   List<FileSystemEntity> saved_images = [];
   final TextEditingController _background_image_controller = TextEditingController();
 
@@ -562,8 +563,9 @@ class _settingsState extends State<settings> {
                                   width: double.infinity,
                                   height: 45,
                                   child: GestureDetector(
-                                    onDoubleTap: () async {
+                                    onTap: () async {
                                       //TODO: add functionality to change background image
+                                      show_feature_in_progress(context);
                                     },
                                     child: Container(
                                       decoration: BoxDecoration(
