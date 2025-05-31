@@ -126,60 +126,6 @@ Color hex_to_color(String hex) {
   return Color(int.parse(hex.replaceFirst('#', '0x')));
 }
 
-//Helper HashMap to convert strings to hex
-Map<String, String> color_name_to_hex_map = {
-  'red': '#FFFF0000',
-  'green': '#FF00FF00',
-  'blue': '#FF0000FF',
-  'yellow': '#FFFFFF00',
-  'black': '#FF000000',
-  'white': '#FFFFFFFF',
-  'grey': '#FF888888',
-  'gray': '#FF888888',
-  'fuchsia': '#FFFF00FF',
-  'cyan': '#FF00FFFF',
-  'magenta': '#FFFF00FF',
-  'orange': '#FFFFA500',
-  'purple': '#FF800080',
-  'pink': '#FFFFC0CB',
-  'brown': '#FFA52A2A',
-  'lime': '#FF00FF00',
-  'lightgreen': '#FF90EE90',
-  'lightblue': '#FFADD8E6',
-  'darkred': '#FF8B0000',
-  'darkblue': '#FF00008B',
-  'aqua': '#FF00FFFF',
-  'navy': '#FF000080',
-  'teal': '#FF008080',
-  'maroon': '#FF800000',
-  'olive': '#FF808000',
-  'silver': '#FFC0C0C0',
-  'gold': '#FFFFD700',
-  'beige': '#FFF5F5DC',
-  'ivory': '#FFFFFFF0',
-  'coral': '#FFFF7F50',
-  'salmon': '#FFFA8072',
-  'khaki': '#FFF0E68C',
-  'turquoise': '#FF40E0D0',
-  'indigo': '#FF4B0082',
-  'violet': '#FFEE82EE',
-  'orchid': '#FFDA70D6',
-  'plum': '#FFDDA0DD',
-  'crimson': '#FFDC143C',
-  'skyblue': '#FF87CEEB',
-  'deepskyblue': '#FF00BFFF',
-  'dodgerblue': '#FF1E90FF',
-  'slategray': '#FF708090',
-  'darkgray': '#FFA9A9A9',
-  'lightgray': '#FFD3D3D3',
-  'seagreen': '#FF2E8B57',
-  'forestgreen': '#FF228B22',
-  'mintcream': '#FFF5FFFA',
-  'snow': '#FFFFFAFA',
-  'chocolate': '#FFD2691E',
-  //Add more here
-};
-
 //To load configuration once
 late app_configuration config_data;
 late Map<String, dynamic> raw_config_json;

@@ -6,10 +6,11 @@ import "dart:async";
 import "dart:convert";
 import 'package:logger/logger.dart';
 
-//Import alert dialogs
+//Import alert dialogs and others
 import "package:simple_chat/utils/alert_dialog_list.dart";
 import 'package:simple_chat/configurations/config_invoke.dart';
 import "package:simple_chat/classes/classes.dart";
+import 'package:simple_chat/utils/colorimetry_blueprints.dart';
 
 //Initialize logger
 var log_handler= Logger();
