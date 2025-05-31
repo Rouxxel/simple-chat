@@ -15,27 +15,28 @@ void main() async{
   await dotenv.load(fileName:"envvar.env");
 
   //Load configuration
-  await load_app_config("assets/config_file.json");
+  await initialize_config();
 
   //Check loaded configuration (I know its horrible coding)
   log_handler.i(
-      'directive: ${config_data.directive}, '
-          'response_length_limit: ${config_data.response_length_limit}, '
-          'response_length_tolerance: ${config_data.response_length_tolerance}, '
-          'ai_api_model: ${config_data.ai_api_model}, '
-          'max_api_response_time_limit: ${config_data.max_api_response_time_limit}, '
-          'verbose: ${config_data.verbose}, '
-          'character_render_speed_ms: ${config_data.character_render_speed_ms}, '
-          'background_color: ${config_data.background_color}, '
-          'app_bar_color: ${config_data.app_bar_color}, '
-          'text_color: ${config_data.text_color}, '
-          'suggest_input_color: ${config_data.suggest_input_color}, '
-          'user_text_box_color: ${config_data.user_text_box_color}, '
-          'ai_text_box_color: ${config_data.ai_text_box_color}, '
-          'date_text_color: ${config_data.date_text_color}, '
-          'user_language: ${config_data.user_language}, '
-          'user_theme: ${config_data.user_theme}, '
-          'app_version: ${config_data.app_version}, '
+      'directive: ${config_data.directive}\n'
+          'default_directive: ${config_data.default_directive}\n'
+          'response_length_limit: ${config_data.response_length_limit}\n'
+          'response_length_tolerance: ${config_data.response_length_tolerance}\n'
+          'ai_api_model: ${config_data.ai_api_model}\n'
+          'max_api_response_time_limit: ${config_data.max_api_response_time_limit}\n'
+          'verbose: ${config_data.verbose}\n'
+          'character_render_speed_ms: ${config_data.character_render_speed_ms}\n'
+          'background_color: ${config_data.background_color}\n'
+          'app_bar_color: ${config_data.app_bar_color}\n'
+          'text_color: ${config_data.text_color}\n'
+          'suggest_input_color: ${config_data.suggest_input_color}\n'
+          'user_text_box_color: ${config_data.user_text_box_color}\n'
+          'ai_text_box_color: ${config_data.ai_text_box_color}\n'
+          'date_text_color: ${config_data.date_text_color}\n'
+          'user_language: ${config_data.user_language}\n'
+          'user_theme: ${config_data.user_theme}\n'
+          'app_version: ${config_data.app_version}\n'
           'legal_notice: ${config_data.legal_notice}'
   );
 

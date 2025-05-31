@@ -36,16 +36,28 @@ class _landing_pageState extends State<landing_page> {
   @override
   void initState() {
     super.initState();
-    //Inject system prompt as first AI message (used for memory context)
-    //Comment out as required to test or configure. NEVER CONFIGURE .directive
-    String system_prompt = "${config_data.directive}. "
-        "Verbose level: ${config_data.verbose}. "
-        "Response limit: ${config_data.response_length_limit} tokens. "
-        "Tolerance response limit: ${config_data.response_length_tolerance} extra tokens."
-        "Default language: ${config_data.user_language} but match prompt language."
-    ;
+    _load_system_prompt();
+  }
 
-    _message_list.add(Message(system_prompt, false)); //false because it represent AI message
+  String system_prompt = "";
+
+  void _load_system_prompt() {
+    setState(() {
+      system_prompt = "${config_data.directive}. "
+          "Verbose level: ${config_data.verbose}. "
+          "Response limit: ${config_data.response_length_limit} tokens. "
+          "Tolerance response limit: ${config_data.response_length_tolerance} extra tokens. "
+          "Default language: ${config_data.user_language} but match prompt language.";
+
+      if (_message_list.isEmpty) {
+        _message_list.add(Message(system_prompt, false));
+      } else {
+        _message_list[_message_list.length - 1] = Message(system_prompt, false);
+      }
+    });
+
+    log_handler.i("Loaded directory: ${_message_list[0].text}");
+    log_handler.i("Loaded messages:\n${_message_list.map((m) => m.text).join('\n')}");
   }
 
   @override
@@ -90,12 +102,14 @@ class _landing_pageState extends State<landing_page> {
                 icon: const Icon(Icons.settings),
                 iconSize: 35,
                 color: Colors.black,
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (context) => const settings()),
-                  );
-                },
+                  onPressed: () async {
+                    await Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => const settings()),
+                    );
+                    //This code runs after you come back from other screens
+                    _load_system_prompt();
+                  }
               )
             ],
           ),

@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:simple_chat/methods_functions/methods.dart';
 import 'package:flutter/services.dart'; // For rootBundle
+import 'dart:io';
+import 'package:path_provider/path_provider.dart';
 
 //Config file management------------------------------------
 //Async asset JSON loader
@@ -31,6 +33,7 @@ Color hex_to_color(String hex) {
 //Extract configuration values
 class app_configuration {
   final String directive;
+  final String default_directive;
   final int response_length_limit;
   final int response_length_tolerance;
   final String ai_api_model;
@@ -54,6 +57,7 @@ class app_configuration {
 
   app_configuration({
     required this.directive,
+    required this.default_directive,
     required this.response_length_limit,
     required this.response_length_tolerance,
     required this.ai_api_model,
@@ -84,6 +88,7 @@ class app_configuration {
 
     return app_configuration(
       directive: ai['directive'] ?? '',
+      default_directive: ai['default_directive'] ?? '',
       max_api_response_time_limit: ai['max_api_response_time_limit.s'] ?? 5,
       ai_api_model: ai["ai_api_model"],
       response_length_limit: ai['response_length_limit.tokens'] ?? 100,
@@ -113,15 +118,24 @@ late app_configuration config_data;
 late Map<String, dynamic> raw_config_json;
 
 //Load config once
-Future<void> load_app_config(String file_path) async {
-  final json_data = await read_data_json_asset(file_path);
+Future<File> get_local_config_file() async {
+  final dir = await getApplicationDocumentsDirectory();
+  return File('${dir.path}/config_file.json');
+}
 
-  if (json_data != null) {
-    raw_config_json = json_data;
-    config_data = app_configuration.fromJson(json_data);
-    log_handler.d("Configuration loaded successfully.");
+Future<void> initialize_config() async {
+  final localFile = await get_local_config_file();
 
-  } else {
-    log_handler.e("Failed to load configuration.");
+  // If config doesn't exist locally, copy from asset
+  if (!await localFile.exists()) {
+    final assetData = await rootBundle.loadString('assets/config_file.json');
+    await localFile.writeAsString(assetData);
   }
+
+  final content = await localFile.readAsString();
+  final json_data = jsonDecode(content);
+
+  raw_config_json = json_data;
+  config_data = app_configuration.fromJson(json_data);
+  log_handler.d("Configuration loaded from local file.");
 }

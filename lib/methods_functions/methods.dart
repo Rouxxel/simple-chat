@@ -4,12 +4,11 @@ import "package:flutter_dotenv/flutter_dotenv.dart"; //env var
 import "package:google_generative_ai/google_generative_ai.dart";
 import "dart:async";
 import "dart:convert";
-import "dart:io";
 import 'package:logger/logger.dart';
 
 //Import alert dialogs
 import "package:simple_chat/utils/alert_dialog_list.dart";
-
+import 'package:simple_chat/configurations/config_invoke.dart';
 import "package:simple_chat/classes/classes.dart";
 
 //Initialize logger
@@ -128,34 +127,6 @@ bool _contains_suspicious_patterns(String input) {
   return false;
 }
 
-//Config file management------------------------------------
-//To extract data from json file
-Map<String, dynamic>? read_data_json(
-    String filePath,
-    {bool exitOnError = true}) {
-  log_handler.d("[------read_data_json function executing------]");
-  try {
-    final file = File(filePath);
-    final contents = file.readAsStringSync();  // Synchronous method
-    final Map<String, dynamic> json_data = jsonDecode(contents);
-    return json_data;
-  } on FileSystemException {
-    log_handler.e("Error: The file '$filePath' was not found.");
-    if (exitOnError) exit(1);
-    return null;
-  } on FormatException {
-    log_handler.e("Error: The file '$filePath' is not a valid JSON file.");
-    if (exitOnError) exit(1);
-    return null;
-  }
-}
-
-//Helper function to convert hex string to Color
-Color hex_to_color(String hex) {
-  log_handler.d("[------hex_to_color function executing------]");
-  return Color(int.parse(hex.replaceFirst('#', '0x')));
-}
-
 //Testing different methods and others------------------------------
 //Test AI, don't use for anything else
 Future<void> test_ai() async {
@@ -170,3 +141,38 @@ Future<void> test_ai() async {
   log_handler.d("---AI response succesful---");
   log_handler.d(response.text);
 }
+
+//Configuration and settings methods--------------------------------------------------
+//Update main directory of the AI
+Future<void> update_directive(BuildContext context, String? new_directive, {int min_length = 20}) async {
+  if (new_directive == null || new_directive.trim().isEmpty || new_directive.trim().length < min_length) {
+    log_handler.w("Attempted to update directive with null, empty, or too short string. Update skipped.");
+    return;
+  }
+
+  //Validate user input, if false, don't proceed
+  try {
+    final is_valid = validate_user_input(context, new_directive);
+    if (!is_valid) {
+      log_handler.w("Directive failed validation. Update skipped.");
+      return;
+    }
+  } on ArgumentError catch (e) {
+    log_handler.w("Directive validation threw ArgumentError: ${e.message}. Update skipped.");
+    return;
+  }
+
+  final file = await get_local_config_file();
+
+  raw_config_json['ai']['directive'] = new_directive.trim();
+  await file.writeAsString(jsonEncode(raw_config_json));
+}
+
+//Update verbose level
+Future<void> update_verbose_level(String new_verbose_level) async {
+  final file = await get_local_config_file();
+
+  raw_config_json['ai']['verbose_level'] = new_verbose_level;
+  await file.writeAsString(jsonEncode(raw_config_json));
+}
+
