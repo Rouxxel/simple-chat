@@ -40,8 +40,9 @@ class _landing_pageState extends State<landing_page> {
     //Comment out as required to test or configure. NEVER CONFIGURE .directive
     String system_prompt = "${config_data.directive}. "
         "Verbose level: ${config_data.verbose}. "
-        "Limit responses: ${config_data.response_length_limit} tokens, "
-        "with a tolerance of ${config_data.response_length_tolerance} extra tokens."
+        "Response limit: ${config_data.response_length_limit} tokens. "
+        "Tolerance response limit: ${config_data.response_length_tolerance} extra tokens."
+        "Default language: ${config_data.user_language} but match prompt language."
     ;
 
     _message_list.add(Message(system_prompt, false)); //false because it represent AI message
@@ -87,7 +88,8 @@ class _landing_pageState extends State<landing_page> {
               ),
               IconButton(
                 icon: const Icon(Icons.settings),
-                iconSize: 40,
+                iconSize: 35,
+                color: Colors.black,
                 onPressed: () {
                   Navigator.push(
                     context,
@@ -260,7 +262,7 @@ class _landing_pageState extends State<landing_page> {
                               fontSize: 18,               // match markdown paragraph font size
                               fontWeight: FontWeight.normal,  // normal weight like markdown p
                               fontStyle: FontStyle.normal, // normal style (not italic by default)
-                              color: _is_processing ? Colors.transparent : Colors.black,
+                              color: _is_processing ? Colors.transparent : config_data.text_color,
                             ),
                           ),
                           decoration: InputDecoration(
@@ -289,7 +291,7 @@ class _landing_pageState extends State<landing_page> {
                       Container(
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(20.0),
-                          color: const Color.fromRGBO(216, 162, 94, 1.0),
+                          color: config_data.user_text_box_color,
                         ),
                         height: 62,
                         width: 62,
