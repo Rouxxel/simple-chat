@@ -8,6 +8,9 @@ import 'package:simple_chat/methods_functions/methods.dart';
 import 'package:simple_chat/classes/classes.dart';
 import 'package:simple_chat/configurations/config_invoke.dart';
 
+//Other screens
+import 'package:simple_chat/screens_pages/settings.dart';
+
 //imports
 /////////////////////////////////////////////////////////////////////////////
 //screen itself
@@ -54,32 +57,45 @@ class _landing_pageState extends State<landing_page> {
         //Top App bar
         appBar: AppBar(
           backgroundColor: config_data.app_bar_color,
-          title: Align(
-            alignment: Alignment.centerLeft,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min, // Prevents the AppBar from expanding too much
-              children: [
-                Text(
-                  "- Simple AI Chat -",
-                  style: GoogleFonts.bebasNeue(
-                    textStyle: TextStyle(
-                      fontSize: 35,
-                      fontWeight: FontWeight.normal,
-                      fontStyle: FontStyle.normal,
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              //Title column
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min, // Prevents the AppBar from expanding too much
+                children: [
+                  Text(
+                    "- Simple AI Chat -",
+                    style: GoogleFonts.bebasNeue(
+                      textStyle: TextStyle(
+                        fontSize: 35,
+                        fontWeight: FontWeight.normal,
+                        fontStyle: FontStyle.normal,
+                        color: config_data.text_color,
+                      ),
+                    ),
+                  ),
+                  Text(
+                    "Google Gemini 2.0 Flash API powered",
+                    style: TextStyle(
+                      fontSize: 9,
                       color: config_data.text_color,
                     ),
                   ),
-                ),
-                Text(
-                  "Google Gemini 2.0 Flash API powered",
-                  style: TextStyle(
-                    fontSize: 9,
-                    color: config_data.text_color,
-                  ),
-                ),
-              ],
-            ),
+                ],
+              ),
+              IconButton(
+                icon: const Icon(Icons.settings),
+                iconSize: 40,
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const settings()),
+                  );
+                },
+              )
+            ],
           ),
         ),
 

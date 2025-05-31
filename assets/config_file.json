@@ -9,7 +9,7 @@
     "character_render_speed.ms": 1
   },
   "colors":{
-    "background.color": "#FF343131",
+    "background.color": "#FFFFF5EE",
     "app_bar.color": "#FFA04747",
     "text.color": "#FF000000",
     "suggest_input.color": "#8A000000",
