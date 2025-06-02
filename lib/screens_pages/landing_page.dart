@@ -80,7 +80,7 @@ class _landing_pageState extends State<landing_page> {
                 mainAxisSize: MainAxisSize.min, // Prevents the AppBar from expanding too much
                 children: [
                   Text(
-                    "- Simple AI Chat -",
+                    "- ${config_data.main_title} -",
                     style: GoogleFonts.bebasNeue(
                       textStyle: TextStyle(
                         fontSize: 35,

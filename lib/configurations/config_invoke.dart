@@ -8,6 +8,8 @@ import 'package:simple_chat/utils/logger_config.dart';
 
 //Extract configuration values
 class app_configuration {
+  final String main_title;
+
   final String directive;
   final String default_directive;
   final int response_length_limit;
@@ -36,6 +38,8 @@ class app_configuration {
   final String legal_notice;
 
   app_configuration({
+    required this.main_title,
+
     required this.directive,
     required this.default_directive,
     required this.response_length_limit,
@@ -72,32 +76,34 @@ class app_configuration {
     final app_info = json['app_info'] ?? {};
 
     return app_configuration(
-      directive: ai['directive'] ?? '',
-      default_directive: ai['default_directive'] ?? '',
-      max_api_response_time_limit: ai['max_api_response_time_limit.s'] ?? 5,
+      main_title: user_defaults['main_title'] ?? 'main_title',
+
+      directive: ai['directive'] ?? 'personality',
+      default_directive: ai['default_directive'] ?? 'default_personality',
+      max_api_response_time_limit: ai['max_api_response_time_limit.s'] ?? 10,
       ai_api_model: ai["ai_api_model"],
       response_length_limit: ai['response_length_limit.tokens'] ?? 100,
       response_length_tolerance: ai['response_length_tolerance.tokens'] ?? 10,
-      verbose: ai['verbose_level'] ?? 'medium',
+      verbose: ai['verbose_level'] ?? 'verbose_level',
       character_render_speed_ms: ai['character_render_speed.ms'] ?? 10,
 
       background_color: hex_to_color(colors['background.color'] ?? '#FFFFFFFF'),
-      app_bar_color: hex_to_color(colors['app_bar.color'] ?? '#FFFFFFFF'),
+      app_bar_color: hex_to_color(colors['app_bar.color'] ?? '#FFFF7F50'),
       text_color: hex_to_color(colors['text.color'] ?? '#FF000000'),
-      suggest_input_color: hex_to_color(colors['suggest_input.color'] ?? '#FF000000'),
-      user_text_box_color: hex_to_color(colors['user_text_boxes.color'] ?? '#FFFFFFFF'),
-      ai_text_box_color: hex_to_color(colors['ai_text_boxes.color'] ?? '#FFFFFFFF'),
+      suggest_input_color: hex_to_color(colors['suggest_input.color'] ?? '#FF808080'),
+      user_text_box_color: hex_to_color(colors['user_text_boxes.color'] ?? '#FF008080'),
+      ai_text_box_color: hex_to_color(colors['ai_text_boxes.color'] ?? '#FF800000'),
       date_text_color: hex_to_color(colors['date_text.color'] ?? '#FF000000'),
 
-      user_language: user_defaults['language'] ?? 'en',
-      default_language: user_defaults['default_language'] ?? 'en',
-      user_theme: user_defaults['theme'] ?? 'light',
+      user_language: user_defaults['language'] ?? 'language',
+      default_language: user_defaults['default_language'] ?? 'default_language',
+      user_theme: user_defaults['theme'] ?? 'theme',
 
       default_image_path: image_paths["default_image.path"] ?? '',
       image_path: image_paths["image.path"] ?? '',
 
-      app_version: app_info['version'] ?? '1.0.0',
-      legal_notice: app_info['legal_notice'] ?? '',
+      app_version: app_info['version'] ?? 'version',
+      legal_notice: app_info['legal_notice'] ?? 'legal_notice',
     );
   }
 }

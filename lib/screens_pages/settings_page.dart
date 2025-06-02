@@ -62,7 +62,7 @@ class _settingsState extends State<settings> {
               MainAxisSize.min, // Prevents the AppBar from expanding too much
           children: [
             Text(
-              "- Simple AI Chat -",
+              "- ${config_data.main_title} -",
               style: GoogleFonts.bebasNeue(
                 textStyle: TextStyle(
                   fontSize: 35,
@@ -229,8 +229,7 @@ class _settingsState extends State<settings> {
                                           padding: EdgeInsets.symmetric(
                                               vertical: 12),
                                           decoration: BoxDecoration(
-                                            color: _verbose_level_controller ==
-                                                    "low"
+                                            color: _verbose_level_controller == "low"
                                                 ? config_data.app_bar_color
                                                 : config_data.background_color,
                                             borderRadius: BorderRadius.only(
@@ -247,14 +246,12 @@ class _settingsState extends State<settings> {
                                             "Low",
                                             style: TextStyle(
                                                 color:
-                                                    _verbose_level_controller ==
-                                                            "low"
+                                                    _verbose_level_controller == "low"
                                                         ? Colors.white
                                                         : config_data
                                                             .text_color,
                                                 fontWeight:
-                                                    _verbose_level_controller ==
-                                                            "low"
+                                                    _verbose_level_controller == "low"
                                                         ? FontWeight.bold
                                                         : FontWeight.normal),
                                           ),
@@ -267,8 +264,7 @@ class _settingsState extends State<settings> {
                                       child: GestureDetector(
                                         onTap: () {
                                           setState(() {
-                                            _verbose_level_controller =
-                                                "medium";
+                                            _verbose_level_controller = "medium";
                                           });
                                           log_handler?.i(
                                               "medium button pressed, verbose: ${_verbose_level_controller}");
@@ -277,8 +273,7 @@ class _settingsState extends State<settings> {
                                           padding: EdgeInsets.symmetric(
                                               vertical: 12),
                                           decoration: BoxDecoration(
-                                            color: _verbose_level_controller ==
-                                                    "medium"
+                                            color: _verbose_level_controller == "medium"
                                                 ? config_data.app_bar_color
                                                 : config_data.background_color,
                                             border: Border.all(
@@ -291,14 +286,12 @@ class _settingsState extends State<settings> {
                                             "Medium",
                                             style: TextStyle(
                                                 color:
-                                                    _verbose_level_controller ==
-                                                            "medium"
+                                                    _verbose_level_controller == "medium"
                                                         ? Colors.white
                                                         : config_data
                                                             .text_color,
                                                 fontWeight:
-                                                    _verbose_level_controller ==
-                                                            "medium"
+                                                    _verbose_level_controller == "medium"
                                                         ? FontWeight.bold
                                                         : FontWeight.normal),
                                           ),
@@ -320,8 +313,7 @@ class _settingsState extends State<settings> {
                                           padding: EdgeInsets.symmetric(
                                               vertical: 12),
                                           decoration: BoxDecoration(
-                                            color: _verbose_level_controller ==
-                                                    "high"
+                                            color: _verbose_level_controller == "high"
                                                 ? config_data.app_bar_color
                                                 : config_data.background_color,
                                             borderRadius: BorderRadius.only(
@@ -338,14 +330,12 @@ class _settingsState extends State<settings> {
                                             "High",
                                             style: TextStyle(
                                                 color:
-                                                    _verbose_level_controller ==
-                                                            "high"
+                                                    _verbose_level_controller == "high"
                                                         ? Colors.white
                                                         : config_data
                                                             .text_color,
                                                 fontWeight:
-                                                    _verbose_level_controller ==
-                                                            "high"
+                                                    _verbose_level_controller == "high"
                                                         ? FontWeight.bold
                                                         : FontWeight.normal),
                                           ),
@@ -682,7 +672,7 @@ class _settingsState extends State<settings> {
                                   width: double.infinity,
                                   height: 45,
                                   child: GestureDetector(
-                                    onDoubleTap: () async {
+                                    onTap: () async {
                                       setState(() async {
                                         //Send feedback
                                          await send_feedback_by_email(context,_feedback_controller.text);

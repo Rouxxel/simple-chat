@@ -5,13 +5,13 @@ import 'package:google_fonts/google_fonts.dart';
 //Helper HashMap to convert strings to hex
 Map<String, String> color_name_to_hex_map = {
   'red': '#FFFF0000',
-  'green': '#FF00FF00',
+  'green': '#FF008000',
   'blue': '#FF0000FF',
   'yellow': '#FFFFFF00',
   'black': '#FF000000',
   'white': '#FFFFFFFF',
-  'grey': '#FF888888',
-  'gray': '#FF888888',
+  'grey': '#FF808080',
+  'gray': '#FF808080',
   'fuchsia': '#FFFF00FF',
   'cyan': '#FF00FFFF',
   'magenta': '#FFFF00FF',
