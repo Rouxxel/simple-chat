@@ -1,3 +1,4 @@
+import "package:audioplayers/audioplayers.dart";
 import "package:flutter/cupertino.dart";
 import "package:flutter/material.dart";
 import "package:flutter_dotenv/flutter_dotenv.dart"; //env var
@@ -14,6 +15,9 @@ import 'package:simple_chat/configurations/config_invoke.dart';
 import "package:simple_chat/classes/classes.dart";
 import 'package:simple_chat/utils/colorimetry_blueprints.dart';
 import 'package:simple_chat/utils/logger_config.dart';
+
+//Audio instance
+final AudioPlayer _audio_instance = AudioPlayer();
 
 //imports
 /////////////////////////////////////////////////////////////////////////////
@@ -141,6 +145,21 @@ Future<void> test_ai() async {
   final response = await model.generateContent([Content.text(user_prompt)]);
   log_handler?.d("---AI response succesful---");
   log_handler?.d(response.text);
+}
+
+//Audio handling------------------------------
+//General play audio
+Future<void> play_effect_sound(String asset_path) async {
+  try {
+    if (config_data.sound_effects_status){
+      await _audio_instance.play(AssetSource(asset_path));
+      log_handler?.i('Sound $asset_path player');
+    } else {
+      log_handler?.w('Sound $asset_path nor played, effects disabled');
+    }
+  } catch (er) {
+    log_handler?.e('Error playing sound "$asset_path": $er');
+  }
 }
 
 //Configuration and settings methods--------------------------------------------------
@@ -285,4 +304,20 @@ Future<void> send_feedback_by_email(BuildContext context, String feedback) async
   } catch (e) {
     log_handler?.e('Error sending feedback email: $e');
   }
+}
+
+//Update sound effect status
+Future<void> update_sound_effect_status(bool sound_effect_status) async {
+  final file = await get_local_config_file();
+
+  raw_config_json['audio']['sound_effects_status'] = sound_effect_status;
+  await file.writeAsString(jsonEncode(raw_config_json));
+}
+
+//Update easter egg found
+Future<void> update_easter_egg_found(bool easter_egg_found) async {
+  final file = await get_local_config_file();
+
+  raw_config_json['audio']['easter_egg_found'] = easter_egg_found;
+  await file.writeAsString(jsonEncode(raw_config_json));
 }

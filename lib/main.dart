@@ -42,6 +42,11 @@ void main() async{
           'user_theme: ${config_data.user_theme}\n'
           'default_image_path: ${config_data.default_image_path}\n'
           'image_path: ${config_data.image_path}\n'
+          'button_pressed_effect: ${config_data.button_pressed_effect}\n'
+          'miscellanous_effect: ${config_data.miscellanous_effect}\n'
+          'sound_effects_status: ${config_data.sound_effects_status}\n'
+          'easter_egg: ${config_data.easter_egg}\n'
+          'easter_egg_found: ${config_data.easter_egg_found}\n'
           'app_version: ${config_data.app_version}\n'
           'legal_notice: ${config_data.legal_notice}'
   );

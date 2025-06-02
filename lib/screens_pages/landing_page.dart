@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';   //Fonts
 import 'package:icons_flutter/icons_flutter.dart'; //Extra icons
 import 'package:intl/intl.dart'; //For date and time formatting
@@ -57,6 +58,7 @@ class _landing_pageState extends State<landing_page> {
       }
     });
 
+    log_handler?.i(config_data.easter_egg_found);
     log_handler?.i("Loaded directory: ${_message_list[0].text}");
     log_handler?.i("Loaded directories:\n${_message_list.map((m) => m.text).join('\n')}");
   }
@@ -104,6 +106,11 @@ class _landing_pageState extends State<landing_page> {
                 iconSize: 35,
                 color: Colors.black,
                   onPressed: () async {
+
+                    //play the button sound
+                    await play_effect_sound(config_data.button_pressed_effect);
+
+                    //Navigate to setting page
                     await Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => const settings()),
@@ -330,6 +337,10 @@ class _landing_pageState extends State<landing_page> {
 
                               if (validate_user_input(context, userInput) &&
                                   userInput.isNotEmpty) {
+
+                                //play sound effect
+                                await play_effect_sound(config_data.button_pressed_effect);
+
                                 setState(() => _is_processing = true); //Start processing
 
                                 Message message = Message(userInput, true);

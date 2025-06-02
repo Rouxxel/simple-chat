@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart'; //Fonts
@@ -8,6 +9,8 @@ import 'package:simple_chat/utils/alert_dialog_list.dart';
 import 'package:simple_chat/utils/colorimetry_blueprints.dart';
 
 import 'package:simple_chat/utils/logger_config.dart';
+
+import '../classes/player.dart';
 
 class settings extends StatefulWidget {
   const settings({super.key});
@@ -34,6 +37,29 @@ class _settingsState extends State<settings> {
 
   final TextEditingController _feedback_controller = TextEditingController();
 
+  bool _sound_effect_controller = config_data.sound_effects_status;
+  bool _easter_egg_found_controller = config_data.easter_egg_found;
+
+  //Easter egg
+  int _tap_count = 0;
+  Timer? _tap_timer;
+
+  Future<void> _handle_ten_taps_gesture(VoidCallback on_ten_taps) async {
+    _tap_count = _tap_count + 1;
+
+    //Reset count if no tap happens within 2 seconds
+    _tap_timer?.cancel();
+    _tap_timer = Timer(const Duration(seconds: 2), () {
+      _tap_count = 0;
+    });
+
+    if (_tap_count >= 10) {
+      _tap_timer?.cancel();
+      _tap_count = 0;
+      on_ten_taps(); //Execute the desired action
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -51,7 +77,10 @@ class _settingsState extends State<settings> {
             icon: const Icon(Icons.close_sharp),
             iconSize: 40,
             color: Colors.black,
-            onPressed: () {
+            onPressed: () async {
+              //play sound effect
+              await play_effect_sound(config_data.button_pressed_effect);
+
               Navigator.pop(context);
             },
           ),
@@ -218,7 +247,9 @@ class _settingsState extends State<settings> {
                                     // Low Button
                                     Expanded(
                                       child: GestureDetector(
-                                        onTap: () {
+                                        onTap: () async {
+                                          //play sound effect
+                                          await play_effect_sound(config_data.button_pressed_effect);
                                           setState(() {
                                             _verbose_level_controller = "low";
                                           });
@@ -262,7 +293,9 @@ class _settingsState extends State<settings> {
                                     // Medium Button
                                     Expanded(
                                       child: GestureDetector(
-                                        onTap: () {
+                                        onTap: () async {
+                                          //play sound effect
+                                          await play_effect_sound(config_data.button_pressed_effect);
                                           setState(() {
                                             _verbose_level_controller = "medium";
                                           });
@@ -302,7 +335,9 @@ class _settingsState extends State<settings> {
                                     // High Button
                                     Expanded(
                                       child: GestureDetector(
-                                        onTap: () {
+                                        onTap: () async {
+                                          //play sound effect
+                                          await play_effect_sound(config_data.button_pressed_effect);
                                           setState(() {
                                             _verbose_level_controller = "high";
                                           });
@@ -558,6 +593,8 @@ class _settingsState extends State<settings> {
                                   height: 45,
                                   child: GestureDetector(
                                     onTap: () async {
+                                      //play sound effect
+                                      await play_effect_sound(config_data.miscellanous_effect);
                                       //TODO: add functionality to change background image
                                       log_handler?.i("Update background image pressed despite big ahh warning");
                                       show_feature_in_progress(context);
@@ -596,7 +633,161 @@ class _settingsState extends State<settings> {
                     height: 15,
                   ),
 
-                  //Feedback image
+                  //Sound effects
+                  Container(
+                    decoration: BoxDecoration(
+                      color: config_data.ai_text_box_color, // Background color
+                      borderRadius:
+                      BorderRadius.circular(12), // Smooth (rounded) edges
+                      border: Border.all(
+                          color: config_data.ai_text_box_color, width: 3),
+                    ),
+                    child: Padding(
+                      padding: EdgeInsets.fromLTRB(16, 0, 16, 0),
+                      child: Column(
+                        //Sound effects image title
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          //Title
+                          Text(
+                            "Sound Effects",
+                            style: GoogleFonts.bebasNeue(
+                              textStyle: TextStyle(
+                                fontSize: 35,
+                                fontWeight: FontWeight.normal,
+                                fontStyle: FontStyle.normal,
+                                color: config_data.text_color,
+                              ),
+                            ),
+                          ),
+
+                          //Sound effect switch
+                          Padding(
+                            padding: EdgeInsets.fromLTRB(16, 0, 0, 16),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                //Option buttons
+                                Row(
+                                  children: [
+                                    // On Button
+                                    Expanded(
+                                      child: GestureDetector(
+                                        onTap: () async {
+                                          //play sound effect
+                                          await play_effect_sound(config_data.button_pressed_effect);
+                                          setState(() {
+                                            _sound_effect_controller = true;
+                                          });
+                                          log_handler?.i(
+                                              "sound effects on button pressed, status: ${_sound_effect_controller}");
+                                        },
+                                        child: Container(
+                                          padding: EdgeInsets.symmetric(
+                                              vertical: 12),
+                                          decoration: BoxDecoration(
+                                            color: _sound_effect_controller == true
+                                                ? config_data.app_bar_color
+                                                : config_data.background_color,
+                                            borderRadius: BorderRadius.only(
+                                              topLeft: Radius.circular(10),
+                                              bottomLeft: Radius.circular(10),
+                                            ),
+                                            border: Border.all(
+                                              color: Colors.black,
+                                              width: 2,
+                                            ),
+                                          ),
+                                          alignment: Alignment.center,
+                                          child: Text(
+                                            "On",
+                                            style: TextStyle(
+                                                color:
+                                                _sound_effect_controller == true
+                                                    ? Colors.white
+                                                    : config_data
+                                                    .text_color,
+                                                fontWeight:
+                                                _sound_effect_controller == true
+                                                    ? FontWeight.bold
+                                                    : FontWeight.normal),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+
+                                    // Off Button
+                                    Expanded(
+                                      child: GestureDetector(
+                                        onTap: () async {
+                                          //play sound effect
+                                          await play_effect_sound(config_data.button_pressed_effect);
+                                          setState(() {
+                                            _sound_effect_controller = false;
+                                          });
+                                          log_handler?.i(
+                                              "sound effects off button pressed, status: ${_sound_effect_controller}");
+                                        },
+                                        child: Container(
+                                          padding: EdgeInsets.symmetric(
+                                              vertical: 12),
+                                          decoration: BoxDecoration(
+                                            color: _sound_effect_controller == false
+                                                ? config_data.app_bar_color
+                                                : config_data.background_color,
+                                            borderRadius: BorderRadius.only(
+                                              topRight: Radius.circular(10),
+                                              bottomRight: Radius.circular(10),
+                                            ),
+                                            border: Border.all(
+                                              color: Colors.black,
+                                              width: 2,
+                                            ),
+                                          ),
+                                          alignment: Alignment.center,
+                                          child: Text(
+                                            "Off",
+                                            style: TextStyle(
+                                                color:
+                                                _sound_effect_controller == false
+                                                    ? Colors.white
+                                                    : config_data
+                                                    .text_color,
+                                                fontWeight:
+                                                _sound_effect_controller == false
+                                                    ? FontWeight.bold
+                                                    : FontWeight.normal),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+
+                                SizedBox(
+                                  width: double.infinity,
+                                  height: 10,
+                                ),
+
+                                if (config_data.easter_egg_found)
+                                  EasterEggPlayerInline(
+                                    asset_path: 'audio/unfinished.mp3',
+                                    text_color: config_data.text_color,
+                                  ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+
+                  SizedBox(
+                    width: double.infinity,
+                    height: 15,
+                  ),
+
+                  //Feedback
                   Container(
                     decoration: BoxDecoration(
                       color: config_data.ai_text_box_color, // Background color
@@ -714,64 +905,128 @@ class _settingsState extends State<settings> {
                   ),
 
                   //Credits and attributions section
-                  Container(
-                    decoration: BoxDecoration(
-                      color: config_data.ai_text_box_color, // Background color
-                      borderRadius:
-                      BorderRadius.circular(12), // Smooth (rounded) edges
-                      border: Border.all(
-                          color: config_data.ai_text_box_color, width: 3),
-                    ),
-                    child: Padding(
-                      padding: EdgeInsets.fromLTRB(16, 0, 16, 0),
-                      child: Column(
-                        //AI title
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "Credits",
-                            style: GoogleFonts.bebasNeue(
-                              textStyle: TextStyle(
-                                fontSize: 35,
-                                fontWeight: FontWeight.normal,
-                                fontStyle: FontStyle.normal,
-                                color: config_data.text_color,
+                  GestureDetector(
+                    onTap: () async {
+                      if (!config_data.easter_egg_found) {
+                        await _handle_ten_taps_gesture(() async {
+                          setState(() {
+                            // Update easter egg found
+                            _easter_egg_found_controller = true;
+                            update_easter_egg_found(_easter_egg_found_controller);
+                            // Reload config_data for runtime changes
+                            config_data = app_configuration.fromJson(raw_config_json);
+
+                            log_handler?.i("Easter egg found");
+                          });
+                          show_easter_egg_discovered(context);
+                        });
+                      } else {
+                        log_handler?.d("Easter egg already found");
+                      }
+                    },
+
+                    child: Container(
+                      decoration: BoxDecoration(
+                        color: config_data.ai_text_box_color, // Background color
+                        borderRadius:
+                        BorderRadius.circular(12), // Smooth (rounded) edges
+                        border: Border.all(
+                            color: config_data.ai_text_box_color, width: 3),
+                      ),
+                      child: Padding(
+                        padding: EdgeInsets.fromLTRB(16, 0, 16, 0),
+                        child: Column(
+                          //AI title
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Credits",
+                              style: GoogleFonts.bebasNeue(
+                                textStyle: TextStyle(
+                                  fontSize: 35,
+                                  fontWeight: FontWeight.normal,
+                                  fontStyle: FontStyle.normal,
+                                  color: config_data.text_color,
+                                ),
                               ),
                             ),
-                          ),
 
-                          //Main directory
-                          Padding(
-                            padding: EdgeInsets.fromLTRB(16, 0, 0, 0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                //Title
-                                Text(
-                                  "- App Icon designed by Freepik",
-                                  style: GoogleFonts.roboto(
-                                    textStyle: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 18,
-                                      color: config_data.text_color,
+                            //Credits list
+                            Padding(
+                              padding: EdgeInsets.fromLTRB(16, 0, 0, 0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  //Title
+                                  Text(
+                                    "- App Icon designed by Freepik",
+                                    style: GoogleFonts.roboto(
+                                      textStyle: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 18,
+                                        color: config_data.text_color,
+                                      ),
                                     ),
                                   ),
-                                ),
-                                //Title
-                                Text(
-                                  "- Background image designed by violoncelloCH",
-                                  style: GoogleFonts.roboto(
-                                    textStyle: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 18,
-                                      color: config_data.text_color,
+                                  //Title
+                                  Text(
+                                    "- Background image designed by violoncelloCH",
+                                    style: GoogleFonts.roboto(
+                                      textStyle: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 18,
+                                        color: config_data.text_color,
+                                      ),
                                     ),
                                   ),
-                                ),
-                              ],
+                                  Text(
+                                    "- App by Rouxxel",
+                                    style: GoogleFonts.roboto(
+                                      textStyle: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 18,
+                                        color: config_data.text_color,
+                                      ),
+                                    ),
+                                  ),
+                                  Text(
+                                    "- Sound effects by Rouxxel",
+                                    style: GoogleFonts.roboto(
+                                      textStyle: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 18,
+                                        color: config_data.text_color,
+                                      ),
+                                    ),
+                                  ),
+                                  if (config_data.easter_egg_found)
+                                    Text(
+                                      "- Arrangement by Rouxxel",
+                                      style: GoogleFonts.roboto(
+                                        textStyle: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 18,
+                                          color: config_data.text_color,
+                                        ),
+                                      ),
+                                    ),
+                                  if (config_data.easter_egg_found)
+                                    Text(
+                                      "- Original music by Justin Hurwitz, Benj "
+                                          "Pasek and Justin Paul",
+                                      style: GoogleFonts.roboto(
+                                        textStyle: TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 18,
+                                          color: config_data.text_color,
+                                        ),
+                                      ),
+                                    ),
+                                ],
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ),
@@ -791,8 +1046,10 @@ class _settingsState extends State<settings> {
             Expanded(
               child: GestureDetector(
                 onTap: () async {
-                  setState(
-                    () async {
+                  //play sound effect
+                  await play_effect_sound(config_data.miscellanous_effect);
+
+                  setState(() async {
                       //Only save AI directory if input is not empty
                       if (_personality_controller.text.isNotEmpty &&
                           _personality_controller.text.length >= 20) {
@@ -821,6 +1078,9 @@ class _settingsState extends State<settings> {
                             "Skipped updating language due to invalid input.");
                       }
 
+                      //Save sound effect status
+                      await update_sound_effect_status(_sound_effect_controller);
+
                       //Reload config_data for runtime changes
                       config_data = app_configuration.fromJson(raw_config_json);
                       log_handler?.i("Save button pressed\n"
@@ -831,6 +1091,8 @@ class _settingsState extends State<settings> {
                           "Saved User textbox color: ${config_data.user_text_box_color}\n"
                           "Saved AI textbox color: ${config_data.ai_text_box_color}\n"
                           "Saved language: ${config_data.user_language}\n"
+                          "Saved sound status: ${config_data.sound_effects_status}\n"
+                          "Saved easter egg: ${config_data.easter_egg_found}\n"
                       );
                       show_changes_saved(context);
                     },
