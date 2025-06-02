@@ -1043,7 +1043,80 @@ class _settingsState extends State<settings> {
         color: config_data.app_bar_color,
         child: Row(
           children: [
+            //Reset button
             Expanded(
+              //Save button
+              child: GestureDetector(
+                onDoubleTap: () async {
+                  //play sound effect
+                  await play_effect_sound(config_data.miscellanous_effect);
+
+                  setState(() async {
+                    //Reset to default all changes by user
+                    //Reset directive
+                    await update_directive(context, config_data.default_directive);
+
+                    //Reset verbose level
+                    await update_verbose_level(config_data.default_verbose);
+
+                    //Reset colorimetry
+                    await update_color_value("background.color", "mistwhite");
+                    await update_color_value("app_bar.color", "deepmagenta");
+                    await update_color_value("user_text_boxes.color", "softorchid");
+                    await update_color_value("ai_text_boxes.color", "blushpink");
+
+                    //Reset Language
+                    await update_user_language(context, config_data.default_language);
+
+                    //Reset sound effect status
+                    await update_sound_effect_status(config_data.default_sound_effects_status);
+
+                    //Reload config_data for runtime reset changes
+                    config_data = app_configuration.fromJson(raw_config_json);
+                    log_handler?.i("Save button pressed\n"
+                        "Reset directory: ${config_data.directive}\n"
+                        "Reset verbose: ${config_data.verbose}\n"
+                        "Reset Background color: ${config_data.background_color}\n"
+                        "Reset Bar colors: ${config_data.app_bar_color}\n"
+                        "Reset User textbox color: ${config_data.user_text_box_color}\n"
+                        "Reset AI textbox color: ${config_data.ai_text_box_color}\n"
+                        "Reset language: ${config_data.user_language}\n"
+                        "Reset sound status: ${config_data.sound_effects_status}\n"
+                    );
+                    show_changes_reset(context);
+                  },
+                  );
+                },
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: config_data.background_color,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Center(
+                    child: Text(
+                      "Reset",
+                      style: GoogleFonts.bebasNeue(
+                        textStyle: TextStyle(
+                          fontSize: 35,
+                          fontWeight: FontWeight.normal,
+                          fontStyle: FontStyle.normal,
+                          color: config_data.text_color,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+
+            SizedBox(
+              height: double.infinity,
+              width: 10,
+            ),
+
+            //Save button
+            Expanded(
+              //Save button
               child: GestureDetector(
                 onTap: () async {
                   //play sound effect
@@ -1105,7 +1178,7 @@ class _settingsState extends State<settings> {
                   ),
                   child: Center(
                     child: Text(
-                      "Save changes",
+                      "Save",
                       style: GoogleFonts.bebasNeue(
                         textStyle: TextStyle(
                           fontSize: 35,

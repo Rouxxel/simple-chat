@@ -17,14 +17,19 @@ class app_configuration {
   final String ai_api_model;
   final int max_api_response_time_limit;
   final String verbose;
+  final String default_verbose;
   final int character_render_speed_ms;
 
   final Color background_color;
+  final Color default_background_color;
   final Color app_bar_color;
+  final Color default_app_bar_color;
   final Color text_color;
   final Color suggest_input_color;
   final Color user_text_box_color;
+  final Color default_user_text_boxes_color;
   final Color ai_text_box_color;
+  final Color default_ai_text_boxes_color;
   final Color date_text_color;
 
   final String user_language;
@@ -37,6 +42,7 @@ class app_configuration {
   final String button_pressed_effect;
   final String miscellanous_effect;
   final bool sound_effects_status;
+  final bool default_sound_effects_status;
   final String easter_egg;
   final bool easter_egg_found;
 
@@ -53,14 +59,19 @@ class app_configuration {
     required this.ai_api_model,
     required this.max_api_response_time_limit,
     required this.verbose,
+    required this.default_verbose,
     required this.character_render_speed_ms,
 
     required this.background_color,
+    required this.default_background_color,
     required this.app_bar_color,
+    required this.default_app_bar_color,
     required this.text_color,
     required this.suggest_input_color,
     required this.user_text_box_color,
+    required this.default_user_text_boxes_color,
     required this.ai_text_box_color,
+    required this.default_ai_text_boxes_color,
     required this.date_text_color,
 
     required this.user_language,
@@ -73,6 +84,7 @@ class app_configuration {
     required this.button_pressed_effect,
     required this.miscellanous_effect,
     required this.sound_effects_status,
+    required this.default_sound_effects_status,
     required this.easter_egg,
     required this.easter_egg_found,
 
@@ -98,14 +110,19 @@ class app_configuration {
       response_length_limit: ai['response_length_limit.tokens'] ?? 100,
       response_length_tolerance: ai['response_length_tolerance.tokens'] ?? 10,
       verbose: ai['verbose_level'] ?? 'verbose_level',
+      default_verbose: ai['default_verbose_level'] ?? 'default_verbose_level',
       character_render_speed_ms: ai['character_render_speed.ms'] ?? 10,
 
       background_color: hex_to_color(colors['background.color'] ?? '#FFFFFFFF'),
+      default_background_color: hex_to_color(colors['default_background.color'] ?? '#FFFFFFFF'),
       app_bar_color: hex_to_color(colors['app_bar.color'] ?? '#FFFF7F50'),
+      default_app_bar_color: hex_to_color(colors['default_app_bar.color'] ?? '#FFFF7F50'),
       text_color: hex_to_color(colors['text.color'] ?? '#FF000000'),
       suggest_input_color: hex_to_color(colors['suggest_input.color'] ?? '#FF808080'),
       user_text_box_color: hex_to_color(colors['user_text_boxes.color'] ?? '#FF008080'),
+      default_user_text_boxes_color: hex_to_color(colors['default_user_text_boxes.color'] ?? '#FF008080'),
       ai_text_box_color: hex_to_color(colors['ai_text_boxes.color'] ?? '#FF800000'),
+      default_ai_text_boxes_color: hex_to_color(colors['default_ai_text_boxes.color'] ?? '#FF800000'),
       date_text_color: hex_to_color(colors['date_text.color'] ?? '#FF000000'),
 
       user_language: user_defaults['language'] ?? 'language',
@@ -118,6 +135,7 @@ class app_configuration {
       button_pressed_effect: audio_paths["button_pressed_effect.mp3"] ?? 'not_found',
       miscellanous_effect: audio_paths["miscellanous_effect.mp3"] ?? 'not_found',
       sound_effects_status: audio_paths["sound_effects_status"] ?? false,
+      default_sound_effects_status: audio_paths["default_sound_effects_status"] ?? false,
       easter_egg: audio_paths["easter_egg"] ?? 'not_found',
       easter_egg_found: audio_paths["easter_egg_found"] ?? false,
 

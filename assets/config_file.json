@@ -7,15 +7,20 @@
     "response_length_limit.tokens": 250,
     "response_length_tolerance.tokens": 30,
     "verbose_level": "medium",
+    "default_verbose_level": "medium",
     "character_render_speed.ms": 1
   },
   "colors":{
     "background.color": "#FFFCF9FB",
+    "default_background.color": "#FFFCF9FB",
     "app_bar.color": "#FFA62987",
+    "default_app_bar.color": "#FFA62987",
     "text.color": "#FF000000",
     "suggest_input.color": "#8A000000",
     "user_text_boxes.color": "#FFCE7EBB",
+    "default_user_text_boxes.color": "#FFCE7EBB",
     "ai_text_boxes.color": "#FFF7C3E4",
+    "default_ai_text_boxes.color": "#FFF7C3E4",
     "date_text.color": "#FF212121"
   },
   "user_defaults": {
@@ -32,11 +37,12 @@
     "button_pressed_effect.mp3": "audio/button_press_effect.mp3",
     "miscellanous_effect.mp3": "audio/miscellanous_effect.mp3",
     "sound_effects_status": true,
+    "default_sound_effects_status": true,
     "easter_egg": "audio/unfinished.mp3",
     "easter_egg_found": false
   },
   "app_info": {
-    "version": "2.5.12",
+    "version": "2.6.1",
     "legal_notice": "All rights reserved © 2025 Simple Chat"
   }
 }
