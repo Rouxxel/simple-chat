@@ -34,6 +34,12 @@ class app_configuration {
   final String default_image_path;
   final String image_path;
 
+  final String button_pressed_effect;
+  final String miscellanous_effect;
+  final bool sound_effects_status;
+  final String easter_egg;
+  final bool easter_egg_found;
+
   final String app_version;
   final String legal_notice;
 
@@ -64,6 +70,12 @@ class app_configuration {
     required this.default_image_path,
     required this.image_path,
 
+    required this.button_pressed_effect,
+    required this.miscellanous_effect,
+    required this.sound_effects_status,
+    required this.easter_egg,
+    required this.easter_egg_found,
+
     required this.app_version,
     required this.legal_notice,
   });
@@ -73,6 +85,7 @@ class app_configuration {
     final colors = json['colors'] ?? {};
     final user_defaults = json['user_defaults'] ?? {};
     final image_paths = json['images'] ?? {};
+    final audio_paths = json['audio'] ?? {};
     final app_info = json['app_info'] ?? {};
 
     return app_configuration(
@@ -99,8 +112,14 @@ class app_configuration {
       default_language: user_defaults['default_language'] ?? 'default_language',
       user_theme: user_defaults['theme'] ?? 'theme',
 
-      default_image_path: image_paths["default_image.path"] ?? '',
-      image_path: image_paths["image.path"] ?? '',
+      default_image_path: image_paths["default_image.path"] ?? 'not_found',
+      image_path: image_paths["image.path"] ?? 'not_found',
+
+      button_pressed_effect: audio_paths["button_pressed_effect.mp3"] ?? 'not_found',
+      miscellanous_effect: audio_paths["miscellanous_effect.mp3"] ?? 'not_found',
+      sound_effects_status: audio_paths["sound_effects_status"] ?? false,
+      easter_egg: audio_paths["easter_egg"] ?? 'not_found',
+      easter_egg_found: audio_paths["easter_egg_found"] ?? false,
 
       app_version: app_info['version'] ?? 'version',
       legal_notice: app_info['legal_notice'] ?? 'legal_notice',

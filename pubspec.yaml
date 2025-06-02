@@ -48,6 +48,7 @@ dependencies:
   flutter_markdown: ^0.6.11    #Markdown
   path_provider: ^2.1.1        #Provide paths
   flutter_email_sender: ^6.0.1 #Email sender
+  audioplayers: ^5.2.1         #Audio player
 
 dev_dependencies:
   flutter_test:
@@ -79,8 +80,8 @@ flutter:
     - envvar.env
     - fonts/
     - images/
-    - audio/
     - assets/
+    - assets/audio/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

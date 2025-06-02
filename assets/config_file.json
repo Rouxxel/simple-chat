@@ -28,8 +28,15 @@
     "default_image.path": "images/background.jpeg",
     "image.path": "images/background.jpeg"
   },
+  "audio": {
+    "button_pressed_effect.mp3": "audio/button_press_effect.mp3",
+    "miscellanous_effect.mp3": "audio/miscellanous_effect.mp3",
+    "sound_effects_status": true,
+    "easter_egg": "audio/unfinished.mp3",
+    "easter_egg_found": false
+  },
   "app_info": {
-    "version": "2.4.9",
+    "version": "2.5.3",
     "legal_notice": "All rights reserved © 2025 Simple Chat"
   }
 }
