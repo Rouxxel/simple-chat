@@ -1025,6 +1025,10 @@ class _settingsState extends State<settings> {
                                 ],
                               ),
                             ),
+                            SizedBox(
+                              width: double.infinity,
+                              height: 10,
+                            ),
                           ],
                         ),
                       ),
