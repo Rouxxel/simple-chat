@@ -10,12 +10,12 @@
     "character_render_speed.ms": 1
   },
   "colors":{
-    "background.color": "#FFFFF5EE",
-    "app_bar.color": "#FFA04747",
+    "background.color": "#FFFCF9FB",
+    "app_bar.color": "#FFA62987",
     "text.color": "#FF000000",
     "suggest_input.color": "#8A000000",
-    "user_text_boxes.color": "#FFD8A25E",
-    "ai_text_boxes.color": "#FFEEDF7A",
+    "user_text_boxes.color": "#FFCE7EBB",
+    "ai_text_boxes.color": "#FFF7C3E4",
     "date_text.color": "#FF212121"
   },
   "user_defaults": {
@@ -36,7 +36,7 @@
     "easter_egg_found": false
   },
   "app_info": {
-    "version": "2.5.3",
+    "version": "2.5.12",
     "legal_notice": "All rights reserved © 2025 Simple Chat"
   }
 }

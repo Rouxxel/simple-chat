@@ -58,7 +58,6 @@ class _landing_pageState extends State<landing_page> {
       }
     });
 
-    log_handler?.i(config_data.easter_egg_found);
     log_handler?.i("Loaded directory: ${_message_list[0].text}");
     log_handler?.i("Loaded directories:\n${_message_list.map((m) => m.text).join('\n')}");
   }
