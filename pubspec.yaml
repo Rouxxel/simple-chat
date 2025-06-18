@@ -49,6 +49,7 @@ dependencies:
   path_provider: ^2.1.1        #Provide paths
   flutter_email_sender: ^6.0.1 #Email sender
   audioplayers: ^5.2.1         #Audio player
+  archive: ^4.0.7              #For zip file generation
 
 dev_dependencies:
   flutter_test:

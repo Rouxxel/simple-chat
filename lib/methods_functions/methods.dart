@@ -8,6 +8,8 @@ import "dart:convert";
 import 'dart:io';
 import 'package:flutter_email_sender/flutter_email_sender.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:archive/archive.dart';
+import 'package:archive/archive_io.dart';
 
 //Import alert dialogs and others
 import "package:simple_chat/utils/alert_dialog_list.dart";
@@ -28,7 +30,9 @@ final AudioPlayer _audio_instance = AudioPlayer();
 String obtain_API_key() {
   log_handler?.d("[------obtain_API_key function executing------]");
   String? ai_API_key = dotenv.env['ai_api_key'];
-  if (ai_API_key == null) {
+
+  if (ai_API_key == null || ai_API_key.isEmpty) {
+    log_handler?.e("API key not found in loaded environment.");
     throw Exception('API key not found');
   }
 
@@ -264,43 +268,48 @@ Future<void> send_feedback_by_email(BuildContext context, String feedback) async
       return;
     }
 
-    // Rename .log files to .txt
-    final renamed_files = <String>[];
+    // Create ZIP archive
+    final archive = Archive();
     for (var file in generated_files) {
-      final newPath = file.path.replaceAll('.log', '.txt');
-      final renamedFile = await file.copy(newPath);
-      renamed_files.add(renamedFile.path);
+      final fileBytes = await file.readAsBytes();
+      final fileName = file.path.split('/').last.replaceAll('.log', '.txt');
+      archive.addFile(ArchiveFile(fileName, fileBytes.length, fileBytes));
     }
 
-    // Create email with renamed attachments
+    final zipData = ZipEncoder().encode(archive)!;
+    final zipFilePath = '${directory.path}/feedback_logs.zip';
+    final zipFile = File(zipFilePath);
+    await zipFile.writeAsBytes(zipData);
+
+    // Create email with zip attachment
     final Email email = Email(
       body: feedback,
       subject: 'Simple AI Chat Feedback',
       recipients: [''], //Do not hardcode mails
-      attachmentPaths: renamed_files,
+      attachmentPaths: [zipFilePath],
       isHTML: false,
     );
 
     await FlutterEmailSender.send(email);
 
-    // Delete original and renamed files
+    // Delete generated original log files
     for (var file in generated_files) {
       try {
         await file.delete();
-        log_handler?.i('Deleted original file: ${file.path}');
+        log_handler?.i('Deleted file: ${file.path}');
       } catch (e) {
-        log_handler?.e('Error deleting original file ${file.path}: $e');
+        log_handler?.e('Error deleting file ${file.path}: $e');
       }
     }
 
-    for (var path in renamed_files) {
-      try {
-        await File(path).delete();
-        log_handler?.i('Deleted renamed file: $path');
-      } catch (e) {
-        log_handler?.e('Error deleting renamed file $path: $e');
-      }
+    // Delete ZIP file
+    try {
+      await zipFile.delete();
+      log_handler?.i('Deleted zip file: $zipFilePath');
+    } catch (e) {
+      log_handler?.e('Error deleting zip file $zipFilePath: $e');
     }
+
   } catch (e) {
     log_handler?.e('Error sending feedback email: $e');
   }
