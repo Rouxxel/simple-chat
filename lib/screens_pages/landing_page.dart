@@ -327,6 +327,10 @@ class _landing_pageState extends State<landing_page> {
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(20.0),
                           color: config_data.user_text_box_color,
+                          border: Border.all(
+                              color: config_data.user_text_box_color,
+                              width: 2.0
+                          ),
                         ),
                         height: 62,
                         width: 62,

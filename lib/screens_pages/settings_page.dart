@@ -144,7 +144,9 @@ class _settingsState extends State<settings> {
                       borderRadius:
                           BorderRadius.circular(12), // Smooth (rounded) edges
                       border: Border.all(
-                          color: config_data.ai_text_box_color, width: 3),
+                          color: config_data.user_text_box_color,
+                          width: 2.0
+                      ),
                     ),
                     child: Padding(
                       padding: EdgeInsets.fromLTRB(16, 0, 16, 0),
@@ -399,7 +401,8 @@ class _settingsState extends State<settings> {
                       borderRadius:
                       BorderRadius.circular(12), //Smooth (rounded) edges
                       border: Border.all(
-                          color: config_data.ai_text_box_color, width: 3
+                          color: config_data.user_text_box_color,
+                          width: 2.0
                       ),
                     ),
                     child: Padding(
@@ -478,23 +481,25 @@ class _settingsState extends State<settings> {
                     height: 15,
                   ),
 
-                  //Language
+                  //AI Language
                   Container(
                     decoration: BoxDecoration(
                       color: config_data.ai_text_box_color, // Background color
                       borderRadius:
                       BorderRadius.circular(12), // Smooth (rounded) edges
                       border: Border.all(
-                          color: config_data.ai_text_box_color, width: 3),
+                          color: config_data.user_text_box_color,
+                          width: 2.0
+                      ),
                     ),
                     child: Padding(
                       padding: EdgeInsets.fromLTRB(16, 0, 16, 0),
                       child: Column(
-                        //Language title
+                        //AI Language title
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            "Language",
+                            "AI Language",
                             style: GoogleFonts.bebasNeue(
                               textStyle: TextStyle(
                                 fontSize: 35,
@@ -562,7 +567,9 @@ class _settingsState extends State<settings> {
                       borderRadius:
                       BorderRadius.circular(12), // Smooth (rounded) edges
                       border: Border.all(
-                          color: config_data.ai_text_box_color, width: 3),
+                          color: config_data.user_text_box_color,
+                          width: 2.0
+                      ),
                     ),
                     child: Padding(
                       padding: EdgeInsets.fromLTRB(16, 0, 16, 0),
@@ -603,13 +610,17 @@ class _settingsState extends State<settings> {
                                       decoration: BoxDecoration(
                                         color: config_data.background_color,
                                         borderRadius: BorderRadius.circular(16),
+                                        border: Border.all(
+                                            color: config_data.text_color,
+                                            width: 2.0
+                                        ),
                                       ),
                                       child: Center(
                                         child: Text(
                                           "-Non-functional yet-",
                                           style: GoogleFonts.bebasNeue(
                                             textStyle: TextStyle(
-                                              fontSize: 35,
+                                              fontSize: 30,
                                               fontWeight: FontWeight.normal,
                                               fontStyle: FontStyle.normal,
                                               color: config_data.text_color,
@@ -640,7 +651,9 @@ class _settingsState extends State<settings> {
                       borderRadius:
                       BorderRadius.circular(12), // Smooth (rounded) edges
                       border: Border.all(
-                          color: config_data.ai_text_box_color, width: 3),
+                          color: config_data.user_text_box_color,
+                          width: 2.0
+                      ),
                     ),
                     child: Padding(
                       padding: EdgeInsets.fromLTRB(16, 0, 16, 0),
@@ -794,7 +807,9 @@ class _settingsState extends State<settings> {
                       borderRadius:
                       BorderRadius.circular(12), // Smooth (rounded) edges
                       border: Border.all(
-                          color: config_data.ai_text_box_color, width: 3),
+                          color: config_data.user_text_box_color,
+                          width: 2.0
+                      ),
                     ),
                     child: Padding(
                       padding: EdgeInsets.fromLTRB(16, 0, 16, 0),
@@ -874,6 +889,10 @@ class _settingsState extends State<settings> {
                                       decoration: BoxDecoration(
                                         color: config_data.background_color,
                                         borderRadius: BorderRadius.circular(16),
+                                        border: Border.all(
+                                            color: config_data.text_color,
+                                            width: 2.0
+                                        ),
                                       ),
                                       child: Center(
                                         child: Text(
@@ -931,7 +950,9 @@ class _settingsState extends State<settings> {
                         borderRadius:
                         BorderRadius.circular(12), // Smooth (rounded) edges
                         border: Border.all(
-                            color: config_data.ai_text_box_color, width: 3),
+                            color: config_data.user_text_box_color,
+                            width: 2.0
+                        ),
                       ),
                       child: Padding(
                         padding: EdgeInsets.fromLTRB(16, 0, 16, 0),
@@ -1046,10 +1067,11 @@ class _settingsState extends State<settings> {
       bottomNavigationBar: BottomAppBar(
         color: config_data.app_bar_color,
         child: Row(
+          //Buttons
           children: [
-            //Reset button
+            //Reset Button
             Expanded(
-              //Save button
+              //Reset button
               child: GestureDetector(
                 onDoubleTap: () async {
                   //play sound effect
@@ -1095,6 +1117,10 @@ class _settingsState extends State<settings> {
                   decoration: BoxDecoration(
                     color: config_data.background_color,
                     borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: Colors.black, //Outline color
+                      width: 2.0,          //Outline thickness
+                    ),
                   ),
                   child: Center(
                     child: Text(
@@ -1179,6 +1205,10 @@ class _settingsState extends State<settings> {
                   decoration: BoxDecoration(
                     color: config_data.background_color,
                     borderRadius: BorderRadius.circular(16),
+                    border: Border.all(
+                      color: Colors.black, //Outline color
+                      width: 2.0,          //Outline thickness
+                    ),
                   ),
                   child: Center(
                     child: Text(
