@@ -58,8 +58,7 @@ class _landing_pageState extends State<landing_page> {
       }
     });
 
-    log_handler?.i("Loaded directory: ${_message_list[0].text}");
-    log_handler?.i("Loaded directories:\n${_message_list.map((m) => m.text).join('\n')}");
+    log_handler?.i("Loaded/saved directory: ${_message_list[0].text}");
   }
 
   @override
@@ -104,19 +103,27 @@ class _landing_pageState extends State<landing_page> {
                 icon: const Icon(Icons.settings),
                 iconSize: 35,
                 color: Colors.black,
-                  onPressed: () async {
+                onPressed: () async {
 
-                    //play the button sound
-                    await play_effect_sound(config_data.button_pressed_effect);
+                  //play the button sound
+                  await play_effect_sound(config_data.button_pressed_effect);
 
-                    //Navigate to setting page
-                    await Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const settings()),
-                    );
-                    //This code runs after you come back from other screens
-                    _load_system_prompt();
-                  }
+                  //Navigate to settings page with fade transition
+                  await Navigator.push(
+                    context,
+                    PageRouteBuilder(
+                      pageBuilder: (context, animation, secondaryAnimation) => const settings(),
+                      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                        return FadeTransition(
+                          opacity: animation,
+                          child: child,
+                        );
+                      },
+                    ),
+                  );
+                  //Run after returning from the settings screen
+                  _load_system_prompt();
+                },
               )
             ],
           ),
