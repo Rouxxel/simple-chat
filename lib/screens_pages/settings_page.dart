@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart'; //Fonts
 
@@ -39,6 +40,7 @@ class _settingsState extends State<settings> {
 
   bool _sound_effect_controller = config_data.sound_effects_status;
   bool _easter_egg_found_controller = config_data.easter_egg_found;
+  bool _button_locked = false;
 
   //Easter egg
   int _tap_count = 0;
@@ -250,10 +252,16 @@ class _settingsState extends State<settings> {
                                     Expanded(
                                       child: GestureDetector(
                                         onTap: () async {
+                                          if (_button_locked) return; //prevent spam
+                                          setState(() {
+                                            _button_locked = true; //Lock buttons
+                                          });
+
                                           //play sound effect
                                           await play_effect_sound(config_data.button_pressed_effect);
                                           setState(() {
                                             _verbose_level_controller = "low";
+                                            _button_locked = false; //unlock after sound finishes
                                           });
                                           log_handler?.i(
                                               "low button pressed, verbose: ${_verbose_level_controller}");
@@ -296,10 +304,16 @@ class _settingsState extends State<settings> {
                                     Expanded(
                                       child: GestureDetector(
                                         onTap: () async {
+                                          if (_button_locked) return; //prevent spam
+                                          setState(() {
+                                            _button_locked = true; //Lock buttons
+                                          });
+
                                           //play sound effect
                                           await play_effect_sound(config_data.button_pressed_effect);
                                           setState(() {
                                             _verbose_level_controller = "medium";
+                                            _button_locked = false; //unlock after sound finishes
                                           });
                                           log_handler?.i(
                                               "medium button pressed, verbose: ${_verbose_level_controller}");
@@ -338,10 +352,16 @@ class _settingsState extends State<settings> {
                                     Expanded(
                                       child: GestureDetector(
                                         onTap: () async {
+                                          if (_button_locked) return; //prevent spam
+                                          setState(() {
+                                            _button_locked = true; //Lock buttons
+                                          });
+
                                           //play sound effect
                                           await play_effect_sound(config_data.button_pressed_effect);
                                           setState(() {
                                             _verbose_level_controller = "high";
+                                            _button_locked = false; //unlock after sound finishes
                                           });
                                           log_handler?.i(
                                               "high button pressed, verbose: ${_verbose_level_controller}");
@@ -687,10 +707,16 @@ class _settingsState extends State<settings> {
                                     Expanded(
                                       child: GestureDetector(
                                         onTap: () async {
+                                          if (_button_locked) return; //prevent spam
+                                          setState(() {
+                                            _button_locked = true; //Lock buttons
+                                          });
+
                                           //play sound effect
                                           await play_effect_sound(config_data.button_pressed_effect);
                                           setState(() {
                                             _sound_effect_controller = true;
+                                            _button_locked = false; //unlock buttons
                                           });
                                           log_handler?.i(
                                               "sound effects on button pressed, status: ${_sound_effect_controller}");
@@ -733,10 +759,16 @@ class _settingsState extends State<settings> {
                                     Expanded(
                                       child: GestureDetector(
                                         onTap: () async {
+                                          if (_button_locked) return; //prevent spam
+                                          setState(() {
+                                            _button_locked = true; //Lock buttons
+                                          });
+
                                           //play sound effect
                                           await play_effect_sound(config_data.button_pressed_effect);
                                           setState(() {
                                             _sound_effect_controller = false;
+                                            _button_locked = false; //unlock buttons
                                           });
                                           log_handler?.i(
                                               "sound effects off button pressed, status: ${_sound_effect_controller}");
