@@ -1,5 +1,7 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:simple_chat/methods_functions/methods.dart';
 import 'package:simple_chat/screens_pages/landing_page.dart';
 import 'package:simple_chat/configurations/config_invoke.dart';
 import 'package:simple_chat/utils/logger_config.dart';
@@ -9,16 +11,21 @@ import 'package:simple_chat/utils/logger_config.dart';
 //Run app
 
 void main() async{
-  //Load environmental variable to make it available
-  await dotenv.load(fileName:"envvar.env");
+  WidgetsFlutterBinding.ensureInitialized();
+
+  //First, Initialize logger
+  await init_logger();
+  log_handler?.i("Logger successfully initialized!");
+
+  //Load environment variables
+  await dotenv.load(fileName: "envvar.env");
+  log_handler?.i("Environment variables loaded successfully.");
+
+  //Validate presence of API key
+  obtain_API_key();
 
   //Load configuration
   await initialize_config();
-
-  //Initialize logger
-  WidgetsFlutterBinding.ensureInitialized();
-  await init_logger();
-  log_handler?.i("Logger initialized!");
 
   //Check loaded configuration (I know its horrible coding)
   log_handler?.i(
@@ -32,7 +39,6 @@ void main() async{
           'default_user_text_boxes.color: ${config_data.default_user_text_boxes_color}\n'
           'default_ai_text_boxes.color: ${config_data.default_ai_text_boxes_color}\n'
           'default_sound_effects_status.color: ${config_data.default_sound_effects_status}\n'
-
           'response_length_limit: ${config_data.response_length_limit}\n'
           'response_length_tolerance: ${config_data.response_length_tolerance}\n'
           'ai_api_model: ${config_data.ai_api_model}\n'
@@ -50,7 +56,7 @@ void main() async{
           'user_theme: ${config_data.user_theme}\n'
           'image_path: ${config_data.image_path}\n'
           'button_pressed_effect: ${config_data.button_pressed_effect}\n'
-          'miscellanous_effect: ${config_data.miscellanous_effect}\n'
+          'miscellaneous_effect: ${config_data.miscellanous_effect}\n'
           'sound_effects_status: ${config_data.sound_effects_status}\n'
           'easter_egg: ${config_data.easter_egg}\n'
           'easter_egg_found: ${config_data.easter_egg_found}\n'
