@@ -28,6 +28,7 @@ Map<String, String> color_name_to_hex_map = {
   'brown': '#FFA52A2A',
   'lime': '#FF00FF00',
   'lightgreen': '#FF90EE90',
+  'lightyellow': '#FFFFFFE0',
   'lightblue': '#FFADD8E6',
   'darkred': '#FF8B0000',
   'darkblue': '#FF00008B',
