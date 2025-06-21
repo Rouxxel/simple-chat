@@ -276,7 +276,7 @@ Future<void> send_feedback_by_email(BuildContext context, String feedback) async
       archive.addFile(ArchiveFile(fileName, fileBytes.length, fileBytes));
     }
 
-    final zipData = ZipEncoder().encode(archive)!;
+    final zipData = ZipEncoder().encode(archive);
     final zipFilePath = '${directory.path}/feedback_logs.zip';
     final zipFile = File(zipFilePath);
     await zipFile.writeAsBytes(zipData);

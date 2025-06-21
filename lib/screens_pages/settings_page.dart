@@ -1,6 +1,4 @@
 import 'dart:async';
-import 'dart:io';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart'; //Fonts
 
@@ -31,10 +29,6 @@ class _settingsState extends State<settings> {
   final TextEditingController _ai_textbox_color_controller = TextEditingController();
 
   final TextEditingController _language_controller = TextEditingController();
-
-  //TODO: to be used to change background image
-  List<FileSystemEntity> saved_images = [];
-  final TextEditingController _background_image_controller = TextEditingController();
 
   final TextEditingController _feedback_controller = TextEditingController();
 
