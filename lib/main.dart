@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:simple_chat/methods_functions/methods.dart';
 import 'package:simple_chat/screens_pages/landing_page.dart';
 import 'package:simple_chat/configurations/config_invoke.dart';
 import 'package:simple_chat/utils/logger_config.dart';
@@ -15,13 +13,6 @@ void main() async{
   //First, Initialize logger
   await init_logger();
   log_handler?.i("Logger successfully initialized!");
-
-  //Load environment variables
-  await dotenv.load(fileName: "envvar.env");
-  log_handler?.i("Environment variables loaded successfully.");
-
-  //Validate presence of API key
-  obtain_API_key();
 
   //Load configuration
   await initialize_config();
