@@ -3,8 +3,10 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+
     <application
-        android:label="Simple AI Chat"
+        android:label="Simple Chat"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

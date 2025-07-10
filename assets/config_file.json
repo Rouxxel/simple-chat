@@ -1,28 +1,48 @@
 {
   "ai": {
-    "directive": "You are 'Montgomery', an AI assistant with the polite, refined manner of a British butler with a formal respectful language, helpful, and eloquent",
+    "directive": "You are 'Montgomery', an AI assistant with a polite, refined manner of a British butler with a formal respectful language, helpful and eloquent",
+    "default_directive": "You are 'Montgomery', an AI assistant with a polite, refined manner of a British butler with a formal respectful language, helpful and eloquent",
     "max_api_response_time_limit.s": 7,
     "ai_api_model": "gemini-2.0-flash",
     "response_length_limit.tokens": 250,
     "response_length_tolerance.tokens": 30,
     "verbose_level": "medium",
+    "default_verbose_level": "medium",
     "character_render_speed.ms": 1
   },
   "colors":{
-    "background.color": "#FF343131",
-    "app_bar.color": "#FFA04747",
+    "background.color": "#FFFCF9FB",
+    "default_background.color": "#FFFCF9FB",
+    "app_bar.color": "#FFA62987",
+    "default_app_bar.color": "#FFA62987",
     "text.color": "#FF000000",
     "suggest_input.color": "#8A000000",
-    "user_text_boxes.color": "#FFD8A25E",
-    "ai_text_boxes.color": "#FFEEDF7A",
+    "user_text_boxes.color": "#FFCE7EBB",
+    "default_user_text_boxes.color": "#FFCE7EBB",
+    "ai_text_boxes.color": "#FFF7C3E4",
+    "default_ai_text_boxes.color": "#FFF7C3E4",
     "date_text.color": "#FF212121"
   },
   "user_defaults": {
-    "language": "en",
+    "main_title": "Simple AI Chat",
+    "language": "English",
+    "default_language": "English",
     "theme": "dark"
   },
+  "images": {
+    "default_image.path": "images/background.jpeg",
+    "image.path": "images/background.jpeg"
+  },
+  "audio": {
+    "button_pressed_effect.mp3": "audio/button_press_effect.mp3",
+    "miscellanous_effect.mp3": "audio/miscellanous_effect.mp3",
+    "sound_effects_status": true,
+    "default_sound_effects_status": true,
+    "easter_egg": "audio/unfinished.mp3",
+    "easter_egg_found": false
+  },
   "app_info": {
-    "version": "1.8.9",
+    "version": "2.6.5",
     "legal_notice": "All rights reserved © 2025 Simple Chat"
   }
 }

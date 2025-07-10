@@ -1,5 +1,3 @@
-import "dart:io";
-
 import "package:flutter/cupertino.dart";
 import "package:flutter/material.dart";
 import "package:google_generative_ai/google_generative_ai.dart";
@@ -8,6 +6,7 @@ import "dart:async";
 //Import methods
 import 'package:simple_chat/methods_functions/methods.dart';
 import 'package:simple_chat/configurations/config_invoke.dart';
+import 'package:simple_chat/utils/logger_config.dart';
 //Import alert dialogs
 import "package:simple_chat/utils/alert_dialog_list.dart";
 
@@ -17,21 +16,21 @@ import "package:simple_chat/utils/alert_dialog_list.dart";
 
 class Message {
   String text;
-  final bool user;
+  final bool is_user;
   final DateTime time_stamp;
 
-  Message(this.text, this.user) : time_stamp = DateTime.now();
+  Message(this.text, this.is_user) : time_stamp = DateTime.now();
 
   //Function for user to send message
   void send_messages(TextEditingController input_controller,
       List<Message> message_list, Function set_state_callback) {
-    log_handler.d("[------send_messages function executing------]");
+    log_handler?.d("[------send_messages function executing------]");
     if (input_controller.text.isNotEmpty) {
       set_state_callback(() {
         //Add message to list
         message_list.insert(0, Message(input_controller.text, true));
       },);
-      log_handler.d("---User Query successfully sent---");
+      log_handler?.d("---User Query successfully sent---");
     }
   }
 
@@ -40,8 +39,9 @@ class Message {
       BuildContext context,
       TextEditingController input_controller,
       List<Message> message_list,
+      //String ai_personality,
       Function set_state_callback) async {
-    log_handler.d("[------ai_query_and_response function executing------]");
+    log_handler?.d("[------ai_query_and_response function executing------]");
     String local_key = obtain_API_key(); //Call api key once
     if (local_key.isEmpty) {
       show_api_key_retrieval_error_dialog(context);
@@ -55,21 +55,6 @@ class Message {
 
       dynamic ai_response;
       if (input_controller.text.isNotEmpty) {
-        //OLD VERSION TO Build conversation memory for current session
-        // const String system_prompt = "You are 'Simple Chat', an AI assistant who "
-        //     "responds with the manner and refinement of "
-        //     "a British butler. Use polite, formal language, "
-        //     "and maintain a respectful tone. You may "
-        //     "occasionally use British expressions, but avoid "
-        //     "beginning every response with greetings or "
-        //     "repeating the user's name unless it's contextually "
-        //     "appropriate. Only introduce yourself if asked, "
-        //     "and focus on being concise, helpful, and eloquent.";
-        //
-        // //Build conversation memory for current session
-        // String history = build_conversation_context(message_list);
-        // String new_prompt = "$system_prompt\n$history\nUser: ${input_controller.text}\nAI:";
-
         //Build conversation memory for current session
         String history = build_conversation_context(message_list);
         String new_prompt = "$history\nUser: ${input_controller.text}\nAI:";
@@ -87,6 +72,7 @@ class Message {
       String ai_text = ai_response?.text.toString() ?? "Error with AI response";
       Message ai_message = Message("", false);
       set_state_callback(() {
+        //Add AI response to list
         message_list.insert(0, ai_message);
       });
 
@@ -97,9 +83,9 @@ class Message {
         });
       }
 
-      log_handler.d("---AI successfully responded back---");
+      log_handler?.d("---AI successfully responded back---");
     } catch (er) {
-      log_handler.e("Error: $er");
+      log_handler?.e("Error: $er");
       show_ai_response_error(context);
     }
   }

@@ -1,19 +1,25 @@
+import "package:audioplayers/audioplayers.dart";
 import "package:flutter/cupertino.dart";
 import "package:flutter/material.dart";
 import "package:flutter_dotenv/flutter_dotenv.dart"; //env var
 import "package:google_generative_ai/google_generative_ai.dart";
 import "dart:async";
 import "dart:convert";
-import "dart:io";
-import 'package:logger/logger.dart';
+import 'dart:io';
+import 'package:flutter_email_sender/flutter_email_sender.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:archive/archive.dart';
+import 'package:archive/archive_io.dart';
 
-//Import alert dialogs
+//Import alert dialogs and others
 import "package:simple_chat/utils/alert_dialog_list.dart";
-
+import 'package:simple_chat/configurations/config_invoke.dart';
 import "package:simple_chat/classes/classes.dart";
+import 'package:simple_chat/utils/colorimetry_blueprints.dart';
+import 'package:simple_chat/utils/logger_config.dart';
 
-//Initialize logger
-var log_handler= Logger();
+//Audio instance
+final AudioPlayer _audio_instance = AudioPlayer();
 
 //imports
 /////////////////////////////////////////////////////////////////////////////
@@ -22,13 +28,15 @@ var log_handler= Logger();
 //API key retrieval--------------------------------------------------
 //To retrieve the apikey from .env file
 String obtain_API_key() {
-  log_handler.d("[------obtain_API_key function executing------]");
+  log_handler?.d("[------obtain_API_key function executing------]");
   String? ai_API_key = dotenv.env['ai_api_key'];
-  if (ai_API_key == null) {
+
+  if (ai_API_key == null || ai_API_key.isEmpty) {
+    log_handler?.e("API key not found in loaded environment.");
     throw Exception('API key not found');
   }
 
-  log_handler.d("---API key successfully found---");
+  log_handler?.d("---API key successfully found---");
   //Return the API key
   return ai_API_key;
 }
@@ -38,7 +46,7 @@ String obtain_API_key() {
 String build_conversation_context(List<Message> messages) {
   final buffer = StringBuffer();
   for (var msg in messages) {
-    if (msg.user) {
+    if (msg.is_user) {
       buffer.writeln("User: ${msg.text}");
     } else {
       buffer.writeln("AI: ${msg.text}");
@@ -50,7 +58,7 @@ String build_conversation_context(List<Message> messages) {
 //Data validation----------------------------------------------------
 //To ensure user input is not an attack
 bool validate_user_input(BuildContext context, String user_input) {
-  log_handler.d("[------validate_user_input function executing------]");
+  log_handler?.d("[------validate_user_input function executing------]");
 
   //Check if input is empty or only whitespace
   if (user_input.trim().isEmpty) {
@@ -59,16 +67,16 @@ bool validate_user_input(BuildContext context, String user_input) {
 
   //Normalize and sanitize user input
   final sanitized_input = _sanitize_input(user_input);
-  log_handler.d("Sanitized input: $sanitized_input");
+  log_handler?.d("Sanitized input: $sanitized_input");
 
   //Check for suspicious content (excluding math blocks)
   if (_contains_suspicious_patterns(sanitized_input)) {
     show_possible_attack_dialog(context);
-    log_handler.w("Possible attack detected in sanitized input");
+    log_handler?.w("Possible attack detected in sanitized input");
     return false;
   }
 
-  log_handler.d("Valid user input");
+  log_handler?.d("Valid user input");
   return true;
 }
 
@@ -103,7 +111,7 @@ String _sanitize_input(String input) {
 
 //Function to check for suspicious patterns like SQL injection, XSS, etc.
 bool _contains_suspicious_patterns(String input) {
-  log_handler.d("[------_contains_suspicious_patterns function executing------]");
+  log_handler?.d("[------_contains_suspicious_patterns function executing------]");
 
   //Remove LaTeX math blocks ($...$) before checking for dangerous patterns
   final cleaned_input = input.replaceAll(RegExp(r'\$(.+?)\$', dotAll: true), '');
@@ -120,53 +128,205 @@ bool _contains_suspicious_patterns(String input) {
   for (final pattern in suspicious_patterns) {
     final regex = RegExp(pattern, caseSensitive: false, dotAll: true);
     if (regex.hasMatch(cleaned_input)) {
-      log_handler.w("Suspicious pattern found: $pattern");
+      log_handler?.w("Suspicious pattern found: $pattern");
       return true;
     }
   }
-  log_handler.d("No suspicious pattern found");
+  log_handler?.d("No suspicious pattern found");
   return false;
-}
-
-//Config file management------------------------------------
-//To extract data from json file
-Map<String, dynamic>? read_data_json(
-    String filePath,
-    {bool exitOnError = true}) {
-  log_handler.d("[------read_data_json function executing------]");
-  try {
-    final file = File(filePath);
-    final contents = file.readAsStringSync();  // Synchronous method
-    final Map<String, dynamic> json_data = jsonDecode(contents);
-    return json_data;
-  } on FileSystemException {
-    log_handler.e("Error: The file '$filePath' was not found.");
-    if (exitOnError) exit(1);
-    return null;
-  } on FormatException {
-    log_handler.e("Error: The file '$filePath' is not a valid JSON file.");
-    if (exitOnError) exit(1);
-    return null;
-  }
-}
-
-//Helper function to convert hex string to Color
-Color hex_to_color(String hex) {
-  log_handler.d("[------hex_to_color function executing------]");
-  return Color(int.parse(hex.replaceFirst('#', '0x')));
 }
 
 //Testing different methods and others------------------------------
 //Test AI, don't use for anything else
 Future<void> test_ai() async {
-  log_handler.d("[------test_ai function executing------]");
+  log_handler?.d("[------test_ai function executing------]");
   final model = GenerativeModel(
-    model: 'gemini-1.5-flash',
+    model: config_data.ai_api_model,
     apiKey: obtain_API_key(),
   );
   final user_prompt = 'Write a story about a magic backpack.';
 
   final response = await model.generateContent([Content.text(user_prompt)]);
-  log_handler.d("---AI response succesful---");
-  log_handler.d(response.text);
+  log_handler?.d("---AI response succesful---");
+  log_handler?.d(response.text);
+}
+
+//Audio handling------------------------------
+//General play audio
+Future<void> play_effect_sound(String asset_path) async {
+  try {
+    if (config_data.sound_effects_status){
+      await _audio_instance.play(AssetSource(asset_path));
+      log_handler?.i('Sound $asset_path player');
+    } else {
+      log_handler?.w('Sound $asset_path nor played, effects disabled');
+    }
+  } catch (er) {
+    log_handler?.e('Error playing sound "$asset_path": $er');
+  }
+}
+
+//Configuration and settings methods--------------------------------------------------
+//Update main directory of the AI
+Future<void> update_directive(BuildContext context, String? new_directive, {int min_length = 20}) async {
+  if (new_directive == null || new_directive.trim().isEmpty || new_directive.trim().length < min_length) {
+    log_handler?.w("Attempted to update directive with null, empty, or too short string. Update skipped.");
+    return;
+  }
+
+  //Validate user input, if false, don't proceed
+  try {
+    final is_valid = validate_user_input(context, new_directive);
+    if (!is_valid) {
+      log_handler?.w("Directive failed validation. Update skipped.");
+      return;
+    }
+  } on ArgumentError catch (e) {
+    log_handler?.w("Directive validation threw ArgumentError: ${e.message}. Update skipped.");
+    return;
+  }
+
+  final file = await get_local_config_file();
+
+  raw_config_json['ai']['directive'] = new_directive.trim();
+  await file.writeAsString(jsonEncode(raw_config_json));
+}
+
+//Update verbose level
+Future<void> update_verbose_level(String new_verbose_level) async {
+  final file = await get_local_config_file();
+
+  raw_config_json['ai']['verbose_level'] = new_verbose_level;
+  await file.writeAsString(jsonEncode(raw_config_json));
+}
+
+//Update color values
+Future<void> update_color_value(String section_key, String color_name) async {
+  final file = await get_local_config_file();
+
+  //Force string to be lowercase and delete whitespaces
+  final normalized_color_name = color_name
+      .toLowerCase()
+      .replaceAll(RegExp(r'[\s_\-]+'), '');
+  if (!color_name_to_hex_map.containsKey(normalized_color_name)) {
+    log_handler?.w("Not supported color name provided: '$color_name'. Update skipped.");
+    return;
+  }
+
+  final hex_color = color_name_to_hex_map[normalized_color_name];
+
+  if (raw_config_json['colors'].containsKey(section_key)) {
+    raw_config_json['colors'][section_key] = hex_color;
+    await file.writeAsString(jsonEncode(raw_config_json));
+    log_handler?.d("Color for '$section_key' updated to $hex_color.");
+  } else {
+    log_handler?.w("Section key '$section_key' not found in 'colors'. Update skipped.");
+  }
+}
+
+//Update user language
+Future<void> update_user_language(BuildContext context, String? new_language, {int min_length = 2}) async {
+  if (new_language == null || new_language.trim().isEmpty || new_language.trim().length < min_length) {
+    log_handler?.w("Attempted to update language with null, empty, or too short string. Update skipped.");
+    return;
+  }
+
+  //Validate user input, if false, don't proceed
+  try {
+    final is_valid = validate_user_input(context, new_language);
+    if (!is_valid) {
+      log_handler?.w("Language failed validation. Update skipped.");
+      return;
+    }
+  } on ArgumentError catch (e) {
+    log_handler?.w("Language validation threw ArgumentError: ${e.message}. Update skipped.");
+    return;
+  }
+
+  final file = await get_local_config_file();
+
+  raw_config_json['user_defaults']['language'] = new_language.trim();
+  await file.writeAsString(jsonEncode(raw_config_json));
+}
+
+//Email sender
+Future<void> send_feedback_by_email(BuildContext context, String feedback) async {
+  try {
+    // Get app document directory
+    final directory = await getApplicationDocumentsDirectory();
+    final files = directory.listSync();
+
+    // Filter for .log files
+    final generated_files = files
+        .whereType<File>()
+        .where((file) => file.path.endsWith('.log'))
+        .toList();
+
+    if (generated_files.isEmpty) {
+      show_one_feedback_per_session(context);
+      log_handler?.w("No generated files found.");
+      return;
+    }
+
+    // Create ZIP archive
+    final archive = Archive();
+    for (var file in generated_files) {
+      final fileBytes = await file.readAsBytes();
+      final fileName = file.path.split('/').last.replaceAll('.log', '.txt');
+      archive.addFile(ArchiveFile(fileName, fileBytes.length, fileBytes));
+    }
+
+    final zipData = ZipEncoder().encode(archive);
+    final zipFilePath = '${directory.path}/feedback_logs.zip';
+    final zipFile = File(zipFilePath);
+    await zipFile.writeAsBytes(zipData);
+
+    // Create email with zip attachment
+    final Email email = Email(
+      body: feedback,
+      subject: 'Simple AI Chat Feedback',
+      recipients: [''], //Do not hardcode mails
+      attachmentPaths: [zipFilePath],
+      isHTML: false,
+    );
+
+    await FlutterEmailSender.send(email);
+
+    // Delete generated original log files
+    for (var file in generated_files) {
+      try {
+        await file.delete();
+        log_handler?.i('Deleted file: ${file.path}');
+      } catch (e) {
+        log_handler?.e('Error deleting file ${file.path}: $e');
+      }
+    }
+
+    // Delete ZIP file
+    try {
+      await zipFile.delete();
+      log_handler?.i('Deleted zip file: $zipFilePath');
+    } catch (e) {
+      log_handler?.e('Error deleting zip file $zipFilePath: $e');
+    }
+
+  } catch (e) {
+    log_handler?.e('Error sending feedback email: $e');
+  }
+}
+
+//Update sound effect status
+Future<void> update_sound_effect_status(bool sound_effect_status) async {
+  final file = await get_local_config_file();
+
+  raw_config_json['audio']['sound_effects_status'] = sound_effect_status;
+  await file.writeAsString(jsonEncode(raw_config_json));
+}
+
+//Update easter egg found
+Future<void> update_easter_egg_found(bool easter_egg_found) async {
+  final file = await get_local_config_file();
+
+  raw_config_json['audio']['easter_egg_found'] = easter_egg_found;
+  await file.writeAsString(jsonEncode(raw_config_json));
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';   //Fonts
 import 'package:icons_flutter/icons_flutter.dart'; //Extra icons
 import 'package:intl/intl.dart'; //For date and time formatting
@@ -7,6 +8,10 @@ import 'package:flutter_markdown/flutter_markdown.dart'; //For markdown
 import 'package:simple_chat/methods_functions/methods.dart';
 import 'package:simple_chat/classes/classes.dart';
 import 'package:simple_chat/configurations/config_invoke.dart';
+import 'package:simple_chat/utils/logger_config.dart';
+
+//Other screens
+import 'package:simple_chat/screens_pages/settings_page.dart';
 
 //imports
 /////////////////////////////////////////////////////////////////////////////
@@ -19,13 +24,13 @@ class landing_page extends StatefulWidget {
 }
 
 class _landing_pageState extends State<landing_page> {
-  //Create a TextEditingController for the input box
+  //Create a TextEditingController for the input box and get user input
   final TextEditingController _input_controller = TextEditingController();
 
-  //List to store chat messages, both user and AI
+  //List to store chat messages, both user and AI that will be displayed in UI
   List<Message> _message_list = [];
 
-  //Boolean controller for send button and input controller hiding
+  //Boolean controller for send button and input controller hint text hiding
   bool _is_processing = false;
   bool _first_query_done = false;
 
@@ -33,15 +38,28 @@ class _landing_pageState extends State<landing_page> {
   @override
   void initState() {
     super.initState();
-    //Inject system prompt as first AI message (used for memory context)
-    //Comment out as required to test or configure. NEVER CONFIGURE .directive
-    String system_prompt = "${config_data.directive}. "
-        "Verbose level: ${config_data.verbose}. "
-        "Limit responses: ${config_data.response_length_limit} tokens, "
-        "with a tolerance of ${config_data.response_length_tolerance} extra tokens."
-    ;
+    _load_system_prompt();
+  }
 
-    _message_list.add(Message(system_prompt, false)); //false because it represent AI message
+  //Load AI personality and add it to message list so AI has context
+  String system_prompt = "";
+  void _load_system_prompt() {
+    setState(() {
+      system_prompt = "${config_data.directive}. "
+          "Verbose level: ${config_data.verbose}. "
+          "Response limit: ${config_data.response_length_limit} tokens. "
+          "Tolerance response limit: ${config_data.response_length_tolerance} extra tokens. "
+          "Default language: ${config_data.user_language} but match prompt language.";
+
+      //Add AI personality as first message
+      if (_message_list.isEmpty) {
+        _message_list.add(Message(system_prompt, false));
+      } else {
+        _message_list[_message_list.length - 1] = Message(system_prompt, false);
+      }
+    });
+
+    log_handler?.i("Loaded/saved directory: ${_message_list[0].text}");
   }
 
   @override
@@ -54,32 +72,61 @@ class _landing_pageState extends State<landing_page> {
         //Top App bar
         appBar: AppBar(
           backgroundColor: config_data.app_bar_color,
-          title: Align(
-            alignment: Alignment.centerLeft,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min, // Prevents the AppBar from expanding too much
-              children: [
-                Text(
-                  "- Simple AI Chat -",
-                  style: GoogleFonts.bebasNeue(
-                    textStyle: TextStyle(
-                      fontSize: 35,
-                      fontWeight: FontWeight.normal,
-                      fontStyle: FontStyle.normal,
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              //Title column
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min, // Prevents the AppBar from expanding too much
+                children: [
+                  Text(
+                    "- ${config_data.main_title} -",
+                    style: GoogleFonts.bebasNeue(
+                      textStyle: TextStyle(
+                        fontSize: 35,
+                        fontWeight: FontWeight.normal,
+                        fontStyle: FontStyle.normal,
+                        color: config_data.text_color,
+                      ),
+                    ),
+                  ),
+                  Text(
+                    "Google Gemini 2.0 Flash API powered",
+                    style: TextStyle(
+                      fontSize: 9,
                       color: config_data.text_color,
                     ),
                   ),
-                ),
-                Text(
-                  "Google Gemini 2.0 Flash API powered",
-                  style: TextStyle(
-                    fontSize: 9,
-                    color: config_data.text_color,
-                  ),
-                ),
-              ],
-            ),
+                ],
+              ),
+              IconButton(
+                icon: const Icon(Icons.settings),
+                iconSize: 35,
+                color: Colors.black,
+                onPressed: () async {
+
+                  //play the button sound
+                  await play_effect_sound(config_data.button_pressed_effect);
+
+                  //Navigate to settings page with fade transition
+                  await Navigator.push(
+                    context,
+                    PageRouteBuilder(
+                      pageBuilder: (context, animation, secondaryAnimation) => const settings(),
+                      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                        return FadeTransition(
+                          opacity: animation,
+                          child: child,
+                        );
+                      },
+                    ),
+                  );
+                  //Run after returning from the settings screen
+                  _load_system_prompt();
+                },
+              )
+            ],
           ),
         ),
 
@@ -88,10 +135,17 @@ class _landing_pageState extends State<landing_page> {
           children: [
             //Background image
             Image.asset(
-              "images/background.jpeg",
+              config_data.image_path,
               fit: BoxFit.cover,
               width: MediaQuery.of(context).size.width,
               height: MediaQuery.of(context).size.height,
+              errorBuilder: (context, error, stackTrace) {
+                return Container(
+                  color: config_data.background_color,  // fallback color or widget
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height,
+                );
+              },
             ),
 
             //Actual content
@@ -115,18 +169,18 @@ class _landing_pageState extends State<landing_page> {
                         final message = _message_list[index];
 
                         //Declare dynamic color
-                        Color dyna_color= message.user?
+                        Color dyna_color= message.is_user?
                           config_data.user_text_box_color:
                           config_data.ai_text_box_color;
                         //Declare dynamic Edge Insets
-                        EdgeInsets dyna_padding= message.user?
+                        EdgeInsets dyna_padding= message.is_user?
                           const EdgeInsets.fromLTRB(50, 4, 0, 4):
                           const EdgeInsets.fromLTRB(0, 4, 50, 4);
 
                         return Padding(
                           padding: dyna_padding, //Pad messages
                           child: Column(
-                              crossAxisAlignment: message.user ?
+                              crossAxisAlignment: message.is_user ?
                                 CrossAxisAlignment.end :
                                 CrossAxisAlignment.start,
                               //mainAxisAlignment: MainAxisAlignment.end,
@@ -244,7 +298,7 @@ class _landing_pageState extends State<landing_page> {
                               fontSize: 18,               // match markdown paragraph font size
                               fontWeight: FontWeight.normal,  // normal weight like markdown p
                               fontStyle: FontStyle.normal, // normal style (not italic by default)
-                              color: _is_processing ? Colors.transparent : Colors.black,
+                              color: _is_processing ? Colors.transparent : config_data.text_color,
                             ),
                           ),
                           decoration: InputDecoration(
@@ -273,7 +327,11 @@ class _landing_pageState extends State<landing_page> {
                       Container(
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(20.0),
-                          color: const Color.fromRGBO(216, 162, 94, 1.0),
+                          color: config_data.user_text_box_color,
+                          border: Border.all(
+                              color: config_data.user_text_box_color,
+                              width: 2.0
+                          ),
                         ),
                         height: 62,
                         width: 62,
@@ -286,12 +344,19 @@ class _landing_pageState extends State<landing_page> {
                             onPressed: _is_processing
                                 ? null //Disable button while processing
                                 : () async {
+                              //Get user input
                               final userInput = _input_controller.text;
 
+                              //Validate user input
                               if (validate_user_input(context, userInput) &&
                                   userInput.isNotEmpty) {
+
+                                //play sound effect
+                                await play_effect_sound(config_data.button_pressed_effect);
+
                                 setState(() => _is_processing = true); //Start processing
 
+                                //Instantiate new message and add it to message_list
                                 Message message = Message(userInput, true);
                                 message.send_messages(_input_controller, _message_list, setState);
 
@@ -309,7 +374,7 @@ class _landing_pageState extends State<landing_page> {
                                   _is_processing = false;
                                 });//End processing
                               } else {
-                                log_handler.w("Message not sent due to invalid input.");
+                                log_handler?.w("Message not sent due to invalid input.");
                               }
                             },
                           ),
