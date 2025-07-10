@@ -63,65 +63,6 @@ void show_possible_attack_dialog(BuildContext context) {
   );
 }
 
-//Alert dialog for API key retrieval error, dont use in final version
-void show_api_key_retrieval_error_dialog(BuildContext context) {
-  //Declare the buttons of alert
-  Widget ok_button = TextButton(
-    child: Text(
-      "Ok",
-      style: GoogleFonts.handjet(
-        textStyle: const TextStyle(
-          fontSize: 30,
-          fontWeight: FontWeight.bold,
-          fontStyle: FontStyle.normal,
-          color: Colors.black,
-        ),
-      ),
-    ),
-    onPressed: () {
-      Navigator.of(context, rootNavigator: true).pop();
-    },
-  );
-
-  //Set variables as the alert itself
-  var alert = AlertDialog(
-    backgroundColor: config_data.app_bar_color,
-    title: Text(
-      "Error 222", //Invalid characters
-      style: GoogleFonts.handjet(
-        textStyle: const TextStyle(
-          fontSize: 45,
-          fontWeight: FontWeight.bold,
-          fontStyle: FontStyle.normal,
-          color: Colors.black,
-        ),
-      ),
-    ),
-    content: Text(
-      "There was an error with API key retrieval",
-      style: GoogleFonts.handjet(
-        textStyle: const TextStyle(
-          fontSize: 25,
-          fontWeight: FontWeight.bold,
-          fontStyle: FontStyle.normal,
-          color: Colors.black,
-        ),
-      ),
-    ),
-    actions: [
-      ok_button,
-    ],
-  );
-
-  //Show the dialog
-  showDialog(
-    context: context,
-    builder: (BuildContext context) {
-      return alert;
-    },
-  );
-}
-
 //Alert dialog for API response error
 void show_ai_response_error(BuildContext context) {
   //Declare the buttons of alert

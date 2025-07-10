@@ -11,8 +11,8 @@
     "character_render_speed.ms": 1
   },
   "backend": {
-    "backend_url": "https://simple-chat-backend-5976.onrender.com",
-    "backend_url_generate_ai_response": "https://simple-chat-backend-5976.onrender.com/generate_ai_response"
+    "backend_url": "https://example_endpoint_deployment.com",
+    "backend_url_generate_ai_response": "https://example_endpoint_deployment.com/generate_ai_response"
   },
   "colors":{
     "background.color": "#FFFCF9FB",

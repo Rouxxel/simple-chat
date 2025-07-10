@@ -26,7 +26,7 @@ This is a simple app that implements the **Gemini 2.0 Flash API** service, allow
 The project is organized into different folders for better readability and maintainability, including:
 - `utils/` - Utility functions
 - `methods_functions/` - Various methods for interacting with APIs and handling data
-- `configurations/` - Configuration files and settings
+- `configurations/` - Configuration files and settings (current and previous links to backend are invalid)
 - `screens_pages/` - All screen or page widgets of the app
 - `classes/` - Custom classes (e.g., for messages, UI components)
 
