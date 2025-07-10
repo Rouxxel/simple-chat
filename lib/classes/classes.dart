@@ -16,10 +16,10 @@ import "package:simple_chat/utils/alert_dialog_list.dart";
 
 class Message {
   String text;
-  final bool user;
+  final bool is_user;
   final DateTime time_stamp;
 
-  Message(this.text, this.user) : time_stamp = DateTime.now();
+  Message(this.text, this.is_user) : time_stamp = DateTime.now();
 
   //Function for user to send message
   void send_messages(TextEditingController input_controller,
@@ -39,6 +39,7 @@ class Message {
       BuildContext context,
       TextEditingController input_controller,
       List<Message> message_list,
+      //String ai_personality,
       Function set_state_callback) async {
     log_handler?.d("[------ai_query_and_response function executing------]");
     String local_key = obtain_API_key(); //Call api key once
@@ -54,21 +55,6 @@ class Message {
 
       dynamic ai_response;
       if (input_controller.text.isNotEmpty) {
-        //OLD VERSION TO Build conversation memory for current session
-        // const String system_prompt = "You are 'Simple Chat', an AI assistant who "
-        //     "responds with the manner and refinement of "
-        //     "a British butler. Use polite, formal language, "
-        //     "and maintain a respectful tone. You may "
-        //     "occasionally use British expressions, but avoid "
-        //     "beginning every response with greetings or "
-        //     "repeating the user's name unless it's contextually "
-        //     "appropriate. Only introduce yourself if asked, "
-        //     "and focus on being concise, helpful, and eloquent.";
-        //
-        // //Build conversation memory for current session
-        // String history = build_conversation_context(message_list);
-        // String new_prompt = "$system_prompt\n$history\nUser: ${input_controller.text}\nAI:";
-
         //Build conversation memory for current session
         String history = build_conversation_context(message_list);
         String new_prompt = "$history\nUser: ${input_controller.text}\nAI:";
@@ -86,6 +72,7 @@ class Message {
       String ai_text = ai_response?.text.toString() ?? "Error with AI response";
       Message ai_message = Message("", false);
       set_state_callback(() {
+        //Add AI response to list
         message_list.insert(0, ai_message);
       });
 

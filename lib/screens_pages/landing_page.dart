@@ -24,13 +24,13 @@ class landing_page extends StatefulWidget {
 }
 
 class _landing_pageState extends State<landing_page> {
-  //Create a TextEditingController for the input box
+  //Create a TextEditingController for the input box and get user input
   final TextEditingController _input_controller = TextEditingController();
 
-  //List to store chat messages, both user and AI
+  //List to store chat messages, both user and AI that will be displayed in UI
   List<Message> _message_list = [];
 
-  //Boolean controller for send button and input controller hiding
+  //Boolean controller for send button and input controller hint text hiding
   bool _is_processing = false;
   bool _first_query_done = false;
 
@@ -41,8 +41,8 @@ class _landing_pageState extends State<landing_page> {
     _load_system_prompt();
   }
 
+  //Load AI personality and add it to message list so AI has context
   String system_prompt = "";
-
   void _load_system_prompt() {
     setState(() {
       system_prompt = "${config_data.directive}. "
@@ -51,6 +51,7 @@ class _landing_pageState extends State<landing_page> {
           "Tolerance response limit: ${config_data.response_length_tolerance} extra tokens. "
           "Default language: ${config_data.user_language} but match prompt language.";
 
+      //Add AI personality as first message
       if (_message_list.isEmpty) {
         _message_list.add(Message(system_prompt, false));
       } else {
@@ -168,18 +169,18 @@ class _landing_pageState extends State<landing_page> {
                         final message = _message_list[index];
 
                         //Declare dynamic color
-                        Color dyna_color= message.user?
+                        Color dyna_color= message.is_user?
                           config_data.user_text_box_color:
                           config_data.ai_text_box_color;
                         //Declare dynamic Edge Insets
-                        EdgeInsets dyna_padding= message.user?
+                        EdgeInsets dyna_padding= message.is_user?
                           const EdgeInsets.fromLTRB(50, 4, 0, 4):
                           const EdgeInsets.fromLTRB(0, 4, 50, 4);
 
                         return Padding(
                           padding: dyna_padding, //Pad messages
                           child: Column(
-                              crossAxisAlignment: message.user ?
+                              crossAxisAlignment: message.is_user ?
                                 CrossAxisAlignment.end :
                                 CrossAxisAlignment.start,
                               //mainAxisAlignment: MainAxisAlignment.end,
@@ -343,8 +344,10 @@ class _landing_pageState extends State<landing_page> {
                             onPressed: _is_processing
                                 ? null //Disable button while processing
                                 : () async {
+                              //Get user input
                               final userInput = _input_controller.text;
 
+                              //Validate user input
                               if (validate_user_input(context, userInput) &&
                                   userInput.isNotEmpty) {
 
@@ -353,6 +356,7 @@ class _landing_pageState extends State<landing_page> {
 
                                 setState(() => _is_processing = true); //Start processing
 
+                                //Instantiate new message and add it to message_list
                                 Message message = Message(userInput, true);
                                 message.send_messages(_input_controller, _message_list, setState);
 

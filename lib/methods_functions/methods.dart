@@ -46,7 +46,7 @@ String obtain_API_key() {
 String build_conversation_context(List<Message> messages) {
   final buffer = StringBuffer();
   for (var msg in messages) {
-    if (msg.user) {
+    if (msg.is_user) {
       buffer.writeln("User: ${msg.text}");
     } else {
       buffer.writeln("AI: ${msg.text}");
@@ -141,7 +141,7 @@ bool _contains_suspicious_patterns(String input) {
 Future<void> test_ai() async {
   log_handler?.d("[------test_ai function executing------]");
   final model = GenerativeModel(
-    model: 'gemini-1.5-flash',
+    model: config_data.ai_api_model,
     apiKey: obtain_API_key(),
   );
   final user_prompt = 'Write a story about a magic backpack.';

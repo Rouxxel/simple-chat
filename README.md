@@ -1,13 +1,13 @@
 # simple_chat
 
-This is a simple app that implements the **Gemini 1.5 Flash API** service, allowing users to interact with an AI chatbot. The user can input queries and receive answers, much like a conversation with a person.
+This is a simple app that implements the **Gemini 2.0 Flash API** service, allowing users to interact with an AI chatbot. The user can input queries and receive answers, much like a conversation with a person.
 
 ### Features:
 - **Single Stateful Screen**: The app consists of a single stateful screen with a chatbot interface where users can ask questions and get responses.
 - **No Memory**: The app does not have memory, meaning the AI cannot remember previous context of the conversation. Each query is treated independently.
 - **Logging**: Used for debugging and tracking events in the app using the **logger** package.
 - **Object-Oriented Programming (OOP)**: The chatbot messages are managed using OOP principles for better organization and readability.
-- **API Key Management**: The API key for accessing the Gemini 1.5 Flash API is securely stored using the **.env** file.
+- **API Key Management**: The API key for accessing the Gemini 2.0 Flash API is securely stored using the **.env** file.
 - **Future Plans**:
     - Implement a **config file** to manage the app's color palette and other app-wide settings.
     - Add a **simple memory system** so the AI can remember the context of the conversation within a session.
