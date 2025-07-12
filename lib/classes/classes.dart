@@ -1,6 +1,7 @@
+import "dart:convert";
 import "package:flutter/cupertino.dart";
 import "package:flutter/material.dart";
-import "package:google_generative_ai/google_generative_ai.dart";
+import 'package:http/http.dart' as http;
 import "dart:async";
 
 //Import methods
@@ -42,34 +43,67 @@ class Message {
       //String ai_personality,
       Function set_state_callback) async {
     log_handler?.d("[------ai_query_and_response function executing------]");
-    String local_key = obtain_API_key(); //Call api key once
-    if (local_key.isEmpty) {
-      show_api_key_retrieval_error_dialog(context);
-      throw Exception("Error in retrieving API key");
+    if (input_controller.text.isEmpty) {
+      //No input to process
+      log_handler?.e("input_controller is empty");
+      return;
     }
+
     try {
-      final gemini_model = GenerativeModel(
-        model: config_data.ai_api_model,
-        apiKey: local_key,
-      );
+      //Build conversation memory for current session
+      String history = build_conversation_context(message_list);
+      String new_prompt = "$history\nUser: ${input_controller.text}\nAI:";
 
-      dynamic ai_response;
-      if (input_controller.text.isNotEmpty) {
-        //Build conversation memory for current session
-        String history = build_conversation_context(message_list);
-        String new_prompt = "$history\nUser: ${input_controller.text}\nAI:";
+      //Prepare request payload
+      final body_for_backend = jsonEncode({
+        "prompt": new_prompt,
+        "ai_model": config_data.ai_api_model,
+        "time_limit": config_data.max_api_response_time_limit,
+      });
 
-        //Send full memory context to the AI along with new query
-        ai_response = await gemini_model
-            .generateContent([Content.text(new_prompt)])
-            .timeout(Duration(seconds: config_data.max_api_response_time_limit), onTimeout: () {
+      //POST request to your backend URL
+      final response = await http
+          .post(
+        Uri.parse(config_data.backend_url_generate_ai_response),
+        headers: {"Content-Type": "application/json"},
+        body: body_for_backend,
+      )
+          .timeout(
+        Duration(seconds: config_data.max_api_response_time_limit + 5),
+        onTimeout: () {
           show_ai_took_too_long_error(context);
           throw TimeoutException('AI response took too long');
-        },);
+        },
+      );
+
+      switch(response.statusCode){
+        case 200:
+          //Log and proceed
+          log_handler?.i("Backend response successful ${response.statusCode}");
+          break;
+        case 504:
+          log_handler?.e("AI timeout: ${response.statusCode} - ${response.body}");
+          show_ai_response_error(context);
+          return;
+        case 500:
+          log_handler?.e("Server error: ${response.statusCode} - ${response.body}");
+          show_ai_response_error(context);
+          return;
+        case 429:
+          log_handler?.e("Backend error: ${response.statusCode} - ${response.body}");
+          show_ai_response_error(context);
+          return;
+        default:
+          log_handler?.w("Unexpected status code: ${response.statusCode}");
+          show_ai_response_error(context);
+          return;
       }
 
+      //Parse AI response text
+      final data = jsonDecode(response.body);
+      String ai_text = data['ai_answer'] ?? "Error with AI response";
+
       //Extract and animate AI response
-      String ai_text = ai_response?.text.toString() ?? "Error with AI response";
       Message ai_message = Message("", false);
       set_state_callback(() {
         //Add AI response to list

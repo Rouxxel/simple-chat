@@ -4,35 +4,35 @@ This is a simple app that implements the **Gemini 2.0 Flash API** service, allow
 
 ### Features:
 - **Single Stateful Screen**: The app consists of a single stateful screen with a chatbot interface where users can ask questions and get responses.
-- **No Memory**: The app does not have memory, meaning the AI cannot remember previous context of the conversation. Each query is treated independently.
+- **Memory**: The app has a rudimentary memory, the query sent to the AI api is the full current conversation for context, is prone to forget, needs changes.
 - **Logging**: Used for debugging and tracking events in the app using the **logger** package.
 - **Object-Oriented Programming (OOP)**: The chatbot messages are managed using OOP principles for better organization and readability.
-- **API Key Management**: The API key for accessing the Gemini 2.0 Flash API is securely stored using the **.env** file.
+- **Back-end connection**: The API key and actual call to AI api are stored and executed outside the app itself in a Web Service depoloyed in Render, in the future it is possible to add more endpoints for various purposes.
 - **Future Plans**:
-    - Implement a **config file** to manage the app's color palette and other app-wide settings.
-    - Add a **simple memory system** so the AI can remember the context of the conversation within a session.
+    - Implement a rudimentary connection to a database to implement log in check
+    - Allow to choose from different AI models, possibly ChatGPT or Claude
 
 ### Libraries Used:
 - **icons_flutter**: ^0.0.4 - Extra icons
-- **flutter_dotenv**: ^5.1.0 - Loads environment variables (for API key management)
 - **intl**: ^0.19.0 - Date formatting
 - **google_fonts**: ^6.2.1 - Easier font management
 - **google_generative_ai**: ^0.4.6 - The AI service itself
 - **logger**: ^2.5.0 - For logging and debugging
-- **http** (commented out) - For consuming internet resources
-- **url_launcher** (commented out) - For launching URLs
+- **http**: ^1.4.0 - For consuming internet resources
+- **url_launcher**(commented out): ^6.3.0   - For launching URLs
+- **flutter_dotenv**(commented out): ^5.1.0 - Loads environment variables (for API key management)
 
 ### Project Structure:
 The project is organized into different folders for better readability and maintainability, including:
 - `utils/` - Utility functions
 - `methods_functions/` - Various methods for interacting with APIs and handling data
-- `configurations/` - Configuration files and settings
+- `configurations/` - Configuration files and settings (current and previous links to backend are invalid)
 - `screens_pages/` - All screen or page widgets of the app
 - `classes/` - Custom classes (e.g., for messages, UI components)
 
 ### Future Improvements:
-- **Config File for Colors**: Plan to implement a configuration file that will control the colors and color palette of the app.
-- **Memory System**: In the future, the app will be able to remember the context of the conversation within the current session.
+- **Data base support**: Plan to implement a simple database for log in.
+- **Various ai models support**: Plan to allow the user to choose different models
 
 ### Emulator and Device Configuration:
 - **Emulator**: Pixel 8 Pro API 34

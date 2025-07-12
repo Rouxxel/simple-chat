@@ -38,7 +38,7 @@ dependencies:
 
   #packages from https://pub.dev/packages ==++--**//
   icons_flutter: ^0.0.4       #Extra icons
-  flutter_dotenv: ^5.1.0      #Load env var
+  #flutter_dotenv: ^5.1.0      #Load env var
   intl: ^0.19.0               #Date formatting
   #http: ^1.2.2                #To consume internet resources
   #url_launcher: ^6.3.0        #Launch URLs
@@ -50,6 +50,7 @@ dependencies:
   flutter_email_sender: ^6.0.1 #Email sender
   audioplayers: ^5.2.1         #Audio player
   archive: ^4.0.7              #For zip file generation
+  http: ^1.4.0                 #To consume https resources
 
 dev_dependencies:
   flutter_test:

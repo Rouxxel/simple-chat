@@ -20,6 +20,9 @@ class app_configuration {
   final String default_verbose;
   final int character_render_speed_ms;
 
+  final String backend_url;
+  final String backend_url_generate_ai_response;
+
   final Color background_color;
   final Color default_background_color;
   final Color app_bar_color;
@@ -62,6 +65,9 @@ class app_configuration {
     required this.default_verbose,
     required this.character_render_speed_ms,
 
+    required this.backend_url,
+    required this.backend_url_generate_ai_response,
+
     required this.background_color,
     required this.default_background_color,
     required this.app_bar_color,
@@ -95,6 +101,7 @@ class app_configuration {
   factory app_configuration.fromJson(Map<String, dynamic> json) {
     final ai = json['ai'] ?? {};
     final colors = json['colors'] ?? {};
+    final backend = json["backend"] ?? {};
     final user_defaults = json['user_defaults'] ?? {};
     final image_paths = json['images'] ?? {};
     final audio_paths = json['audio'] ?? {};
@@ -112,6 +119,9 @@ class app_configuration {
       verbose: ai['verbose_level'] ?? 'verbose_level',
       default_verbose: ai['default_verbose_level'] ?? 'default_verbose_level',
       character_render_speed_ms: ai['character_render_speed.ms'] ?? 10,
+
+      backend_url: backend["backend_url"]?? 'invalid://missing-host',
+      backend_url_generate_ai_response: backend["backend_url_generate_ai_response"]?? 'invalid://missing-host',
 
       background_color: hex_to_color(colors['background.color'] ?? '#FFFFFFFF'),
       default_background_color: hex_to_color(colors['default_background.color'] ?? '#FFFFFFFF'),

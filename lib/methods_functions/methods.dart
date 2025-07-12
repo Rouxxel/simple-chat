@@ -1,7 +1,6 @@
 import "package:audioplayers/audioplayers.dart";
 import "package:flutter/cupertino.dart";
 import "package:flutter/material.dart";
-import "package:flutter_dotenv/flutter_dotenv.dart"; //env var
 import "package:google_generative_ai/google_generative_ai.dart";
 import "dart:async";
 import "dart:convert";
@@ -25,23 +24,7 @@ final AudioPlayer _audio_instance = AudioPlayer();
 /////////////////////////////////////////////////////////////////////////////
 //Methods
 
-//API key retrieval--------------------------------------------------
-//To retrieve the apikey from .env file
-String obtain_API_key() {
-  log_handler?.d("[------obtain_API_key function executing------]");
-  String? ai_API_key = dotenv.env['ai_api_key'];
-
-  if (ai_API_key == null || ai_API_key.isEmpty) {
-    log_handler?.e("API key not found in loaded environment.");
-    throw Exception('API key not found');
-  }
-
-  log_handler?.d("---API key successfully found---");
-  //Return the API key
-  return ai_API_key;
-}
-
-//AI session memory
+//AI session memory--------------------------------------------------
 //Re-read the whole conversation so far
 String build_conversation_context(List<Message> messages) {
   final buffer = StringBuffer();
@@ -138,11 +121,11 @@ bool _contains_suspicious_patterns(String input) {
 
 //Testing different methods and others------------------------------
 //Test AI, don't use for anything else
-Future<void> test_ai() async {
+Future<void> test_ai(String api_key) async {
   log_handler?.d("[------test_ai function executing------]");
   final model = GenerativeModel(
     model: config_data.ai_api_model,
-    apiKey: obtain_API_key(),
+    apiKey: api_key,
   );
   final user_prompt = 'Write a story about a magic backpack.';
 

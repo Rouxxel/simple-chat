@@ -10,6 +10,10 @@
     "default_verbose_level": "medium",
     "character_render_speed.ms": 1
   },
+  "backend": {
+    "backend_url": "https://example_endpoint_deployment.com",
+    "backend_url_generate_ai_response": "https://example_endpoint_deployment.com/generate_ai_response"
+  },
   "colors":{
     "background.color": "#FFFCF9FB",
     "default_background.color": "#FFFCF9FB",
@@ -42,7 +46,7 @@
     "easter_egg_found": false
   },
   "app_info": {
-    "version": "2.6.5",
+    "version": "2.7.1",
     "legal_notice": "All rights reserved © 2025 Simple Chat"
   }
 }
