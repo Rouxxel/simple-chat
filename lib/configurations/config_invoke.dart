@@ -39,8 +39,8 @@ class app_configuration {
   final String default_language;
   final String user_theme;
 
-  final String default_image_path;
-  final String image_path;
+  final String default_background_image_path;
+  final String background_image_path;
 
   final String button_pressed_effect;
   final String miscellanous_effect;
@@ -84,8 +84,8 @@ class app_configuration {
     required this.default_language,
     required this.user_theme,
 
-    required this.default_image_path,
-    required this.image_path,
+    required this.default_background_image_path,
+    required this.background_image_path,
 
     required this.button_pressed_effect,
     required this.miscellanous_effect,
@@ -139,8 +139,8 @@ class app_configuration {
       default_language: user_defaults['default_language'] ?? 'default_language',
       user_theme: user_defaults['theme'] ?? 'theme',
 
-      default_image_path: image_paths["default_image.path"] ?? 'not_found',
-      image_path: image_paths["image.path"] ?? 'not_found',
+      default_background_image_path: image_paths["default_background_image.path"] ?? 'not_found',
+      background_image_path: image_paths["background_image.path"] ?? 'not_found',
 
       button_pressed_effect: audio_paths["button_pressed_effect.mp3"] ?? 'not_found',
       miscellanous_effect: audio_paths["miscellanous_effect.mp3"] ?? 'not_found',

@@ -34,8 +34,8 @@
     "theme": "dark"
   },
   "images": {
-    "default_image.path": "images/background.jpeg",
-    "image.path": "images/background.jpeg"
+    "default_background_image.path": "images/background.jpeg",
+    "background_image.path": "images/background.jpeg"
   },
   "audio": {
     "button_pressed_effect.mp3": "audio/button_press_effect.mp3",
