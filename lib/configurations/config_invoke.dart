@@ -23,6 +23,9 @@ class app_configuration {
   final String backend_url;
   final String backend_url_generate_ai_response;
 
+  final List<dynamic> allowed_email_providers;
+  final List<dynamic> allowed_email_tlds;
+
   final Color background_color;
   final Color default_background_color;
   final Color app_bar_color;
@@ -68,6 +71,9 @@ class app_configuration {
     required this.backend_url,
     required this.backend_url_generate_ai_response,
 
+    required this.allowed_email_providers,
+    required this.allowed_email_tlds,
+
     required this.background_color,
     required this.default_background_color,
     required this.app_bar_color,
@@ -102,6 +108,7 @@ class app_configuration {
     final ai = json['ai'] ?? {};
     final colors = json['colors'] ?? {};
     final backend = json["backend"] ?? {};
+    final db = json["db"] ?? {};
     final user_defaults = json['user_defaults'] ?? {};
     final image_paths = json['images'] ?? {};
     final audio_paths = json['audio'] ?? {};
@@ -122,6 +129,9 @@ class app_configuration {
 
       backend_url: backend["backend_url"]?? 'invalid://missing-host',
       backend_url_generate_ai_response: backend["backend_url_generate_ai_response"]?? 'invalid://missing-host',
+
+      allowed_email_providers: db["allowed_email_providers"]?? [''],
+      allowed_email_tlds: db["allowed_email_tlds"]?? [''],
 
       background_color: hex_to_color(colors['background.color'] ?? '#FFFFFFFF'),
       default_background_color: hex_to_color(colors['default_background.color'] ?? '#FFFFFFFF'),

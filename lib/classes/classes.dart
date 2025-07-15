@@ -88,15 +88,15 @@ class Message {
           return;
         case 500:
           log_handler?.e("Server error: ${response.statusCode} - ${response.body}");
-          //TODO: Create alert dialog server error
+          show_server_error(context);
           return;
         case 429:
           log_handler?.e("Backend error: ${response.statusCode} - ${response.body}");
-          //TODO: Create alert dialog server error
+          show_server_error(context);
           return;
         default:
           log_handler?.w("Unexpected status code: ${response.statusCode}");
-          //TODO: Create alert dialog unexpected error with backend
+          show_unexpected_backend_error(context);
           return;
       }
 

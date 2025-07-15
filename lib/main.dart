@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:simple_chat/screens_pages/landing_page.dart';
 import 'package:simple_chat/configurations/config_invoke.dart';
 import 'package:simple_chat/utils/logger_config.dart';
+import 'package:simple_chat/screens_pages/sign_up_page.dart';
 
 //imports
 /////////////////////////////////////////////////////////////////////////////
@@ -37,6 +37,8 @@ void main() async{
           'character_render_speed_ms: ${config_data.character_render_speed_ms}\n'
           'backend_url: ${config_data.backend_url}\n'
           'backend_url_generate_ai_response: ${config_data.backend_url_generate_ai_response}\n'
+          'allowed_email_providers: ${config_data.allowed_email_providers}\n'
+          'allowed_email_tlds: ${config_data.allowed_email_tlds}\n'
           'background_color: ${config_data.background_color}\n'
           'app_bar_color: ${config_data.app_bar_color}\n'
           'text_color: ${config_data.text_color}\n'
@@ -58,7 +60,7 @@ void main() async{
 
   runApp(
     const MaterialApp(
-      home: landing_page(),
+      home: sign_up_page(),
     ),
   );
 }

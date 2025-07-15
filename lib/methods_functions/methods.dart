@@ -45,6 +45,7 @@ bool validate_user_input(BuildContext context, String user_input) {
 
   //Check if input is empty or only whitespace
   if (user_input.trim().isEmpty) {
+    show_empty_input(context);
     throw ArgumentError("Input is empty");
   }
 
@@ -119,19 +120,93 @@ bool _contains_suspicious_patterns(String input) {
   return false;
 }
 
-//Testing different methods and others------------------------------
-//Test AI, don't use for anything else
-Future<void> test_ai(String api_key) async {
-  log_handler?.d("[------test_ai function executing------]");
-  final model = GenerativeModel(
-    model: config_data.ai_api_model,
-    apiKey: api_key,
-  );
-  final user_prompt = 'Write a story about a magic backpack.';
+//Function to check a valid email
+bool is_valid_email(BuildContext context, String email) {
+  //Check for exactly one '@'
+  if ('@'.allMatches(email).length != 1) {
+    log_handler?.w("Invalid email '$email': must contain exactly one '@'");
+    show_invalid_email(context);
+    return false;
+  }
 
-  final response = await model.generateContent([Content.text(user_prompt)]);
-  log_handler?.d("---AI response succesful---");
-  log_handler?.d(response.text);
+  final parts = email.split('@');
+  final local_part = parts[0];
+  final domain_part = parts[1];
+
+  //Validate local part
+  final local_regex = RegExp(r'^[\w\.-]+$');
+  if (local_part.isEmpty || !local_regex.hasMatch(local_part)) {
+    log_handler?.w("Invalid email '$email': local part is invalid");
+    show_invalid_email(context);
+    return false;
+  }
+
+  //Check domain has exactly one '.'
+  if ('.'.allMatches(domain_part).length != 1) {
+    log_handler?.w("Invalid email '$email': domain part must contain exactly one '.'");
+    show_invalid_email(context);
+    return false;
+  }
+
+  final domain_parts = domain_part.split('.');
+  final provider = domain_parts[0];
+  final tld = domain_parts[1];
+
+  //Check provider and TLD are allowed
+  if (!config_data.allowed_email_providers.contains(provider)) {
+    log_handler?.w("Invalid email '$email': provider '$provider' not allowed");
+    show_invalid_email(context);
+    return false;
+  }
+  if (!config_data.allowed_email_tlds.contains(tld)) {
+    log_handler?.w("Invalid email '$email': TLD '$tld' not allowed");
+    show_invalid_email(context);
+    return false;
+  }
+
+  log_handler?.d("Email '$email' is valid, proceeding");
+  return true;
+}
+
+//Function to check valid password
+bool is_valid_password(BuildContext context, String password) {
+  //Rule 1: minimum length
+  if (password.length < 8) {
+    log_handler?.w('Password validation failed: fewer than 8 characters');
+    show_invalid_password_error(context);
+    return false;
+  }
+
+  //Rule 2: at least one lowercase letter
+  if (!RegExp(r'[a-z]').hasMatch(password)) {
+    log_handler?.w('Password validation failed: no lowercase letter found');
+    show_invalid_password_error(context);
+    return false;
+  }
+
+  //Rule 3: at least one uppercase letter
+  if (!RegExp(r'[A-Z]').hasMatch(password)) {
+    log_handler?.w('Password validation failed: no uppercase letter found');
+    show_invalid_password_error(context);
+    return false;
+  }
+
+  //Rule 4: at least one digit
+  if (!RegExp(r'\d').hasMatch(password)) {
+    log_handler?.w('Password validation failed: no digit found');
+    show_invalid_password_error(context);
+    return false;
+  }
+
+  // Rule 5: at least one special symbol (anything not letter, digit, or underscore/whitespace)
+  if (!RegExp(r'[^\w\s]').hasMatch(password)) {
+    log_handler?.w('Password validation failed: no special symbol found');
+    show_invalid_password_error(context);
+    return false;
+  }
+
+  log_handler?.d('Password is valid, proceeding');
+  return true;
 }
 
 //Audio handling------------------------------
@@ -312,4 +387,19 @@ Future<void> update_easter_egg_found(bool easter_egg_found) async {
 
   raw_config_json['audio']['easter_egg_found'] = easter_egg_found;
   await file.writeAsString(jsonEncode(raw_config_json));
+}
+
+//Testing different methods and others------------------------------
+//Test AI, don't use for anything else
+Future<void> test_ai(String api_key) async {
+  log_handler?.d("[------test_ai function executing------]");
+  final model = GenerativeModel(
+    model: config_data.ai_api_model,
+    apiKey: api_key,
+  );
+  final user_prompt = 'Write a story about a magic backpack.';
+
+  final response = await model.generateContent([Content.text(user_prompt)]);
+  log_handler?.d("---AI response succesful---");
+  log_handler?.d(response.text);
 }

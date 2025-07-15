@@ -408,6 +408,7 @@ class LabeledTextField extends StatelessWidget {
   final Color text_color;
   final Color fill_color;
   final Color hint_color;
+  final bool enabled;
 
   const LabeledTextField({
     Key? key,
@@ -417,6 +418,7 @@ class LabeledTextField extends StatelessWidget {
     required this.text_color,
     required this.fill_color,
     required this.hint_color,
+    this.enabled = true,
   }) : super(key: key);
 
   @override
@@ -440,6 +442,7 @@ class LabeledTextField extends StatelessWidget {
           height: 55,
           child: TextField(
             controller: controller,
+            enabled: enabled,
             style: GoogleFonts.roboto(
               textStyle: TextStyle(
                 fontSize: 18,
