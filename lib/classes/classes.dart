@@ -76,6 +76,7 @@ class Message {
         },
       );
 
+      //Check response status code
       switch(response.statusCode){
         case 200:
           //Log and proceed
@@ -87,15 +88,15 @@ class Message {
           return;
         case 500:
           log_handler?.e("Server error: ${response.statusCode} - ${response.body}");
-          show_ai_response_error(context);
+          //TODO: Create alert dialog server error
           return;
         case 429:
           log_handler?.e("Backend error: ${response.statusCode} - ${response.body}");
-          show_ai_response_error(context);
+          //TODO: Create alert dialog server error
           return;
         default:
           log_handler?.w("Unexpected status code: ${response.statusCode}");
-          show_ai_response_error(context);
+          //TODO: Create alert dialog unexpected error with backend
           return;
       }
 
