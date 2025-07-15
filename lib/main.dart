@@ -37,6 +37,7 @@ void main() async{
           'character_render_speed_ms: ${config_data.character_render_speed_ms}\n'
           'backend_url: ${config_data.backend_url}\n'
           'backend_url_generate_ai_response: ${config_data.backend_url_generate_ai_response}\n'
+          'backend_url_sign_up: ${config_data.backend_url_sign_up}\n'
           'allowed_email_providers: ${config_data.allowed_email_providers}\n'
           'allowed_email_tlds: ${config_data.allowed_email_tlds}\n'
           'background_color: ${config_data.background_color}\n'

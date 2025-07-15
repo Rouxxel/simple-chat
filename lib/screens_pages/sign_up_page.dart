@@ -207,9 +207,9 @@ class _sign_up_pageState extends State<sign_up_page> {
                                     await sign_up(context, email, password);
 
                                     //Update accordingly
-                                    // _sign_in_controller.clear();
-                                    // _password_controller.clear();
-                                    // _confirm_password_controller.clear();
+                                    _sign_in_controller.clear();
+                                    _password_controller.clear();
+                                    _confirm_password_controller.clear();
                                     setState(() {
                                       _is_processing = false;
                                     });

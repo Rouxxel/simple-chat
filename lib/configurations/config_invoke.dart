@@ -22,6 +22,7 @@ class app_configuration {
 
   final String backend_url;
   final String backend_url_generate_ai_response;
+  final String backend_url_sign_up;
 
   final List<dynamic> allowed_email_providers;
   final List<dynamic> allowed_email_tlds;
@@ -70,6 +71,7 @@ class app_configuration {
 
     required this.backend_url,
     required this.backend_url_generate_ai_response,
+    required this.backend_url_sign_up,
 
     required this.allowed_email_providers,
     required this.allowed_email_tlds,
@@ -129,6 +131,7 @@ class app_configuration {
 
       backend_url: backend["backend_url"]?? 'invalid://missing-host',
       backend_url_generate_ai_response: backend["backend_url_generate_ai_response"]?? 'invalid://missing-host',
+      backend_url_sign_up: backend["backend_url_sign_up"]?? 'invalid://missing-host',
 
       allowed_email_providers: db["allowed_email_providers"]?? [''],
       allowed_email_tlds: db["allowed_email_tlds"]?? [''],
