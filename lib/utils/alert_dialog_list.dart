@@ -635,8 +635,8 @@ void show_successful_sign_up(BuildContext context) {
     ),
     content: Text(
       "You have been successfully signed into our app, please check the email you "
-      "provided to confirm your onboarding and enjoy the app. Please go back to log "
-      "in.",
+      "provided to confirm your onboarding and enjoy the app. Returning to log in "
+      "now.",
       style: GoogleFonts.handjet(
         textStyle: const TextStyle(
           fontSize: 25,
@@ -696,6 +696,65 @@ void show_server_error(BuildContext context) {
     ),
     content: Text(
       "There has been an error with the server, please try again later",
+      style: GoogleFonts.handjet(
+        textStyle: const TextStyle(
+          fontSize: 25,
+          fontWeight: FontWeight.bold,
+          fontStyle: FontStyle.normal,
+          color: Colors.black,
+        ),
+      ),
+    ),
+    actions: [
+      ok_button,
+    ],
+  );
+
+  //Show the dialog
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return alert;
+    },
+  );
+}
+
+//Alert to show network error
+void show_network_error(BuildContext context) {
+  //Declare the buttons of alert
+  Widget ok_button = TextButton(
+    child: Text(
+      "Ok",
+      style: GoogleFonts.handjet(
+        textStyle: const TextStyle(
+          fontSize: 30,
+          fontWeight: FontWeight.bold,
+          fontStyle: FontStyle.normal,
+          color: Colors.black,
+        ),
+      ),
+    ),
+    onPressed: () {
+      Navigator.of(context, rootNavigator: true).pop();
+    },
+  );
+
+  //Set variables as the alert itself
+  var alert = AlertDialog(
+    backgroundColor: config_data.app_bar_color,
+    title: Text(
+      "Error 234",
+      style: GoogleFonts.handjet(
+        textStyle: const TextStyle(
+          fontSize: 45,
+          fontWeight: FontWeight.bold,
+          fontStyle: FontStyle.normal,
+          color: Colors.black,
+        ),
+      ),
+    ),
+    content: Text(
+      "There has been an error with the network, please try again later",
       style: GoogleFonts.handjet(
         textStyle: const TextStyle(
           fontSize: 25,
@@ -898,7 +957,7 @@ void show_invalid_password_error(BuildContext context) {
   );
 }
 
-//Alert to show non matchin passwords error
+//Alert to show unexpected backend error
 void show_unexpected_backend_error(BuildContext context) {
   //Declare the buttons of alert
   Widget ok_button = TextButton(
@@ -993,6 +1052,66 @@ void show_invalid_parameters_error(BuildContext context) {
     ),
     content: Text(
       "You have entered invalid values, please enter valid values.",
+      style: GoogleFonts.handjet(
+        textStyle: const TextStyle(
+          fontSize: 25,
+          fontWeight: FontWeight.bold,
+          fontStyle: FontStyle.normal,
+          color: Colors.black,
+        ),
+      ),
+    ),
+    actions: [
+      ok_button,
+    ],
+  );
+
+  //Show the dialog
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return alert;
+    },
+  );
+}
+
+//Alert to show invalid credentials error
+void show_invalid_credentials(BuildContext context) {
+  //Declare the buttons of alert
+  Widget ok_button = TextButton(
+    child: Text(
+      "Ok",
+      style: GoogleFonts.handjet(
+        textStyle: const TextStyle(
+          fontSize: 30,
+          fontWeight: FontWeight.bold,
+          fontStyle: FontStyle.normal,
+          color: Colors.black,
+        ),
+      ),
+    ),
+    onPressed: () {
+      Navigator.of(context, rootNavigator: true).pop();
+    },
+  );
+
+  //Set variables as the alert itself
+  var alert = AlertDialog(
+    backgroundColor: config_data.app_bar_color,
+    title: Text(
+      "Invalid user",
+      style: GoogleFonts.handjet(
+        textStyle: const TextStyle(
+          fontSize: 45,
+          fontWeight: FontWeight.bold,
+          fontStyle: FontStyle.normal,
+          color: Colors.black,
+        ),
+      ),
+    ),
+    content: Text(
+      "We were not able to find your user, please ensure you have signed up and"
+          "confirmed your email before trying again",
       style: GoogleFonts.handjet(
         textStyle: const TextStyle(
           fontSize: 25,

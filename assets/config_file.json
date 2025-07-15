@@ -13,7 +13,8 @@
   "backend": {
     "backend_url": "https://example_endpoint_deployment.com",
     "backend_url_generate_ai_response": "https://example_endpoint_deployment.com/generate_ai_response",
-    "backend_url_sign_up": "https://example_endpoint_deployment.com/auth/sign_up_email"
+    "backend_url_sign_up": "https://example_endpoint_deployment.com/auth/sign_up_email",
+    "backend_url_log_in": "https://example_endpoint_deployment.com/auth/log_in_email_pw"
   },
   "db": {
     "allowed_email_providers": ["gmail","outlook","yahoo","hotmail","icloud","protonmail","aol","zoho","gmx","mail"],

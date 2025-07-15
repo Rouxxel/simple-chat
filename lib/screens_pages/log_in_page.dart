@@ -1,32 +1,32 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';   //Fonts
 
 import 'package:simple_chat/methods_functions/methods.dart';
-import 'package:simple_chat/methods_functions/user_entrypoint_methods.dart';
 import 'package:simple_chat/configurations/config_invoke.dart';
-import 'package:simple_chat/utils/alert_dialog_list.dart';
+import 'package:simple_chat/screens_pages/landing_page.dart';
 import 'package:simple_chat/utils/logger_config.dart';
-import 'package:simple_chat/screens_pages/log_in_page.dart';
+import 'package:simple_chat/screens_pages/sign_up_page.dart';
 
+import '../methods_functions/user_entrypoint_methods.dart';
 import '../utils/colorimetry_blueprints.dart';
 
 //imports
 /////////////////////////////////////////////////////////////////////////////
 //screen itself
-class sign_up_page extends StatefulWidget {
-  const sign_up_page({super.key});
+class log_in_page extends StatefulWidget {
+  const log_in_page({super.key});
 
   @override
-  State<sign_up_page> createState() => _sign_up_pageState();
+  State<log_in_page> createState() => _log_in_pageState();
 }
 
-class _sign_up_pageState extends State<sign_up_page> {
+class _log_in_pageState extends State<log_in_page> {
 
   //Add input controllers
-  final TextEditingController _sign_in_controller = TextEditingController();
+  final TextEditingController _log_in_controller = TextEditingController();
   final TextEditingController _password_controller = TextEditingController();
-  final TextEditingController _confirm_password_controller = TextEditingController();
 
   //Boolean controller for send button and input controller hint text hiding
   bool _is_processing = false;
@@ -109,7 +109,7 @@ class _sign_up_pageState extends State<sign_up_page> {
                           children: [
                             //Title of card
                             Text(
-                              "Sign up",
+                              "Log in",
                               style: GoogleFonts.bebasNeue(
                                 textStyle: TextStyle(
                                   fontSize: 35,
@@ -128,7 +128,7 @@ class _sign_up_pageState extends State<sign_up_page> {
                                   children: [
                                     LabeledTextField(
                                       label: "Email",
-                                      controller: _sign_in_controller,
+                                      controller: _log_in_controller,
                                       hint_text: "example@provider.com",
                                       text_color: config_data.text_color,
                                       fill_color: config_data.user_text_box_color,
@@ -139,16 +139,6 @@ class _sign_up_pageState extends State<sign_up_page> {
                                     LabeledTextField(
                                       label: "Password",
                                       controller: _password_controller,
-                                      hint_text: "0Kzj#{[8ss9,",
-                                      text_color: config_data.text_color,
-                                      fill_color: config_data.user_text_box_color,
-                                      hint_color: config_data.suggest_input_color,
-                                      enabled: !_is_processing,
-                                    ),
-                                    SizedBox(height: 10),
-                                    LabeledTextField(
-                                      label: "Confirm password",
-                                      controller: _confirm_password_controller,
                                       hint_text: "0Kzj#{[8ss9,",
                                       text_color: config_data.text_color,
                                       fill_color: config_data.user_text_box_color,
@@ -168,17 +158,15 @@ class _sign_up_pageState extends State<sign_up_page> {
                                       ? null //Disable button while processing
                                       : () async {
                                     //Get user input
-                                    final String email = _sign_in_controller.text;
+                                    final String email = _log_in_controller.text;
                                     final String password = _password_controller.text;
-                                    final String confirm_password = _confirm_password_controller.text;
 
                                     //play sound effect
                                     await play_effect_sound(config_data.button_pressed_effect);
 
                                     //Validate user inputs
                                     if (!validate_user_input(context, email) ||
-                                        !validate_user_input(context, password) ||
-                                        !validate_user_input(context, confirm_password)) {
+                                        !validate_user_input(context, password)) {
                                       log_handler?.w("Input not sent due to suspicious input by user.");
                                       return;
                                     }
@@ -189,31 +177,39 @@ class _sign_up_pageState extends State<sign_up_page> {
                                       return;
                                     }
 
-                                    //Ensure passwords match
-                                    if(password != confirm_password){
-                                      log_handler?.w("Password and password confirm are not the same");
-                                      show_nonmatching_passwords(context);
-                                      return;
-                                    }
                                     //Check valid password
                                     if(!is_valid_password(context,password)){
                                       log_handler?.w("Input not sent due to invalid password.");
                                       return;
                                     }
 
-                                    //Start sign up
+                                    //Start Log in
                                     setState(() => _is_processing = true); //Start processing
 
                                     //Make call
-                                    await sign_up(context, email, password);
+                                    final response = await log_in(context, email, password);
+                                    if (response != null) {
+                                      _log_in_controller.clear();
+                                      _password_controller.clear();
 
-                                    //Update accordingly
-                                    _sign_in_controller.clear();
-                                    _password_controller.clear();
-                                    _confirm_password_controller.clear();
-                                    setState(() {
-                                      _is_processing = false;
-                                    });
+                                      setState(() => _is_processing = false);
+
+                                      await Navigator.push(
+                                        context,
+                                        PageRouteBuilder(
+                                          pageBuilder: (context, animation, secondaryAnimation) =>
+                                          const landing_page(),
+                                          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                                            return FadeTransition(
+                                              opacity: animation,
+                                              child: child,
+                                            );
+                                          },
+                                        ),
+                                      );
+                                    } else {
+                                      setState(() => _is_processing = false);
+                                    }
                                   },
                                   child: Container(
                                     decoration: BoxDecoration(
@@ -226,7 +222,7 @@ class _sign_up_pageState extends State<sign_up_page> {
                                     ),
                                     child: Center(
                                       child: Text(
-                                        _is_processing ? "Signing up..." : "Sign up",
+                                        _is_processing ? "Logging in..." : "Log in",
                                         style: GoogleFonts.bebasNeue(
                                           textStyle: TextStyle(
                                             fontSize: 30,
@@ -241,20 +237,61 @@ class _sign_up_pageState extends State<sign_up_page> {
                                 ),
 
                                 // Spacing between button and link
-                                SizedBox(height: 12),
+                                SizedBox(height: 15),
 
                                 //Hyperlink text
+                                RichText(
+                                  text: TextSpan(
+                                    style: const TextStyle(fontSize: 16.0), // Base style
+                                    children: [
+                                      const TextSpan(
+                                        text: "I have no account, ",
+                                        style: TextStyle(color: Colors.black), // Normal text
+                                      ),
+                                      TextSpan(
+                                        text: "Sign up!!!",
+                                        style: TextStyle(
+                                          color: !_is_processing ? Colors.blue : config_data.text_color,
+                                          decoration: TextDecoration.underline,
+                                        ),
+                                        recognizer: !_is_processing
+                                            ? (TapGestureRecognizer()
+                                          ..onTap = () async {
+                                            log_handler?.d("Navigate to sign-up page");
+                                            await Navigator.push(
+                                              context,
+                                              PageRouteBuilder(
+                                                pageBuilder: (context, animation, secondaryAnimation) =>
+                                                const sign_up_page(),
+                                                transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                                                  return FadeTransition(
+                                                    opacity: animation,
+                                                    child: child,
+                                                  );
+                                                },
+                                              ),
+                                            );
+                                          })
+                                            : null,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+
+                                // Spacing between button and link
+                                SizedBox(height: 12),
+
+                                //Forgot password
                                 GestureDetector(
                                   onTap: _is_processing
                                       ? null                           // Disable while processing
                                       : () async {
-                                    log_handler?.d("Navigate to sign‑up page");
-
+                                    log_handler?.d("Navigate to forgot password page");
                                     await Navigator.push(
                                       context,
                                       PageRouteBuilder(
                                         pageBuilder: (context, animation, secondaryAnimation) =>
-                                        const log_in_page(),
+                                        const sign_up_page(), //Change to forgotpassword when done
                                         transitionsBuilder: (context, animation, secondaryAnimation, child) {
                                           return FadeTransition(
                                             opacity: animation,
@@ -265,7 +302,7 @@ class _sign_up_pageState extends State<sign_up_page> {
                                     );
                                   },
                                   child: Text(
-                                    "I remembered I have a user!!!",
+                                    "I forgot my password",
                                     style: TextStyle(
                                       color: !_is_processing? Colors.blue : config_data.text_color,
                                       decoration: TextDecoration.underline,
