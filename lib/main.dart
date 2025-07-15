@@ -21,7 +21,7 @@ void main() async{
   log_handler?.i(
       'directive: ${config_data.directive}\n'
           'default_directive: ${config_data.default_directive}\n'
-          'default_image_path: ${config_data.default_image_path}\n'
+          'default_image_path: ${config_data.default_background_image_path}\n'
           'default_language: ${config_data.default_language}\n'
           'default_verbose_level: ${config_data.default_verbose}\n'
           'default_background.color: ${config_data.default_background_color}\n'
@@ -46,7 +46,7 @@ void main() async{
           'date_text_color: ${config_data.date_text_color}\n'
           'user_language: ${config_data.user_language}\n'
           'user_theme: ${config_data.user_theme}\n'
-          'image_path: ${config_data.image_path}\n'
+          'background_image_path: ${config_data.background_image_path}\n'
           'button_pressed_effect: ${config_data.button_pressed_effect}\n'
           'miscellaneous_effect: ${config_data.miscellanous_effect}\n'
           'sound_effects_status: ${config_data.sound_effects_status}\n'

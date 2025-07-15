@@ -135,7 +135,7 @@ class _landing_pageState extends State<landing_page> {
           children: [
             //Background image
             Image.asset(
-              config_data.image_path,
+              config_data.background_image_path,
               fit: BoxFit.cover,
               width: MediaQuery.of(context).size.width,
               height: MediaQuery.of(context).size.height,
