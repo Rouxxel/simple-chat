@@ -14,7 +14,10 @@
     "backend_url": "https://example_endpoint_deployment.com",
     "backend_url_generate_ai_response": "https://example_endpoint_deployment.com/generate_ai_response",
     "backend_url_sign_up": "https://example_endpoint_deployment.com/auth/sign_up_email",
-    "backend_url_log_in": "https://example_endpoint_deployment.com/auth/log_in_email_pw"
+    "backend_url_log_in": "https://example_endpoint_deployment.com/auth/log_in_email_pw",
+    "backend_url_log_out": "https://example_endpoint_deployment.com/auth/log_out",
+    "backend_url_refresh_token": "https://example_endpoint_deployment.com/auth/refresh_token",
+    "backend_url_reset_password": "https://example_endpoint_deployment.com/auth/reset_password"
   },
   "db": {
     "allowed_email_providers": ["gmail","outlook","yahoo","hotmail","icloud","protonmail","aol","zoho","gmx","mail"],

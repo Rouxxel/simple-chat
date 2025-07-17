@@ -24,6 +24,9 @@ class app_configuration {
   final String backend_url_generate_ai_response;
   final String backend_url_sign_up;
   final String backend_url_log_in;
+  final String backend_url_log_out;
+  final String backend_url_refresh_token;
+  final String backend_url_reset_password;
 
   final List<dynamic> allowed_email_providers;
   final List<dynamic> allowed_email_tlds;
@@ -74,6 +77,9 @@ class app_configuration {
     required this.backend_url_generate_ai_response,
     required this.backend_url_sign_up,
     required this.backend_url_log_in,
+    required this.backend_url_log_out,
+    required this.backend_url_refresh_token,
+    required this.backend_url_reset_password,
 
     required this.allowed_email_providers,
     required this.allowed_email_tlds,
@@ -135,6 +141,9 @@ class app_configuration {
       backend_url_generate_ai_response: backend["backend_url_generate_ai_response"]?? 'invalid://missing-host',
       backend_url_sign_up: backend["backend_url_sign_up"]?? 'invalid://missing-host',
       backend_url_log_in: backend["backend_url_log_in"]?? 'invalid://missing-host',
+      backend_url_log_out: backend["backend_url_log_out"]?? 'invalid://missing-host',
+      backend_url_refresh_token: backend["backend_url_refresh_token"]?? 'invalid://missing-host',
+      backend_url_reset_password: backend["backend_url_reset_password"]?? 'invalid://missing-host',
 
       allowed_email_providers: db["allowed_email_providers"]?? [''],
       allowed_email_tlds: db["allowed_email_tlds"]?? [''],
