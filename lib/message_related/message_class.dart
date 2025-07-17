@@ -7,6 +7,7 @@ import "dart:async";
 //Import methods
 import 'package:simple_chat/methods_functions/general_methods.dart';
 import 'package:simple_chat/configuration/config_invoke.dart';
+import "package:simple_chat/session_related/app_storage_class.dart";
 import 'package:simple_chat/utils/logger_config.dart';
 //Import alert dialogs
 import "package:simple_chat/utils/alert_dialog_list.dart";
@@ -54,12 +55,20 @@ class Message {
       String history = build_conversation_context(message_list);
       String new_prompt = "$history\nUser: ${input_controller.text}\nAI:";
 
+      //Obtain critical user data
+      final String? user_id = await AppStorage.get_user_id();
+      final String? access_token = await AppStorage.get_access_token();
+
       //Prepare request payload
       final body_for_backend = jsonEncode({
         "prompt": new_prompt,
         "ai_model": config_data.ai_api_model,
         "time_limit": config_data.max_api_response_time_limit,
+        "user_id": user_id,
+        "access_token": access_token
       });
+
+      log_handler?.w(body_for_backend);
 
       //POST request to your backend URL
       final response = await http

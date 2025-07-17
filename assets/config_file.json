@@ -2,7 +2,7 @@
   "ai": {
     "directive": "You are 'Montgomery', an AI assistant with a polite, refined manner of a British butler with a formal respectful language, helpful and eloquent",
     "default_directive": "You are 'Montgomery', an AI assistant with a polite, refined manner of a British butler with a formal respectful language, helpful and eloquent",
-    "max_api_response_time_limit.s": 7,
+    "max_api_response_time_limit.s": 9,
     "ai_api_model": "gemini-2.0-flash",
     "response_length_limit.tokens": 250,
     "response_length_tolerance.tokens": 30,
@@ -56,7 +56,7 @@
     "easter_egg_found": false
   },
   "app_info": {
-    "version": "2.7.1",
+    "version": "2.9.12",
     "legal_notice": "All rights reserved © 2025 Simple Chat"
   }
 }
