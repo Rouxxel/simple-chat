@@ -157,9 +157,6 @@ class _log_in_pageState extends State<log_in_page> {
                                   onTap: _is_processing
                                       ? null //Disable button while processing
                                       : () async {
-                                    //Start Log in
-                                    setState(() => _is_processing = true); //Start processing
-
                                     //Get user input
                                     final String email = _log_in_controller.text;
                                     final String password = _password_controller.text;
@@ -173,6 +170,9 @@ class _log_in_pageState extends State<log_in_page> {
                                       log_handler?.w("Input not sent due to suspicious input by user.");
                                       return;
                                     }
+
+                                    //Start Log in request
+                                    setState(() => _is_processing = true);
 
                                     //Make call to log in
                                     final response = await log_in(context, email, password);

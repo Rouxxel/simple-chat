@@ -167,9 +167,6 @@ class _sign_up_pageState extends State<sign_up_page> {
                                   onTap: _is_processing
                                       ? null //Disable button while processing
                                       : () async {
-                                    //Start sign up
-                                    setState(() => _is_processing = true);
-
                                     //Get user input
                                     final String email = _sign_in_controller.text;
                                     final String password = _password_controller.text;
@@ -183,6 +180,7 @@ class _sign_up_pageState extends State<sign_up_page> {
                                         !validate_user_input(context, password) ||
                                         !validate_user_input(context, confirm_password)) {
                                       log_handler?.w("Input not sent due to suspicious input by user.");
+                                      setState(() {_is_processing = false;});
                                       return;
                                     }
 
@@ -190,12 +188,15 @@ class _sign_up_pageState extends State<sign_up_page> {
                                     if(password != confirm_password){
                                       log_handler?.w("Password and password confirm are not the same");
                                       show_nonmatching_passwords(context);
+                                      setState(() {_is_processing = false;});
                                       return;
                                     }
 
+                                    //Start sign up request
+                                    setState(() => _is_processing = true);
+
                                     //Make call to sign up
                                     final bool answer = await sign_up(context, email, password);
-
                                     //Clear only if answer is successful
                                     if (answer){
                                       //Update accordingly
