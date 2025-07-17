@@ -38,6 +38,13 @@ class AppStorage {
   }
 
   //Update token and refresh token
+  static Future<void> update_token_and_refresh(
+      String access_token,
+      String refresh_token,
+      ) async {
+    await _storage.write(key: _access_token_key, value: access_token);
+    await _storage.write(key: _refresh_token_key, value: refresh_token);
+  }
 
   //GETTERS
   //Read access token

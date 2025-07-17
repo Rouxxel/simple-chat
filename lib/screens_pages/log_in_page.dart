@@ -157,6 +157,9 @@ class _log_in_pageState extends State<log_in_page> {
                                   onTap: _is_processing
                                       ? null //Disable button while processing
                                       : () async {
+                                    //Start Log in
+                                    setState(() => _is_processing = true); //Start processing
+
                                     //Get user input
                                     final String email = _log_in_controller.text;
                                     final String password = _password_controller.text;
@@ -171,28 +174,12 @@ class _log_in_pageState extends State<log_in_page> {
                                       return;
                                     }
 
-                                    //Check valid email
-                                    if(!is_valid_email(context, email)){
-                                      log_handler?.w("Input not sent due to invalid email.");
-                                      return;
-                                    }
-
-                                    //Check valid password
-                                    if(!is_valid_password(context,password)){
-                                      log_handler?.w("Input not sent due to invalid password.");
-                                      return;
-                                    }
-
-                                    //Start Log in
-                                    setState(() => _is_processing = true); //Start processing
-
-                                    //Make call
+                                    //Make call to log in
                                     final response = await log_in(context, email, password);
-                                    if (response != null) {
+                                    //Clear only if log in is successful
+                                    if (response) {
                                       _log_in_controller.clear();
                                       _password_controller.clear();
-
-                                      setState(() => _is_processing = false);
 
                                       await Navigator.push(
                                         context,
@@ -207,9 +194,8 @@ class _log_in_pageState extends State<log_in_page> {
                                           },
                                         ),
                                       );
-                                    } else {
-                                      setState(() => _is_processing = false);
                                     }
+                                    setState(() => _is_processing = false);
                                   },
                                   child: Container(
                                     decoration: BoxDecoration(

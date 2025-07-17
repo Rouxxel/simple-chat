@@ -6,6 +6,7 @@ import "dart:async";
 import "dart:convert";
 import 'package:http/http.dart' as http;
 import "package:simple_chat/classes/app_storage.dart";
+import "package:simple_chat/methods_functions/methods.dart";
 
 //Import alert dialogs and others
 import "package:simple_chat/utils/alert_dialog_list.dart";
@@ -36,12 +37,24 @@ Future<void> root_endpoint() async {
 }
 
 //Sign up method
-Future<void> sign_up(BuildContext context, String email, String password) async{
+Future<bool> sign_up(BuildContext context, String email, String password) async{
   log_handler?.d("[------sign_up function executing------]");
   if (email.isEmpty || password.isEmpty) {
     //No input to process
     log_handler?.e("Controllers are empty");
-    return;
+    return false;
+  }
+
+  //Validate email and password
+  if(!is_valid_email(context, email)){
+    show_invalid_email(context);
+    log_handler?.w("Input not sent due to invalid email.");
+    return false;
+  }
+  if(!is_valid_password(context, password)){
+    show_invalid_password_error(context);
+    log_handler?.w("Input not sent due to invalid password.");
+    return false;
   }
 
   try {
@@ -75,19 +88,19 @@ Future<void> sign_up(BuildContext context, String email, String password) async{
       case 500:
         log_handler?.e("Server error: ${response.statusCode} - ${response.body}");
         show_server_error(context);
-        return;
+        return false;
       case 400:
         log_handler?.e("Parameters error: ${response.statusCode} - ${response.body}");
         show_invalid_parameters_error(context);
-        return;
+        return false;
       case 429:
         log_handler?.e("Backend error: ${response.statusCode} - ${response.body}");
         show_unexpected_backend_error(context);
-        return;
+        return false;
       default:
         log_handler?.w("Unexpected status code: ${response.statusCode}");
         show_unexpected_backend_error(context);
-        return;
+        return false;
     }
 
     //Parse Backend response text
@@ -97,23 +110,35 @@ Future<void> sign_up(BuildContext context, String email, String password) async{
 
     log_handler?.d("User confirmed (${user['confirmed']}) signed in with email ${user['email']} at ${user['created_at']}");
     show_successful_sign_up(context);
+    return true;
   } catch (er){
     log_handler?.e("Error: $er");
-    //show_ai_response_error(context);
+    return false;
   }
 }
 
-Future<Map<String, dynamic>?> log_in(
+Future<bool> log_in(
     BuildContext context,
     String email,
     String password,
     ) async {
   log_handler?.d("[------log_in function executing------]");
-
-  // Basic empty check (client‑side)
+  //Basic empty check (client‑side)
   if (email.trim().isEmpty || password.isEmpty) {
     show_invalid_parameters_error(context);
-    return null;
+    return false;
+  }
+
+  //Validate email and password
+  if(!is_valid_email(context, email)){
+    show_invalid_email(context);
+    log_handler?.w("Input not sent due to invalid email.");
+    return false;
+  }
+  if(!is_valid_password(context, password)){
+    show_invalid_password_error(context);
+    log_handler?.w("Input not sent due to invalid password.");
+    return false;
   }
 
   final body = jsonEncode({
@@ -139,56 +164,140 @@ Future<Map<String, dynamic>?> log_in(
   } on SocketException catch (e) {
     log_handler?.e("Network error: $e");
     show_network_error(context);
-    return null;
+    return false;
   } on TimeoutException {
     // dialog already shown in onTimeout
-    return null;
+    return false;
   } catch (e) {
     log_handler?.e("Unexpected error: $e");
     show_unexpected_backend_error(context);
-    return null;
+    return false;
   }
 
-  //---------- Status‑code handling ----------
-  switch (response.statusCode) {
-    case 200:
-      log_handler?.i("Backend response successful ${response.statusCode}");
-      final data = jsonDecode(response.body);
+  try {
+    //---------- Status‑code handling ----------
+    switch (response.statusCode) {
+      case 200:
+        log_handler?.i("Backend response successful ${response.statusCode}");
+        final data = jsonDecode(response.body);
 
-      //Save token data for global use
-      await AppStorage.save_token_related(
-        data['session']['access_token'],
-        data['session']['refresh_token'],
-        data['session']['expires_in'],
-        data['session']['token_type'],
-      );
-      //Save user data for global use
-      await AppStorage.save_user_data(
-        data['user']['id'],
-        data['user']['email'],
-      );
+        //Save token data for global use
+        await AppStorage.save_token_related(
+          data['session']['access_token'],
+          data['session']['refresh_token'],
+          data['session']['expires_in'],
+          data['session']['token_type'],
+        );
+        //Save user data for global use
+        await AppStorage.save_user_data(
+          data['user']['id'],
+          data['user']['email'],
+        );
 
-      return data;
-    case 400:
-      log_handler?.e("Parameters error: ${response.statusCode} - ${response.body}");
-      show_invalid_parameters_error(context);
-      break;
-    case 401:
-      log_handler?.w("Unauthorized access: ${response.statusCode} - ${response.body}");
-      show_invalid_credentials(context);
-      break;
-    case 429:
-      log_handler?.e("Backend error: ${response.statusCode} - ${response.body}");
-      show_unexpected_backend_error(context);
-      break;
-    case 500:
-      log_handler?.e("Server error: ${response.statusCode} - ${response.body}");
-      show_server_error(context);
-      break;
-    default:
-      log_handler?.w("Unhandled status code: ${response.statusCode}");
-      show_unexpected_backend_error(context);
-      break;
+        return true;
+      case 400:
+        log_handler?.e("Parameters error: ${response.statusCode} - ${response.body}");
+        show_invalid_parameters_error(context);
+        return false;
+      case 401:
+        log_handler?.w("Unauthorized access: ${response.statusCode} - ${response.body}");
+        show_invalid_credentials(context);
+        return false;
+      case 429:
+        log_handler?.e("Backend error: ${response.statusCode} - ${response.body}");
+        show_unexpected_backend_error(context);
+        return false;
+      case 500:
+        log_handler?.e("Server error: ${response.statusCode} - ${response.body}");
+        show_server_error(context);
+        return false;
+      default:
+        log_handler?.w("Unhandled status code: ${response.statusCode}");
+        show_unexpected_backend_error(context);
+        return false;
+    }
+  } catch (er){
+    log_handler?.e("Error: $er");
+    return false;
   }
-  return null;
+}
+
+Future<bool> reset_password(
+    BuildContext context,
+    String email,
+    ) async {
+  log_handler?.d("[------reset_password function executing------]");
+
+  //Check for empty
+  if (email.trim().isEmpty) {
+    show_invalid_parameters_error(context);
+    return false;
+  }
+  //Check for invalid email
+  if (!is_valid_email(context, email)) {
+    show_invalid_email(context);
+    log_handler?.w("Input not sent due to invalid email.");
+    return false;
+  }
+
+  //Prepare body
+  final body = jsonEncode({"email": email});
+
+  try {
+    final response = await http
+        .post(
+      Uri.parse(config_data.backend_url_reset_password),
+      headers: {"Content-Type": "application/json"},
+      body: body,
+    )
+        .timeout(
+      Duration(seconds: config_data.max_api_response_time_limit + 5),
+      onTimeout: () {
+        show_ai_took_too_long_error(context);
+        throw TimeoutException('Server took too long');
+      },
+    );
+
+    switch (response.statusCode) {
+      case 200:
+        log_handler?.i("Password reset email sent successfully.");
+        show_successful_password_reset(context);
+        return true;
+
+      case 400:
+        log_handler?.e("Invalid email format: ${response.body}");
+        show_invalid_email(context);
+        return false;
+
+      case 404:
+        log_handler?.w("Email not registered: ${response.body}");
+        show_user_not_found(context); // You should implement this dialog
+        return false;
+
+      case 429:
+        log_handler?.e("Rate limit hit: ${response.body}");
+        show_unexpected_backend_error(context);
+        return false;
+
+      case 500:
+        log_handler?.e("Server error: ${response.body}");
+        show_server_error(context);
+        return false;
+
+      default:
+        log_handler?.w("Unexpected status code: ${response.statusCode}");
+        show_unexpected_backend_error(context);
+        return false;
+    }
+  } on SocketException catch (e) {
+    log_handler?.e("Network error: $e");
+    show_network_error(context);
+    return false;
+  } on TimeoutException {
+    return false; // already handled
+  } catch (e) {
+    log_handler?.e("Unexpected error: $e");
+    show_unexpected_backend_error(context);
+    return false;
+  }
 }

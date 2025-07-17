@@ -167,6 +167,9 @@ class _sign_up_pageState extends State<sign_up_page> {
                                   onTap: _is_processing
                                       ? null //Disable button while processing
                                       : () async {
+                                    //Start sign up
+                                    setState(() => _is_processing = true);
+
                                     //Get user input
                                     final String email = _sign_in_controller.text;
                                     final String password = _password_controller.text;
@@ -183,37 +186,24 @@ class _sign_up_pageState extends State<sign_up_page> {
                                       return;
                                     }
 
-                                    //Check valid email
-                                    if(!is_valid_email(context, email)){
-                                      log_handler?.w("Input not sent due to invalid email.");
-                                      return;
-                                    }
-
                                     //Ensure passwords match
                                     if(password != confirm_password){
                                       log_handler?.w("Password and password confirm are not the same");
                                       show_nonmatching_passwords(context);
                                       return;
                                     }
-                                    //Check valid password
-                                    if(!is_valid_password(context,password)){
-                                      log_handler?.w("Input not sent due to invalid password.");
-                                      return;
+
+                                    //Make call to sign up
+                                    final bool answer = await sign_up(context, email, password);
+
+                                    //Clear only if answer is successful
+                                    if (answer){
+                                      //Update accordingly
+                                      _sign_in_controller.clear();
+                                      _password_controller.clear();
+                                      _confirm_password_controller.clear();
                                     }
-
-                                    //Start sign up
-                                    setState(() => _is_processing = true); //Start processing
-
-                                    //Make call
-                                    await sign_up(context, email, password);
-
-                                    //Update accordingly
-                                    _sign_in_controller.clear();
-                                    _password_controller.clear();
-                                    _confirm_password_controller.clear();
-                                    setState(() {
-                                      _is_processing = false;
-                                    });
+                                    setState(() {_is_processing = false;});
                                   },
                                   child: Container(
                                     decoration: BoxDecoration(
