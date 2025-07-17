@@ -1,7 +1,7 @@
 import "package:flutter/cupertino.dart";
 import "package:flutter/material.dart";
 import "package:google_fonts/google_fonts.dart";
-import "package:simple_chat/configurations/config_invoke.dart";
+import "package:simple_chat/configuration/config_invoke.dart";
 
 //TODO:Create a single alert dialog that can be modified to have title and paragraph
 //Alert dialogs------------------------------------------------------

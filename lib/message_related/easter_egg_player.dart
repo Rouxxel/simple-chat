@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:simple_chat/configurations/config_invoke.dart';
+import 'package:simple_chat/configuration/config_invoke.dart';
 
 class EasterEggPlayerInline extends StatefulWidget {
   final String asset_path;

@@ -5,12 +5,12 @@ import "package:flutter/material.dart";
 import "dart:async";
 import "dart:convert";
 import 'package:http/http.dart' as http;
-import "package:simple_chat/classes/app_storage.dart";
-import "package:simple_chat/methods_functions/methods.dart";
+import "package:simple_chat/session_related/app_storage_class.dart";
+import "package:simple_chat/methods_functions/general_methods.dart";
 
 //Import alert dialogs and others
 import "package:simple_chat/utils/alert_dialog_list.dart";
-import 'package:simple_chat/configurations/config_invoke.dart';
+import 'package:simple_chat/configuration/config_invoke.dart';
 import 'package:simple_chat/utils/logger_config.dart';
 
 //imports

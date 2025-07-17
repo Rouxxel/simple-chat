@@ -2,14 +2,14 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart'; //Fonts
 
-import 'package:simple_chat/methods_functions/methods.dart';
-import 'package:simple_chat/configurations/config_invoke.dart';
+import 'package:simple_chat/methods_functions/general_methods.dart';
+import 'package:simple_chat/configuration/config_invoke.dart';
 import 'package:simple_chat/utils/alert_dialog_list.dart';
 import 'package:simple_chat/utils/colorimetry_blueprints.dart';
 
 import 'package:simple_chat/utils/logger_config.dart';
 
-import '../classes/easter_egg_player.dart';
+import '../message_related/easter_egg_player.dart';
 
 class settings extends StatefulWidget {
   const settings({super.key});

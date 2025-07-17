@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';   //Fonts
 
-import 'package:simple_chat/methods_functions/methods.dart';
+import 'package:simple_chat/methods_functions/general_methods.dart';
 import 'package:simple_chat/methods_functions/user_entrypoint_methods.dart';
-import 'package:simple_chat/configurations/config_invoke.dart';
+import 'package:simple_chat/configuration/config_invoke.dart';
 import 'package:simple_chat/utils/alert_dialog_list.dart';
 import 'package:simple_chat/utils/logger_config.dart';
 import 'package:simple_chat/screens_pages/log_in_page.dart';
