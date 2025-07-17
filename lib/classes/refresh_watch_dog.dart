@@ -42,6 +42,7 @@ class TokenWatchdog {
   }
 
   void stop() {
+    log_handler?.i("Token refresh scheduled stopped");
     _timer?.cancel();
     _timer = null;
   }
