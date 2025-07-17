@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:simple_chat/configurations/config_invoke.dart';
 import 'package:simple_chat/utils/logger_config.dart';
 import 'package:simple_chat/screens_pages/log_in_page.dart';
+import 'package:simple_chat/methods_functions/user_entrypoint_methods.dart';
 
 //imports
 /////////////////////////////////////////////////////////////////////////////
@@ -16,6 +17,9 @@ void main() async{
 
   //Load configuration
   await initialize_config();
+
+  //Wake up backend
+  await root_endpoint(); //Ping the backend
 
   //Check loaded configuration (I know its horrible coding)
   log_handler?.i(

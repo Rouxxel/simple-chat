@@ -5,6 +5,7 @@ import "package:flutter/material.dart";
 import "dart:async";
 import "dart:convert";
 import 'package:http/http.dart' as http;
+import "package:simple_chat/classes/app_storage.dart";
 
 //Import alert dialogs and others
 import "package:simple_chat/utils/alert_dialog_list.dart";
@@ -16,6 +17,24 @@ import 'package:simple_chat/utils/logger_config.dart';
 //Methods
 
 //User entrypoint handling--------------------------------------------------
+//Root method to wake the backend up
+Future<void> root_endpoint() async {
+  final Uri url = Uri.parse('${config_data.backend_url}/');
+
+  try {
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      log_handler?.i("Backend running: ${data['message']}");
+    } else {
+      log_handler?.w("Backend start up failed with status: ${response.statusCode}");
+    }
+  } catch (e) {
+    log_handler?.e("Failed to connect to backend: $e");
+  }
+}
+
 //Sign up method
 Future<void> sign_up(BuildContext context, String email, String password) async{
   log_handler?.d("[------sign_up function executing------]");
@@ -134,8 +153,21 @@ Future<Map<String, dynamic>?> log_in(
   switch (response.statusCode) {
     case 200:
       log_handler?.i("Backend response successful ${response.statusCode}");
-      final data = jsonDecode(response.body); //Return backend response
-      log_handler?.w(data);
+      final data = jsonDecode(response.body);
+
+      //Save token data for global use
+      await AppStorage.save_token_related(
+        data['session']['access_token'],
+        data['session']['refresh_token'],
+        data['session']['expires_in'],
+        data['session']['token_type'],
+      );
+      //Save user data for global use
+      await AppStorage.save_user_data(
+        data['user']['id'],
+        data['user']['email'],
+      );
+
       return data;
     case 400:
       log_handler?.e("Parameters error: ${response.statusCode} - ${response.body}");

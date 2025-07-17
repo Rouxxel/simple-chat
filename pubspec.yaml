@@ -51,6 +51,7 @@ dependencies:
   audioplayers: ^5.2.1         #Audio player
   archive: ^4.0.7              #For zip file generation
   http: ^1.4.0                 #To consume https resources
+  flutter_secure_storage: ^9.2.4 #To secure safely critical data
 
 dev_dependencies:
   flutter_test:
