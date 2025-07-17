@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';   //Fonts
@@ -8,6 +9,8 @@ import 'package:flutter_markdown/flutter_markdown.dart'; //For markdown
 import 'package:simple_chat/methods_functions/methods.dart';
 import 'package:simple_chat/classes/classes.dart';
 import 'package:simple_chat/configurations/config_invoke.dart';
+import 'package:simple_chat/methods_functions/user_entrypoint_methods.dart';
+import 'package:simple_chat/screens_pages/log_in_page.dart';
 import 'package:simple_chat/utils/logger_config.dart';
 
 //Other screens
@@ -100,31 +103,63 @@ class _landing_pageState extends State<landing_page> {
                   ),
                 ],
               ),
-              IconButton(
-                icon: const Icon(Icons.settings),
-                iconSize: 35,
-                color: Colors.black,
-                onPressed: () async {
+              Row(
 
-                  //play the button sound
-                  await play_effect_sound(config_data.button_pressed_effect);
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.settings),
+                    iconSize: 35,
+                    color: Colors.black,
+                    onPressed: () async {
 
-                  //Navigate to settings page with fade transition
-                  await Navigator.push(
-                    context,
-                    PageRouteBuilder(
-                      pageBuilder: (context, animation, secondaryAnimation) => const settings(),
-                      transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                        return FadeTransition(
-                          opacity: animation,
-                          child: child,
-                        );
-                      },
-                    ),
-                  );
-                  //Run after returning from the settings screen
-                  _load_system_prompt();
-                },
+                      //play the button sound
+                      await play_effect_sound(config_data.button_pressed_effect);
+
+                      //Navigate to settings page with fade transition
+                      await Navigator.push(
+                        context,
+                        PageRouteBuilder(
+                          pageBuilder: (context, animation, secondaryAnimation) => const settings(),
+                          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                            return FadeTransition(
+                              opacity: animation,
+                              child: child,
+                            );
+                          },
+                        ),
+                      );
+                      //Run after returning from the settings screen
+                      _load_system_prompt();
+                    },
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.logout),
+                    iconSize: 35,
+                    color: Colors.black,
+                    onPressed: () async {
+
+                      //play the button sound
+                      await play_effect_sound(config_data.button_pressed_effect);
+
+                      await log_out(context);
+                      log_handler?.i("User logged out. Exiting app...");
+
+                      //Navigate to login page with fade transition
+                      await Navigator.push(
+                        context,
+                        PageRouteBuilder(
+                          pageBuilder: (context, animation, secondaryAnimation) => const log_in_page(),
+                          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                            return FadeTransition(
+                              opacity: animation,
+                              child: child,
+                            );
+                          },
+                        ),
+                      );
+                    },
+                  ),
+                ],
               )
             ],
           ),

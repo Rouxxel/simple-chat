@@ -12,6 +12,7 @@ import "package:simple_chat/methods_functions/methods.dart";
 import "package:simple_chat/utils/alert_dialog_list.dart";
 import 'package:simple_chat/configurations/config_invoke.dart';
 import 'package:simple_chat/utils/logger_config.dart';
+import 'package:simple_chat/classes/app_storage.dart';
 
 //imports
 /////////////////////////////////////////////////////////////////////////////
@@ -37,7 +38,11 @@ Future<void> root_endpoint() async {
 }
 
 //Sign up method
-Future<bool> sign_up(BuildContext context, String email, String password) async{
+Future<bool> sign_up(
+    BuildContext context,
+    String email,
+    String password
+    ) async{
   log_handler?.d("[------sign_up function executing------]");
   if (email.isEmpty || password.isEmpty) {
     //No input to process
@@ -47,7 +52,7 @@ Future<bool> sign_up(BuildContext context, String email, String password) async{
 
   //Validate email and password
   if(!is_valid_email(context, email)){
-    show_invalid_email(context);
+    show_invalid_email_error(context);
     log_handler?.w("Input not sent due to invalid email.");
     return false;
   }
@@ -131,7 +136,7 @@ Future<bool> log_in(
 
   //Validate email and password
   if(!is_valid_email(context, email)){
-    show_invalid_email(context);
+    show_invalid_email_error(context);
     log_handler?.w("Input not sent due to invalid email.");
     return false;
   }
@@ -222,6 +227,86 @@ Future<bool> log_in(
   }
 }
 
+Future<void> log_out(
+    BuildContext context,
+    ) async {
+  log_handler?.d("[------log_out function executing------]");
+
+  //Get access_token
+  final String? access_token = await AppStorage.get_access_token();
+
+  if (access_token == null || access_token.trim().isEmpty) {
+    show_invalid_parameters_error(context);
+    return;
+  }
+
+  final body = jsonEncode({
+    "access_token": access_token,
+  });
+
+  http.Response response;
+  try {
+    response = await http
+        .post(
+      Uri.parse(config_data.backend_url_log_out),
+      headers: {"Content-Type": "application/json"},
+      body: body,
+    )
+        .timeout(
+      Duration(seconds: config_data.max_api_response_time_limit + 5),
+      onTimeout: () {
+        show_ai_took_too_long_error(context);
+        throw TimeoutException('Server took too long');
+      },
+    );
+  } on SocketException catch (e) {
+    log_handler?.e("Network error: $e");
+    show_network_error(context);
+    return;
+  } on TimeoutException {
+    // dialog already shown in onTimeout
+    return;
+  } catch (e) {
+    log_handler?.e("Unexpected error: $e");
+    show_unexpected_backend_error(context);
+    return;
+  }
+
+  try {
+    //---------- Status‑code handling ----------
+    switch (response.statusCode) {
+      case 200:
+        log_handler?.i("Backend response successful ${response.statusCode}");
+        //Remove all global variables
+        await AppStorage.clear_tokens();
+        return;
+      case 400:
+        log_handler?.e("Parameters error: ${response.statusCode} - ${response.body}");
+        show_invalid_parameters_error(context);
+        return;
+      case 401:
+        log_handler?.w("Unauthorized access: ${response.statusCode} - ${response.body}");
+        show_invalid_credentials(context);
+        return;
+      case 429:
+        log_handler?.e("Backend error: ${response.statusCode} - ${response.body}");
+        show_unexpected_backend_error(context);
+        return;
+      case 500:
+        log_handler?.e("Server error: ${response.statusCode} - ${response.body}");
+        show_server_error(context);
+        return;
+      default:
+        log_handler?.w("Unhandled status code: ${response.statusCode}");
+        show_unexpected_backend_error(context);
+        return;
+    }
+  } catch (er){
+    log_handler?.e("Error: $er");
+    return;
+  }
+}
+
 Future<bool> reset_password(
     BuildContext context,
     String email,
@@ -235,7 +320,7 @@ Future<bool> reset_password(
   }
   //Check for invalid email
   if (!is_valid_email(context, email)) {
-    show_invalid_email(context);
+    show_invalid_email_error(context);
     log_handler?.w("Input not sent due to invalid email.");
     return false;
   }
@@ -266,7 +351,7 @@ Future<bool> reset_password(
 
       case 400:
         log_handler?.e("Invalid email format: ${response.body}");
-        show_invalid_email(context);
+        show_invalid_email_error(context);
         return false;
 
       case 404:
