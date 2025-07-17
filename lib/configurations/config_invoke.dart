@@ -30,6 +30,7 @@ class app_configuration {
 
   final List<dynamic> allowed_email_providers;
   final List<dynamic> allowed_email_tlds;
+  final int refresh_token_preemptive;
 
   final Color background_color;
   final Color default_background_color;
@@ -83,6 +84,7 @@ class app_configuration {
 
     required this.allowed_email_providers,
     required this.allowed_email_tlds,
+    required this.refresh_token_preemptive,
 
     required this.background_color,
     required this.default_background_color,
@@ -147,6 +149,7 @@ class app_configuration {
 
       allowed_email_providers: db["allowed_email_providers"]?? [''],
       allowed_email_tlds: db["allowed_email_tlds"]?? [''],
+      refresh_token_preemptive: db["refresh_token_preemptive.s"]?? 10,
 
       background_color: hex_to_color(colors['background.color'] ?? '#FFFFFFFF'),
       default_background_color: hex_to_color(colors['default_background.color'] ?? '#FFFFFFFF'),

@@ -1,0 +1,48 @@
+import 'dart:async';
+import 'package:flutter/cupertino.dart';
+import 'package:simple_chat/classes/app_storage.dart';
+import 'package:simple_chat/configurations/config_invoke.dart';
+import 'package:simple_chat/utils/logger_config.dart';
+
+import 'package:simple_chat/methods_functions/user_entrypoint_methods.dart';
+
+class TokenWatchdog {
+  static final TokenWatchdog _instance = TokenWatchdog._internal();
+  factory TokenWatchdog() => _instance;
+  TokenWatchdog._internal();
+
+  Timer? _timer;
+
+  void start(BuildContext context) async {
+    //Should be an int
+    final expires_in_str = await AppStorage.get_expires_in();
+
+    if (expires_in_str == null || expires_in_str.trim().isEmpty) {
+      log_handler?.e("Token expiry not found, cannot start watchdog.");
+      return;
+    }
+
+    final expires_in_int = int.tryParse(expires_in_str);
+    if (expires_in_int == null) {
+      log_handler?.e("Invalid expiry format.");
+      return;
+    }
+
+    final duration = Duration(seconds: expires_in_int - config_data.refresh_token_preemptive);
+    log_handler?.i("Token refresh scheduled in ${duration.inSeconds} seconds.");
+
+    _timer?.cancel(); //Cancel existing timer
+    _timer = Timer(duration, () {
+      log_handler?.i("Executing scheduled token refresh...");
+      refresh_access(context).then((_) {
+        //Restart the watchdog after refresh
+        start(context);
+      });
+    });
+  }
+
+  void stop() {
+    _timer?.cancel();
+    _timer = null;
+  }
+}

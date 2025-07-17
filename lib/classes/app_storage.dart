@@ -38,6 +38,7 @@ class AppStorage {
   }
 
   //Update token and refresh token
+  //MAY NOT BE NECESSARY SINCE save_token_related() EXISTS
   static Future<void> update_token_and_refresh(
       String access_token,
       String refresh_token,

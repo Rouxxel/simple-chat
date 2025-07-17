@@ -21,7 +21,8 @@
   },
   "db": {
     "allowed_email_providers": ["gmail","outlook","yahoo","hotmail","icloud","protonmail","aol","zoho","gmx","mail"],
-    "allowed_email_tlds": ["com", "org", "net", "co", "io", "edu", "gov"]
+    "allowed_email_tlds": ["com", "org", "net", "co", "io", "edu", "gov"],
+    "refresh_token_preemptive.s": 30
   },
   "colors":{
     "background.color": "#FFFCF9FB",

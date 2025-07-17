@@ -48,6 +48,7 @@ void main() async{
           'backend_url_reset_password: ${config_data.backend_url_reset_password}\n'
           'allowed_email_providers: ${config_data.allowed_email_providers}\n'
           'allowed_email_tlds: ${config_data.allowed_email_tlds}\n'
+          'refresh_token_preemptive.s: ${config_data.refresh_token_preemptive}\n'
           'background_color: ${config_data.background_color}\n'
           'app_bar_color: ${config_data.app_bar_color}\n'
           'text_color: ${config_data.text_color}\n'

@@ -12,7 +12,6 @@ import "package:simple_chat/methods_functions/methods.dart";
 import "package:simple_chat/utils/alert_dialog_list.dart";
 import 'package:simple_chat/configurations/config_invoke.dart';
 import 'package:simple_chat/utils/logger_config.dart';
-import 'package:simple_chat/classes/app_storage.dart';
 
 //imports
 /////////////////////////////////////////////////////////////////////////////
@@ -199,6 +198,9 @@ Future<bool> log_in(
           data['user']['email'],
         );
 
+        //TODO: Start timer for token refresh watch dog
+        //TokenWatchdog().start(context);
+
         return true;
       case 400:
         log_handler?.e("Parameters error: ${response.statusCode} - ${response.body}");
@@ -279,6 +281,98 @@ Future<void> log_out(
         log_handler?.i("Backend response successful ${response.statusCode}");
         //Remove all global variables
         await AppStorage.clear_tokens();
+        //TODO: Stop watch dog for token refresh
+        //TokenWatchdog().stop();
+        return;
+      case 400:
+        log_handler?.e("Parameters error: ${response.statusCode} - ${response.body}");
+        show_invalid_parameters_error(context);
+        return;
+      case 401:
+        log_handler?.w("Unauthorized access: ${response.statusCode} - ${response.body}");
+        show_invalid_credentials(context);
+        return;
+      case 429:
+        log_handler?.e("Backend error: ${response.statusCode} - ${response.body}");
+        show_unexpected_backend_error(context);
+        return;
+      case 500:
+        log_handler?.e("Server error: ${response.statusCode} - ${response.body}");
+        show_server_error(context);
+        return;
+      default:
+        log_handler?.w("Unhandled status code: ${response.statusCode}");
+        show_unexpected_backend_error(context);
+        return;
+    }
+  } catch (er){
+    log_handler?.e("Error: $er");
+    return;
+  }
+}
+
+Future<void> refresh_access(
+    BuildContext context
+    ) async {
+  log_handler?.d("[------refresh_access function executing------]");
+  //Get access_token
+  final String? refresh_token = await AppStorage.get_refresh_token();
+
+  if (refresh_token == null || refresh_token.trim().isEmpty) {
+    show_invalid_parameters_error(context);
+    return;
+  }
+
+  final body = jsonEncode({
+    "refresh_token": refresh_token,
+  });
+
+  http.Response response;
+  try {
+    response = await http
+        .post(
+      Uri.parse(config_data.backend_url_refresh_token),
+      headers: {"Content-Type": "application/json"},
+      body: body,
+    )
+        .timeout(
+      Duration(seconds: config_data.max_api_response_time_limit + 5),
+      onTimeout: () {
+        show_ai_took_too_long_error(context);
+        throw TimeoutException('Server took too long');
+      },
+    );
+  } on SocketException catch (e) {
+    log_handler?.e("Network error: $e");
+    show_network_error(context);
+    return;
+  } on TimeoutException {
+    // dialog already shown in onTimeout
+    return;
+  } catch (e) {
+    log_handler?.e("Unexpected error: $e");
+    show_unexpected_backend_error(context);
+    return;
+  }
+
+  try {
+    //---------- Status‑code handling ----------
+    switch (response.statusCode) {
+      case 200:
+        log_handler?.i("Backend response successful ${response.statusCode}");
+        final data = jsonDecode(response.body);
+
+        await AppStorage.save_token_related(
+          data["data"]["access_token"],
+          data["data"]["refresh_token"],
+          data["data"]["expires_in"],
+          data["data"]["token_type"],
+        );
+
+        //TODO: Start timer for token refresh watch dog
+        //TokenWatchdog().start(context);
+
+        log_handler?.i("User token refreshed successfully");
         return;
       case 400:
         log_handler?.e("Parameters error: ${response.statusCode} - ${response.body}");

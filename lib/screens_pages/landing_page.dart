@@ -5,6 +5,7 @@ import 'package:google_fonts/google_fonts.dart';   //Fonts
 import 'package:icons_flutter/icons_flutter.dart'; //Extra icons
 import 'package:intl/intl.dart'; //For date and time formatting
 import 'package:flutter_markdown/flutter_markdown.dart'; //For markdown
+import 'package:simple_chat/classes/refresh_watch_dog.dart';
 
 import 'package:simple_chat/methods_functions/methods.dart';
 import 'package:simple_chat/classes/classes.dart';
@@ -142,7 +143,9 @@ class _landing_pageState extends State<landing_page> {
                       await play_effect_sound(config_data.button_pressed_effect);
 
                       await log_out(context);
-                      log_handler?.i("User logged out. Exiting app...");
+                      //Stop watch dog for token refresh
+                      TokenWatchdog().stop();
+                      log_handler?.i("User logged out. Returning to log in page");
 
                       //Navigate to login page with fade transition
                       await Navigator.push(

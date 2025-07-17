@@ -9,6 +9,7 @@ import 'package:simple_chat/screens_pages/landing_page.dart';
 import 'package:simple_chat/utils/logger_config.dart';
 import 'package:simple_chat/screens_pages/sign_up_page.dart';
 
+import '../classes/refresh_watch_dog.dart';
 import '../methods_functions/user_entrypoint_methods.dart';
 import '../utils/colorimetry_blueprints.dart';
 
@@ -180,6 +181,9 @@ class _log_in_pageState extends State<log_in_page> {
                                     if (response) {
                                       _log_in_controller.clear();
                                       _password_controller.clear();
+
+                                      //Start timer for token refresh watch dog
+                                      TokenWatchdog().start(context);
 
                                       await Navigator.push(
                                         context,
