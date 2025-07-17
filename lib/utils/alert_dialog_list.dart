@@ -838,7 +838,7 @@ void show_network_error(BuildContext context) {
 }
 
 //Alert to show invalid email error
-void show_invalid_email(BuildContext context) {
+void show_invalid_email_error(BuildContext context) {
   //Declare the buttons of alert
   Widget ok_button = TextButton(
     child: Text(
