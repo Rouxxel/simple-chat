@@ -67,7 +67,7 @@ class Message {
         "access_token": access_token
       });
 
-      log_handler?.w(body_for_backend);
+      //log_handler?.w(body_for_backend);
 
       //POST request to your backend URL
       final response = await http
