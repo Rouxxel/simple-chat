@@ -6,6 +6,8 @@ import 'package:google_fonts/google_fonts.dart';   //Fonts
 import 'package:simple_chat/methods_functions/general_methods.dart';
 import 'package:simple_chat/configuration/config_invoke.dart';
 import 'package:simple_chat/screens_pages/landing_page.dart';
+import 'package:simple_chat/screens_pages/complete_profile.dart';
+import 'package:simple_chat/session_related/app_storage_class.dart';
 import 'package:simple_chat/utils/logger_config.dart';
 import 'package:simple_chat/screens_pages/sign_up_page.dart';
 
@@ -185,19 +187,45 @@ class _log_in_pageState extends State<log_in_page> {
                                       //Start timer for token refresh watch dog
                                       TokenWatchdog().start(context);
 
-                                      await Navigator.push(
-                                        context,
-                                        PageRouteBuilder(
-                                          pageBuilder: (context, animation, secondaryAnimation) =>
-                                          const landing_page(),
-                                          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                                            return FadeTransition(
-                                              opacity: animation,
-                                              child: child,
-                                            );
-                                          },
-                                        ),
+                                      //Get access and user id
+                                      final String? user_id = await AppStorage.get_user_id();
+                                      final String? access_token = await AppStorage.get_access_token();
+                                      final bool user_exists = await check_user_exists(context,
+                                          access_token: access_token.toString(),
+                                          user_id: user_id.toString()
                                       );
+
+                                      if (user_exists){
+                                        log_handler?.i("User profile complete, move to landing page");
+                                        await Navigator.push(
+                                          context,
+                                          PageRouteBuilder(
+                                            pageBuilder: (context, animation, secondaryAnimation) =>
+                                            const landing_page(),
+                                            transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                                              return FadeTransition(
+                                                opacity: animation,
+                                                child: child,
+                                              );
+                                            },
+                                          ),
+                                        );
+                                      } else{
+                                        log_handler?.i("User profile incomplete, move to complete profile page");
+                                        await Navigator.push(
+                                          context,
+                                          PageRouteBuilder(
+                                            pageBuilder: (context, animation, secondaryAnimation) =>
+                                            const complete_profile(),
+                                            transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                                              return FadeTransition(
+                                                opacity: animation,
+                                                child: child,
+                                              );
+                                            },
+                                          ),
+                                        );
+                                      }
                                     }
                                     setState(() => _is_processing = false);
                                   },

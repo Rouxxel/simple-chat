@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:simple_chat/configuration/config_invoke.dart';
+import 'package:simple_chat/configuration/countries_invoke.dart';
 import 'package:simple_chat/utils/logger_config.dart';
 import 'package:simple_chat/screens_pages/log_in_page.dart';
 import 'package:simple_chat/methods_functions/user_entrypoint_methods.dart';
@@ -15,8 +16,9 @@ void main() async{
   await init_logger();
   log_handler?.i("Logger successfully initialized!");
 
-  //Load configuration
+  //Load configurations
   await initialize_config();
+  await initialize_countries();
 
   //Wake up backend
   await root_endpoint(); //Ping the backend
@@ -46,6 +48,8 @@ void main() async{
           'backend_url_log_out: ${config_data.backend_url_log_out}\n'
           'backend_url_refresh_token: ${config_data.backend_url_refresh_token}\n'
           'backend_url_reset_password: ${config_data.backend_url_reset_password}\n'
+          'backend_url_complete_profile: ${config_data.backend_url_complete_profile}\n'
+          'backend_url_user_exists: ${config_data.backend_url_user_exists}\n'
           'allowed_email_providers: ${config_data.allowed_email_providers}\n'
           'allowed_email_tlds: ${config_data.allowed_email_tlds}\n'
           'refresh_token_preemptive.s: ${config_data.refresh_token_preemptive}\n'

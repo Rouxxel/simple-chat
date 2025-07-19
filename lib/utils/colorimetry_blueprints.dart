@@ -409,6 +409,8 @@ class LabeledTextField extends StatelessWidget {
   final Color fill_color;
   final Color hint_color;
   final bool enabled;
+  final VoidCallback? onTap;
+  final bool readOnly;
 
   const LabeledTextField({
     Key? key,
@@ -419,12 +421,13 @@ class LabeledTextField extends StatelessWidget {
     required this.fill_color,
     required this.hint_color,
     this.enabled = true,
+    this.onTap,
+    this.readOnly = false,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
@@ -443,11 +446,12 @@ class LabeledTextField extends StatelessWidget {
           child: TextField(
             controller: controller,
             enabled: enabled,
+            readOnly: readOnly,
+            onTap: onTap,
             style: GoogleFonts.roboto(
               textStyle: TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.normal,
-                fontStyle: FontStyle.normal,
               ),
             ),
             decoration: InputDecoration(
@@ -458,7 +462,6 @@ class LabeledTextField extends StatelessWidget {
                 textStyle: TextStyle(
                   fontSize: 18,
                   fontStyle: FontStyle.italic,
-                  fontWeight: FontWeight.normal,
                   color: hint_color,
                 ),
               ),
