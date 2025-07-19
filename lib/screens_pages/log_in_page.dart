@@ -6,7 +6,7 @@ import 'package:google_fonts/google_fonts.dart';   //Fonts
 import 'package:simple_chat/standalone_methods_functions/general_methods.dart';
 import 'package:simple_chat/configuration/config_invoke.dart';
 import 'package:simple_chat/screens_pages/landing_page.dart';
-import 'package:simple_chat/screens_pages/complete_profile.dart';
+import 'package:simple_chat/screens_pages/complete_profile_page.dart';
 import 'package:simple_chat/session_related/app_storage_class.dart';
 import 'package:simple_chat/utils/logger_config.dart';
 import 'package:simple_chat/screens_pages/sign_up_page.dart';
