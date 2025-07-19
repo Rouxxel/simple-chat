@@ -311,6 +311,197 @@ Future<void> log_out(
   }
 }
 
+Future<bool> complete_user_profile(
+    BuildContext context, {
+      required String access_token,
+      required String email,
+      required String user_name,
+      required String first_name,
+      required String last_name,
+      required String phone_number,
+      required String date_birth,   // Format: 'YYYY-MM-DD'
+      required String country,
+      required String country_code, // ISO 3166-1 alpha-2
+    }) async {
+  log_handler?.d("[------complete_profile function executing------]");
+
+  // Basic client-side validation
+  if (access_token.trim().isEmpty ||
+      email.trim().isEmpty ||
+      user_name.trim().isEmpty ||
+      first_name.trim().isEmpty ||
+      last_name.trim().isEmpty ||
+      phone_number.trim().isEmpty ||
+      date_birth.trim().isEmpty ||
+      country.trim().isEmpty ||
+      country_code.trim().isEmpty) {
+    show_invalid_parameters_error(context);
+    return false;
+  }
+
+  if (!is_valid_email(context, email)) {
+    show_invalid_email_error(context);
+    log_handler?.w("Input not sent due to invalid email.");
+    return false;
+  }
+
+  // Construct request body
+  final body = jsonEncode({
+    "access_token": access_token,
+    "email": email,
+    "user_name": user_name,
+    "first_name": first_name,
+    "last_name": last_name,
+    "phone_number": phone_number,
+    "date_birth": date_birth,
+    "country": country,
+    "country_code": country_code,
+  });
+
+  http.Response response;
+  try {
+    response = await http
+        .post(
+      Uri.parse(config_data.backend_url_complete_profile),
+      headers: {"Content-Type": "application/json"},
+      body: body,
+    )
+        .timeout(
+      Duration(seconds: config_data.max_api_response_time_limit + 5),
+      onTimeout: () {
+        show_ai_took_too_long_error(context);
+        throw TimeoutException('Server took too long');
+      },
+    );
+  } on SocketException catch (e) {
+    log_handler?.e("Network error: $e");
+    show_network_error(context);
+    return false;
+  } on TimeoutException {
+    // dialog already shown in onTimeout
+    return false;
+  } catch (e) {
+    log_handler?.e("Unexpected error: $e");
+    show_unexpected_backend_error(context);
+    return false;
+  }
+
+  try {
+    switch (response.statusCode) {
+      case 200:
+      case 201: //Just in case your backend returns 201 Created
+        log_handler?.i("Profile completion successful: ${response.statusCode}");
+        return true;
+      case 400:
+        log_handler?.e("Invalid parameters: ${response.statusCode} - ${response.body}");
+        show_invalid_parameters_error(context);
+        return false;
+      case 401:
+        log_handler?.w("Unauthorized: ${response.statusCode} - ${response.body}");
+        show_invalid_credentials(context);
+        return false;
+      case 409:
+        log_handler?.w("Profile already exists: ${response.statusCode} - ${response.body}");
+        //TODO:create alert dialog
+        //show_profile_already_exists_error(context);
+        return false;
+      case 429:
+        log_handler?.e("Rate limited: ${response.statusCode} - ${response.body}");
+        show_unexpected_backend_error(context);
+        return false;
+      case 500:
+        log_handler?.e("Server error: ${response.statusCode} - ${response.body}");
+        show_server_error(context);
+        return false;
+      default:
+        log_handler?.w("Unhandled status code: ${response.statusCode}");
+        show_unexpected_backend_error(context);
+        return false;
+    }
+  } catch (er) {
+    log_handler?.e("Error processing response: $er");
+    return false;
+  }
+}
+
+Future<bool> check_user_exists(
+    BuildContext context, {
+      required String access_token,
+      required String user_id,
+    }) async {
+  log_handler?.d("[------check_user_exists function executing------]");
+
+  //Basic client-side validation
+  if (access_token.trim().isEmpty || user_id.trim().isEmpty) {
+    show_invalid_parameters_error(context);
+    return false;
+  }
+
+  final body = jsonEncode({
+    "access_token": access_token,
+    "user_id": user_id,
+  });
+
+  http.Response response;
+  try {
+    response = await http
+        .post(
+      Uri.parse(config_data.backend_url_user_exists),
+      headers: {"Content-Type": "application/json"},
+      body: body,
+    )
+        .timeout(
+      Duration(seconds: config_data.max_api_response_time_limit + 5),
+      onTimeout: () {
+        show_ai_took_too_long_error(context);
+        throw TimeoutException('Server took too long');
+      },
+    );
+  } on SocketException catch (e) {
+    log_handler?.e("Network error: $e");
+    show_network_error(context);
+    return false;
+  } on TimeoutException {
+    return false;
+  } catch (e) {
+    log_handler?.e("Unexpected error: $e");
+    show_unexpected_backend_error(context);
+    return false;
+  }
+
+  try {
+    switch (response.statusCode) {
+      case 200:
+        final data = jsonDecode(response.body);
+        log_handler?.i("User existence check success: exists=${data['exists']}");
+        return data['exists'];
+      case 400:
+        log_handler?.e("Invalid parameters: ${response.statusCode} - ${response.body}");
+        show_invalid_parameters_error(context);
+        return false;
+      case 401:
+        log_handler?.w("Unauthorized: ${response.statusCode} - ${response.body}");
+        show_invalid_credentials(context);
+        return false;
+      case 429:
+        log_handler?.e("Rate limited: ${response.statusCode} - ${response.body}");
+        show_unexpected_backend_error(context);
+        return false;
+      case 500:
+        log_handler?.e("Server error: ${response.statusCode} - ${response.body}");
+        show_server_error(context);
+        return false;
+      default:
+        log_handler?.w("Unhandled status code: ${response.statusCode}");
+        show_unexpected_backend_error(context);
+        return false;
+    }
+  } catch (er) {
+    log_handler?.e("Error processing response: $er");
+    return false;
+  }
+}
+
 Future<void> refresh_access(
     BuildContext context
     ) async {
