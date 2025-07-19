@@ -1016,6 +1016,65 @@ void show_invalid_password_error(BuildContext context) {
   );
 }
 
+//Alert to show invalid phone number
+void show_invalid_phone_number_error(BuildContext context) {
+  //Declare the buttons of alert
+  Widget ok_button = TextButton(
+    child: Text(
+      "Ok",
+      style: GoogleFonts.handjet(
+        textStyle: const TextStyle(
+          fontSize: 30,
+          fontWeight: FontWeight.bold,
+          fontStyle: FontStyle.normal,
+          color: Colors.black,
+        ),
+      ),
+    ),
+    onPressed: () {
+      Navigator.of(context, rootNavigator: true).pop();
+    },
+  );
+
+  //Set variables as the alert itself
+  var alert = AlertDialog(
+    backgroundColor: config_data.app_bar_color,
+    title: Text(
+      "Invalid phone number",
+      style: GoogleFonts.handjet(
+        textStyle: const TextStyle(
+          fontSize: 45,
+          fontWeight: FontWeight.bold,
+          fontStyle: FontStyle.normal,
+          color: Colors.black,
+        ),
+      ),
+    ),
+    content: Text(
+      "The phone number you entered is invalid, please enter a valid phone number",
+      style: GoogleFonts.handjet(
+        textStyle: const TextStyle(
+          fontSize: 25,
+          fontWeight: FontWeight.bold,
+          fontStyle: FontStyle.normal,
+          color: Colors.black,
+        ),
+      ),
+    ),
+    actions: [
+      ok_button,
+    ],
+  );
+
+  //Show the dialog
+  showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return alert;
+    },
+  );
+}
+
 //Alert to show unexpected backend error
 void show_unexpected_backend_error(BuildContext context) {
   //Declare the buttons of alert
