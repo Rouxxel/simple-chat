@@ -9,7 +9,7 @@ import "package:simple_chat/session_related/app_storage_class.dart";
 import "package:simple_chat/standalone_methods_functions/general_methods.dart";
 
 //Import alert dialogs and others
-import "package:simple_chat/utils/alert_dialog_list.dart";
+import "package:simple_chat/utils/widgets_and_ui_elements/alert_dialog_list.dart";
 import 'package:simple_chat/configuration/config_invoke.dart';
 import 'package:simple_chat/utils/logger_config.dart';
 

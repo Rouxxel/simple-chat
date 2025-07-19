@@ -8,7 +8,7 @@ import 'package:simple_chat/standalone_methods_functions/general_methods.dart';
 import 'package:simple_chat/standalone_methods_functions/user_entrypoint_methods.dart';
 import 'package:simple_chat/configuration/config_invoke.dart';
 import 'package:simple_chat/screens_pages/landing_page.dart';
-import 'package:simple_chat/utils/alert_dialog_list.dart';
+import 'package:simple_chat/utils/widgets_and_ui_elements/alert_dialog_list.dart';
 import 'package:simple_chat/utils/logger_config.dart';
 import 'package:simple_chat/session_related/app_storage_class.dart';
 

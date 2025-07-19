@@ -11,7 +11,7 @@ import 'package:archive/archive.dart';
 import 'package:archive/archive_io.dart';
 
 //Import alert dialogs and others
-import "package:simple_chat/utils/alert_dialog_list.dart";
+import "package:simple_chat/utils/widgets_and_ui_elements/alert_dialog_list.dart";
 import 'package:simple_chat/configuration/config_invoke.dart';
 import "package:simple_chat/message_related/message_class.dart";
 import 'package:simple_chat/utils/colorimetry_blueprints.dart';
