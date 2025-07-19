@@ -4,7 +4,7 @@ import 'package:simple_chat/session_related/app_storage_class.dart';
 import 'package:simple_chat/configuration/config_invoke.dart';
 import 'package:simple_chat/utils/logger_config.dart';
 
-import 'package:simple_chat/methods_functions/user_entrypoint_methods.dart';
+import 'package:simple_chat/standalone_methods_functions/user_entrypoint_methods.dart';
 
 class TokenWatchdog {
   static final TokenWatchdog _instance = TokenWatchdog._internal();

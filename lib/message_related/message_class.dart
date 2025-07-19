@@ -5,11 +5,10 @@ import 'package:http/http.dart' as http;
 import "dart:async";
 
 //Import methods
-import 'package:simple_chat/methods_functions/general_methods.dart';
+import 'package:simple_chat/standalone_methods_functions/general_methods.dart';
 import 'package:simple_chat/configuration/config_invoke.dart';
 import "package:simple_chat/session_related/app_storage_class.dart";
 import 'package:simple_chat/utils/logger_config.dart';
-//Import alert dialogs
 import "package:simple_chat/utils/alert_dialog_list.dart";
 
 //imports

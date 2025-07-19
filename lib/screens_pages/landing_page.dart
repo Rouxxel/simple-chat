@@ -6,10 +6,10 @@ import 'package:intl/intl.dart'; //For date and time formatting
 import 'package:flutter_markdown/flutter_markdown.dart'; //For markdown
 import 'package:simple_chat/session_related/refresh_tk_watch_dog.dart';
 
-import 'package:simple_chat/methods_functions/general_methods.dart';
+import 'package:simple_chat/standalone_methods_functions/general_methods.dart';
 import 'package:simple_chat/message_related/message_class.dart';
 import 'package:simple_chat/configuration/config_invoke.dart';
-import 'package:simple_chat/methods_functions/user_entrypoint_methods.dart';
+import 'package:simple_chat/standalone_methods_functions/user_entrypoint_methods.dart';
 import 'package:simple_chat/screens_pages/log_in_page.dart';
 import 'package:simple_chat/utils/logger_config.dart';
 

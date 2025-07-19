@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';   //Fonts
 
-import 'package:simple_chat/methods_functions/general_methods.dart';
+import 'package:simple_chat/standalone_methods_functions/general_methods.dart';
 import 'package:simple_chat/configuration/config_invoke.dart';
 import 'package:simple_chat/screens_pages/landing_page.dart';
 import 'package:simple_chat/screens_pages/complete_profile.dart';
@@ -12,7 +12,7 @@ import 'package:simple_chat/utils/logger_config.dart';
 import 'package:simple_chat/screens_pages/sign_up_page.dart';
 
 import '../session_related/refresh_tk_watch_dog.dart';
-import '../methods_functions/user_entrypoint_methods.dart';
+import '../standalone_methods_functions/user_entrypoint_methods.dart';
 import '../utils/colorimetry_blueprints.dart';
 
 //imports

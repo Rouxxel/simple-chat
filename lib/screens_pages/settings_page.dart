@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart'; //Fonts
 
-import 'package:simple_chat/methods_functions/general_methods.dart';
+import 'package:simple_chat/standalone_methods_functions/general_methods.dart';
 import 'package:simple_chat/configuration/config_invoke.dart';
 import 'package:simple_chat/utils/alert_dialog_list.dart';
 import 'package:simple_chat/utils/colorimetry_blueprints.dart';
