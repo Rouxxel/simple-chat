@@ -11,9 +11,9 @@ import 'package:simple_chat/session_related/app_storage_class.dart';
 import 'package:simple_chat/utils/logger_config.dart';
 import 'package:simple_chat/screens_pages/sign_up_page.dart';
 
-import '../session_related/refresh_tk_watch_dog.dart';
-import '../standalone_methods_functions/user_entrypoint_methods.dart';
-import '../utils/colorimetry_blueprints.dart';
+import 'package:simple_chat/session_related/refresh_tk_watch_dog.dart';
+import 'package:simple_chat/standalone_methods_functions/user_entrypoint_methods.dart';
+import 'package:simple_chat/utils/widgets_and_ui_elements/labeled_text_field.dart';
 
 //imports
 /////////////////////////////////////////////////////////////////////////////
