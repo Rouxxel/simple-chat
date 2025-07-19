@@ -199,6 +199,46 @@ bool is_valid_password(BuildContext context, String password) {
   return true;
 }
 
+//Function to check valid phone number
+bool is_valid_phone_number(BuildContext context, String phone_number) {
+  log_handler?.d('Validating phone number: $phone_number');
+
+  // Clean input: remove spaces, dashes, and parentheses
+  String cleaned = phone_number.replaceAll(RegExp(r'[\s\-\(\)]'), '');
+
+  // Rule 1: must be digits only (with optional leading +)
+  if (!RegExp(r'^\+?\d+$').hasMatch(cleaned)) {
+    log_handler?.w('Phone number validation failed: contains invalid characters -> ${phone_number}');
+    return false;
+  }
+
+  // Rule 2: length between 7 and 15 digits (standard international range)
+  final digitCount = cleaned.startsWith('+') ? cleaned.length - 1 : cleaned.length;
+  if (digitCount < 7 || digitCount > 15) {
+    log_handler?.w('Phone number validation failed: length not in valid range (7–15 digits)');
+    return false;
+  }
+
+  log_handler?.d('Phone number is valid, proceeding');
+  return true;
+}
+
+String date_formatter(BuildContext context, String date) {
+  //Safety check
+  if (!date.contains("/") || date.split("/").length != 3) {
+    throw FormatException("Invalid date format. Expected DD/MM/YYYY.");
+  }
+
+  //Split into parts
+  List<String> date_parts = date.split("/");
+  String day = date_parts[0].padLeft(2, '0');    //Ensure 2-digit day
+  String month = date_parts[1].padLeft(2, '0');  //Ensure 2-digit month
+  String year = date_parts[2];
+
+  //Return in YYYY-MM-DD format
+  return "$year-$month-$day";
+}
+
 //Audio handling------------------------------
 //General play audio
 Future<void> play_effect_sound(String asset_path) async {
