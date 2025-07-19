@@ -27,6 +27,8 @@ class app_configuration {
   final String backend_url_log_out;
   final String backend_url_refresh_token;
   final String backend_url_reset_password;
+  final String backend_url_complete_profile;
+  final String backend_url_user_exists;
 
   final List<dynamic> allowed_email_providers;
   final List<dynamic> allowed_email_tlds;
@@ -81,6 +83,8 @@ class app_configuration {
     required this.backend_url_log_out,
     required this.backend_url_refresh_token,
     required this.backend_url_reset_password,
+    required this.backend_url_complete_profile,
+    required this.backend_url_user_exists,
 
     required this.allowed_email_providers,
     required this.allowed_email_tlds,
@@ -146,6 +150,8 @@ class app_configuration {
       backend_url_log_out: backend["backend_url_log_out"]?? 'invalid://missing-host',
       backend_url_refresh_token: backend["backend_url_refresh_token"]?? 'invalid://missing-host',
       backend_url_reset_password: backend["backend_url_reset_password"]?? 'invalid://missing-host',
+      backend_url_complete_profile: backend["backend_url_complete_profile"]?? 'invalid://missing-host',
+      backend_url_user_exists: backend["backend_url_check_user_exists"]?? 'invalid://missing-host',
 
       allowed_email_providers: db["allowed_email_providers"]?? [''],
       allowed_email_tlds: db["allowed_email_tlds"]?? [''],
