@@ -29,6 +29,7 @@ class app_configuration {
   final String backend_url_reset_password;
   final String backend_url_complete_profile;
   final String backend_url_user_exists;
+  final String backend_url_user_prefences;
 
   final List<dynamic> allowed_email_providers;
   final List<dynamic> allowed_email_tlds;
@@ -85,6 +86,7 @@ class app_configuration {
     required this.backend_url_reset_password,
     required this.backend_url_complete_profile,
     required this.backend_url_user_exists,
+    required this.backend_url_user_prefences,
 
     required this.allowed_email_providers,
     required this.allowed_email_tlds,
@@ -152,6 +154,7 @@ class app_configuration {
       backend_url_reset_password: backend["backend_url_reset_password"]?? 'invalid://missing-host',
       backend_url_complete_profile: backend["backend_url_complete_profile"]?? 'invalid://missing-host',
       backend_url_user_exists: backend["backend_url_check_user_exists"]?? 'invalid://missing-host',
+      backend_url_user_prefences: backend["backend_url_user_prefences"]?? 'invalid://missing-host',
 
       allowed_email_providers: db["allowed_email_providers"]?? [''],
       allowed_email_tlds: db["allowed_email_tlds"]?? [''],
@@ -212,6 +215,16 @@ Future<Map<String, dynamic>?> read_data_json_asset(String file_path) async {
 Color hex_to_color(String hex) {
   log_handler?.d("[------hex_to_color function executing------]");
   return Color(int.parse(hex.replaceFirst('#', '0x')));
+}
+
+//Helper function to convert a Color to hex string including alpha (#FFA62987)
+String color_to_hex(Color color) {
+  log_handler?.d("[------color_to_hex function executing------]");
+  return '#'
+      '${color.alpha.toRadixString(16).padLeft(2, '0').toUpperCase()}'
+      '${color.red.toRadixString(16).padLeft(2, '0').toUpperCase()}'
+      '${color.green.toRadixString(16).padLeft(2, '0').toUpperCase()}'
+      '${color.blue.toRadixString(16).padLeft(2, '0').toUpperCase()}';
 }
 
 //To load configuration once
