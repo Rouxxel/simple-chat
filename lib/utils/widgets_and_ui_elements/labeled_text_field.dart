@@ -9,8 +9,13 @@ class LabeledTextField extends StatelessWidget {
   final Color fill_color;
   final Color hint_color;
   final bool enabled;
-  final VoidCallback? onTap;
-  final bool readOnly;
+  final VoidCallback? on_tap;
+  final bool read_only;
+  final int? max_length;
+  final int? max_lines;
+  final int? min_lines;
+  final double? height;
+  final double? width;
 
   const LabeledTextField({
     super.key,
@@ -21,8 +26,13 @@ class LabeledTextField extends StatelessWidget {
     required this.fill_color,
     required this.hint_color,
     this.enabled = true,
-    this.onTap,
-    this.readOnly = false,
+    this.on_tap,
+    this.read_only = false,
+    this.max_length,
+    this.max_lines,
+    this.min_lines,
+    this.height,
+    this.width,
   });
 
   @override
@@ -41,13 +51,16 @@ class LabeledTextField extends StatelessWidget {
           ),
         ),
         SizedBox(
-          width: double.infinity,
-          height: 55,
+          width: width ?? double.infinity,
+          height: height ?? 55,
           child: TextField(
             controller: controller,
             enabled: enabled,
-            readOnly: readOnly,
-            onTap: onTap,
+            readOnly: read_only,
+            onTap: on_tap,
+            maxLength: max_length,
+            maxLines: max_lines,
+            minLines: min_lines,
             style: GoogleFonts.roboto(
               textStyle: const TextStyle(
                 fontSize: 18,
