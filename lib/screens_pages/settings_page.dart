@@ -1,9 +1,11 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart'; //Fonts
+import 'package:simple_chat/session_related/app_storage_class.dart';
 
 import 'package:simple_chat/standalone_methods_functions/general_methods.dart';
 import 'package:simple_chat/configuration/config_invoke.dart';
+import 'package:simple_chat/standalone_methods_functions/user_entrypoint_methods.dart';
 import 'package:simple_chat/utils/widgets_and_ui_elements/alert_dialog_list.dart';
 import 'package:simple_chat/utils/widgets_and_ui_elements/labeled_text_field.dart';
 import 'package:simple_chat/utils/logger_config.dart';
@@ -1093,7 +1095,7 @@ class _settingsState extends State<settings> {
               child: GestureDetector(
                 onDoubleTap: () async {
                   //play sound effect
-                  await play_effect_sound(config_data.miscellanous_effect);
+                  await play_effect_sound(config_data.button_pressed_effect);
 
                   setState(() async {
                     //Reset to default all changes by user
@@ -1117,7 +1119,7 @@ class _settingsState extends State<settings> {
 
                     //Reload config_data for runtime reset changes
                     config_data = app_configuration.fromJson(raw_config_json);
-                    log_handler?.i("Save button pressed\n"
+                    log_handler?.i("Reset button pressed\n"
                         "Reset directory: ${config_data.directive}\n"
                         "Reset verbose: ${config_data.verbose}\n"
                         "Reset Background color: ${config_data.background_color}\n"
@@ -1127,6 +1129,24 @@ class _settingsState extends State<settings> {
                         "Reset language: ${config_data.user_language}\n"
                         "Reset sound status: ${config_data.sound_effects_status}\n"
                     );
+
+                    //Reset preferences to cloud
+                    final String? access_token = await AppStorage.get_access_token();
+                    final String? user_id = await AppStorage.get_user_id();
+                    await save_user_preferences(context,
+                      access_token: access_token.toString(),
+                      user_id: user_id.toString(),
+                      ai_personality: config_data.directive,
+                      verbose_level: config_data.verbose,
+                      background_color: color_to_hex(config_data.background_color),
+                      bar_colors: color_to_hex(config_data.app_bar_color),
+                      user_text_box_color: color_to_hex(config_data.user_text_box_color),
+                      ai_text_box_color: color_to_hex(config_data.ai_text_box_color),
+                      ai_language: config_data.user_language,
+                      sound_effects_on: config_data.sound_effects_status,
+                    );
+                    //play sound effect
+                    await play_effect_sound(config_data.miscellanous_effect);
                     show_changes_reset(context);
                   },
                   );
@@ -1168,7 +1188,7 @@ class _settingsState extends State<settings> {
               child: GestureDetector(
                 onTap: () async {
                   //play sound effect
-                  await play_effect_sound(config_data.miscellanous_effect);
+                  await play_effect_sound(config_data.button_pressed_effect);
 
                   setState(() async {
                       //Only save AI directory if input is not empty
@@ -1207,14 +1227,33 @@ class _settingsState extends State<settings> {
                       log_handler?.i("Save button pressed\n"
                           "Saved directory: ${config_data.directive}\n"
                           "Saved verbose: ${config_data.verbose}\n"
-                          "Saved Background color: ${config_data.background_color}\n"
-                          "Saved Bar colors: ${config_data.app_bar_color}\n"
-                          "Saved User textbox color: ${config_data.user_text_box_color}\n"
-                          "Saved AI textbox color: ${config_data.ai_text_box_color}\n"
+                          "Saved Background color: ${color_to_hex(config_data.background_color)}\n"
+                          "Saved Bar colors: ${color_to_hex(config_data.app_bar_color)}\n"
+                          "Saved User textbox color: ${color_to_hex(config_data.user_text_box_color)}\n"
+                          "Saved AI textbox color: ${color_to_hex(config_data.ai_text_box_color)}\n"
                           "Saved language: ${config_data.user_language}\n"
                           "Saved sound status: ${config_data.sound_effects_status}\n"
                           "Saved easter egg: ${config_data.easter_egg_found}\n"
                       );
+
+                      //Save preferences to cloud with reloaded configuration
+                      final String? access_token = await AppStorage.get_access_token();
+                      final String? user_id = await AppStorage.get_user_id();
+                      await save_user_preferences(context,
+                        access_token: access_token.toString(),
+                        user_id: user_id.toString(),
+                        ai_personality: config_data.directive,
+                        verbose_level: config_data.verbose,
+                        background_color: color_to_hex(config_data.background_color),
+                        bar_colors: color_to_hex(config_data.app_bar_color),
+                        user_text_box_color: color_to_hex(config_data.user_text_box_color),
+                        ai_text_box_color: color_to_hex(config_data.ai_text_box_color),
+                        ai_language: config_data.user_language,
+                        sound_effects_on: config_data.sound_effects_status,
+                      );
+
+                      //play sound effect//
+                      await play_effect_sound(config_data.miscellanous_effect);
                       show_changes_saved(context);
                     },
                   );
