@@ -168,8 +168,8 @@ class _complete_profileState extends State<complete_profile> {
                                     fill_color: config_data.user_text_box_color,
                                     hint_color: config_data.suggest_input_color,
                                     enabled: !_is_processing,
-                                    readOnly: true,
-                                    onTap: () async {
+                                    read_only: true,
+                                    on_tap: () async {
                                       DateTime? pickedDate = await showDatePicker(
                                         context: context,
                                         initialDate: DateTime(2000),
@@ -200,8 +200,8 @@ class _complete_profileState extends State<complete_profile> {
                                     fill_color: config_data.user_text_box_color,
                                     hint_color: config_data.suggest_input_color,
                                     enabled: !_is_processing,
-                                    readOnly: true,
-                                    onTap: () async {
+                                    read_only: true,
+                                    on_tap: () async {
                                       final selected_country = await showModalBottomSheet<countries>(
                                         context: context,
                                         builder: (context) {
