@@ -20,7 +20,7 @@
     "backend_url_reset_password": "https://example_endpoint_deployment.com/auth/reset_password",
     "backend_url_complete_profile": "https://example_endpoint_deployment.com/user_profile/complete_profile",
     "backend_url_check_user_exists": "https://example_endpoint_deployment.com/user_profile/user_exists",
-    "backend_url_check_user_preferences": "https://example_endpoint_deployment.com/user_profile/user_preferences"
+    "backend_url_user_preferences": "https://example_endpoint_deployment.com/user_profile/user_preferences"
   },
   "db": {
     "allowed_email_providers": ["gmail","outlook","yahoo","hotmail","icloud","protonmail","aol","zoho","gmx","mail"],
