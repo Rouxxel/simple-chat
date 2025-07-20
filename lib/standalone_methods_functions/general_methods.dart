@@ -208,7 +208,7 @@ bool is_valid_phone_number(BuildContext context, String phone_number) {
 
   // Rule 1: must be digits only (with optional leading +)
   if (!RegExp(r'^\+?\d+$').hasMatch(cleaned)) {
-    log_handler?.w('Phone number validation failed: contains invalid characters -> ${phone_number}');
+    log_handler?.w('Phone number validation failed: contains invalid characters -> $phone_number');
     return false;
   }
 
@@ -226,7 +226,7 @@ bool is_valid_phone_number(BuildContext context, String phone_number) {
 String date_formatter(BuildContext context, String date) {
   //Safety check
   if (!date.contains("/") || date.split("/").length != 3) {
-    throw FormatException("Invalid date format. Expected DD/MM/YYYY.");
+    throw const FormatException("Invalid date format. Expected DD/MM/YYYY.");
   }
 
   //Split into parts
@@ -427,7 +427,7 @@ Future<void> test_ai(String api_key) async {
     model: config_data.ai_api_model,
     apiKey: api_key,
   );
-  final user_prompt = 'Write a story about a magic backpack.';
+  const user_prompt = 'Write a story about a magic backpack.';
 
   final response = await model.generateContent([Content.text(user_prompt)]);
   log_handler?.d("---AI response succesful---");

@@ -2,7 +2,7 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class AppStorage {
   //Singleton instance of FlutterSecureStorage
-  static final FlutterSecureStorage _storage = FlutterSecureStorage();
+  static const FlutterSecureStorage _storage = FlutterSecureStorage();
 
   //Keys
   static const String _access_token_key = 'access_token';

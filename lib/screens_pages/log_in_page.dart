@@ -91,7 +91,7 @@ class _log_in_pageState extends State<log_in_page> {
               children: [
                 Padding(
                   //
-                  padding: EdgeInsets.symmetric(vertical: 170, horizontal: 35),
+                  padding: const EdgeInsets.symmetric(vertical: 170, horizontal: 35),
                   child: Center(
                     //
                     child: Container(
@@ -105,7 +105,7 @@ class _log_in_pageState extends State<log_in_page> {
 
                       //
                       child: Padding(
-                        padding: EdgeInsets.all(16),
+                        padding: const EdgeInsets.all(16),
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -125,31 +125,29 @@ class _log_in_pageState extends State<log_in_page> {
 
                             //Inputs of card
                             Padding(
-                              padding: EdgeInsets.fromLTRB(16, 0, 0, 20),
-                              child: Container(
-                                child: Column(
-                                  children: [
-                                    LabeledTextField(
-                                      label: "Email",
-                                      controller: _log_in_controller,
-                                      hint_text: "example@provider.com",
-                                      text_color: config_data.text_color,
-                                      fill_color: config_data.user_text_box_color,
-                                      hint_color: config_data.suggest_input_color,
-                                      enabled: !_is_processing,
-                                    ),
-                                    SizedBox(height: 10),
-                                    LabeledTextField(
-                                      label: "Password",
-                                      controller: _password_controller,
-                                      hint_text: "0Kzj#{[8ss9,",
-                                      text_color: config_data.text_color,
-                                      fill_color: config_data.user_text_box_color,
-                                      hint_color: config_data.suggest_input_color,
-                                      enabled: !_is_processing,
-                                    ),
-                                  ],
-                                ),
+                              padding: const EdgeInsets.fromLTRB(16, 0, 0, 20),
+                              child: Column(
+                                children: [
+                                  LabeledTextField(
+                                    label: "Email",
+                                    controller: _log_in_controller,
+                                    hint_text: "example@provider.com",
+                                    text_color: config_data.text_color,
+                                    fill_color: config_data.user_text_box_color,
+                                    hint_color: config_data.suggest_input_color,
+                                    enabled: !_is_processing,
+                                  ),
+                                  const SizedBox(height: 10),
+                                  LabeledTextField(
+                                    label: "Password",
+                                    controller: _password_controller,
+                                    hint_text: "0Kzj#{[8ss9,",
+                                    text_color: config_data.text_color,
+                                    fill_color: config_data.user_text_box_color,
+                                    hint_color: config_data.suggest_input_color,
+                                    enabled: !_is_processing,
+                                  ),
+                                ],
                               ),
                             ),
 
@@ -255,7 +253,7 @@ class _log_in_pageState extends State<log_in_page> {
                                 ),
 
                                 // Spacing between button and link
-                                SizedBox(height: 15),
+                                const SizedBox(height: 15),
 
                                 //Hyperlink text
                                 RichText(
@@ -297,7 +295,7 @@ class _log_in_pageState extends State<log_in_page> {
                                 ),
 
                                 // Spacing between button and link
-                                SizedBox(height: 12),
+                                const SizedBox(height: 12),
 
                                 //Forgot password
                                 GestureDetector(

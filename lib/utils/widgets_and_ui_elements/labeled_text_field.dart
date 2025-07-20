@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -14,7 +13,7 @@ class LabeledTextField extends StatelessWidget {
   final bool readOnly;
 
   const LabeledTextField({
-    Key? key,
+    super.key,
     required this.label,
     required this.controller,
     required this.hint_text,
@@ -24,7 +23,7 @@ class LabeledTextField extends StatelessWidget {
     this.enabled = true,
     this.onTap,
     this.readOnly = false,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +49,7 @@ class LabeledTextField extends StatelessWidget {
             readOnly: readOnly,
             onTap: onTap,
             style: GoogleFonts.roboto(
-              textStyle: TextStyle(
+              textStyle: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.normal,
               ),

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';   //Fonts
 import 'package:intl/intl.dart';
 import 'package:simple_chat/configuration/countries_invoke.dart';
@@ -94,7 +93,7 @@ class _complete_profileState extends State<complete_profile> {
               children: [
                 Padding(
                   //
-                  padding: EdgeInsets.symmetric(vertical: 35, horizontal: 35),
+                  padding: const EdgeInsets.symmetric(vertical: 35, horizontal: 35),
                   child: Center(
                     //
                     child: Container(
@@ -108,7 +107,7 @@ class _complete_profileState extends State<complete_profile> {
 
                       //
                       child: Padding(
-                        padding: EdgeInsets.all(16),
+                        padding: const EdgeInsets.all(16),
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -128,109 +127,107 @@ class _complete_profileState extends State<complete_profile> {
 
                             //Inputs of card
                             Padding(
-                              padding: EdgeInsets.fromLTRB(16, 0, 0, 20),
-                              child: Container(
-                                child: Column(
-                                  children: [
-                                    LabeledTextField(
-                                      label: "First name",
-                                      controller: _first_name_controller,
-                                      hint_text: "John",
-                                      text_color: config_data.text_color,
-                                      fill_color: config_data.user_text_box_color,
-                                      hint_color: config_data.suggest_input_color,
-                                      enabled: !_is_processing,
-                                    ),
-                                    SizedBox(height: 10),
-                                    LabeledTextField(
-                                      label: "Last name",
-                                      controller: _last_name_controller,
-                                      hint_text: "Doe",
-                                      text_color: config_data.text_color,
-                                      fill_color: config_data.user_text_box_color,
-                                      hint_color: config_data.suggest_input_color,
-                                      enabled: !_is_processing,
-                                    ),
-                                    SizedBox(height: 10),
-                                    LabeledTextField(
-                                      label: "User name",
-                                      controller: _user_name_controller,
-                                      hint_text: "JohnDoe86",
-                                      text_color: config_data.text_color,
-                                      fill_color: config_data.user_text_box_color,
-                                      hint_color: config_data.suggest_input_color,
-                                      enabled: !_is_processing,
-                                    ),
-                                    SizedBox(height: 10),
-                                    LabeledTextField(
-                                      label: "Date of birth",
-                                      controller: _date_birth_controller,
-                                      hint_text: "Select your birth date",
-                                      text_color: config_data.text_color,
-                                      fill_color: config_data.user_text_box_color,
-                                      hint_color: config_data.suggest_input_color,
-                                      enabled: !_is_processing,
-                                      readOnly: true,
-                                      onTap: () async {
-                                        DateTime? pickedDate = await showDatePicker(
-                                          context: context,
-                                          initialDate: DateTime(2000),
-                                          firstDate: DateTime(1900),
-                                          lastDate: DateTime.now(),
-                                        );
-                                        if (pickedDate != null) {
-                                          _date_birth_controller.text = DateFormat("dd/MM/yyyy").format(pickedDate);
-                                        }
-                                      },
-                                    ),
-                                    SizedBox(height: 10),
-                                    LabeledTextField(
-                                      label: "Phone Number",
-                                      controller: _phone_number_controller,
-                                      hint_text: "+12 345 567891",
-                                      text_color: config_data.text_color,
-                                      fill_color: config_data.user_text_box_color,
-                                      hint_color: config_data.suggest_input_color,
-                                      enabled: !_is_processing,
-                                    ),
-                                    SizedBox(height: 10),
-                                    LabeledTextField(
-                                      label: "Country",
-                                      controller: _country_controller,
-                                      hint_text: "Select your country",
-                                      text_color: config_data.text_color,
-                                      fill_color: config_data.user_text_box_color,
-                                      hint_color: config_data.suggest_input_color,
-                                      enabled: !_is_processing,
-                                      readOnly: true,
-                                      onTap: () async {
-                                        final selected_country = await showModalBottomSheet<countries>(
-                                          context: context,
-                                          builder: (context) {
-                                            return ListView.builder(
-                                              itemCount: list_of_countries.length,
-                                              itemBuilder: (context, index) {
-                                                final country = list_of_countries[index];
-                                                return ListTile(
-                                                  title: Text("${country.name} (${country.code})"),
-                                                  onTap: () {
-                                                    Navigator.pop(context, country);
-                                                  },
-                                                );
-                                              },
-                                            );//
-                                          },
-                                        );
+                              padding: const EdgeInsets.fromLTRB(16, 0, 0, 20),
+                              child: Column(
+                                children: [
+                                  LabeledTextField(
+                                    label: "First name",
+                                    controller: _first_name_controller,
+                                    hint_text: "John",
+                                    text_color: config_data.text_color,
+                                    fill_color: config_data.user_text_box_color,
+                                    hint_color: config_data.suggest_input_color,
+                                    enabled: !_is_processing,
+                                  ),
+                                  const SizedBox(height: 10),
+                                  LabeledTextField(
+                                    label: "Last name",
+                                    controller: _last_name_controller,
+                                    hint_text: "Doe",
+                                    text_color: config_data.text_color,
+                                    fill_color: config_data.user_text_box_color,
+                                    hint_color: config_data.suggest_input_color,
+                                    enabled: !_is_processing,
+                                  ),
+                                  const SizedBox(height: 10),
+                                  LabeledTextField(
+                                    label: "User name",
+                                    controller: _user_name_controller,
+                                    hint_text: "JohnDoe86",
+                                    text_color: config_data.text_color,
+                                    fill_color: config_data.user_text_box_color,
+                                    hint_color: config_data.suggest_input_color,
+                                    enabled: !_is_processing,
+                                  ),
+                                  const SizedBox(height: 10),
+                                  LabeledTextField(
+                                    label: "Date of birth",
+                                    controller: _date_birth_controller,
+                                    hint_text: "Select your birth date",
+                                    text_color: config_data.text_color,
+                                    fill_color: config_data.user_text_box_color,
+                                    hint_color: config_data.suggest_input_color,
+                                    enabled: !_is_processing,
+                                    readOnly: true,
+                                    onTap: () async {
+                                      DateTime? pickedDate = await showDatePicker(
+                                        context: context,
+                                        initialDate: DateTime(2000),
+                                        firstDate: DateTime(1900),
+                                        lastDate: DateTime.now(),
+                                      );
+                                      if (pickedDate != null) {
+                                        _date_birth_controller.text = DateFormat("dd/MM/yyyy").format(pickedDate);
+                                      }
+                                    },
+                                  ),
+                                  const SizedBox(height: 10),
+                                  LabeledTextField(
+                                    label: "Phone Number",
+                                    controller: _phone_number_controller,
+                                    hint_text: "+12 345 567891",
+                                    text_color: config_data.text_color,
+                                    fill_color: config_data.user_text_box_color,
+                                    hint_color: config_data.suggest_input_color,
+                                    enabled: !_is_processing,
+                                  ),
+                                  const SizedBox(height: 10),
+                                  LabeledTextField(
+                                    label: "Country",
+                                    controller: _country_controller,
+                                    hint_text: "Select your country",
+                                    text_color: config_data.text_color,
+                                    fill_color: config_data.user_text_box_color,
+                                    hint_color: config_data.suggest_input_color,
+                                    enabled: !_is_processing,
+                                    readOnly: true,
+                                    onTap: () async {
+                                      final selected_country = await showModalBottomSheet<countries>(
+                                        context: context,
+                                        builder: (context) {
+                                          return ListView.builder(
+                                            itemCount: list_of_countries.length,
+                                            itemBuilder: (context, index) {
+                                              final country = list_of_countries[index];
+                                              return ListTile(
+                                                title: Text("${country.name} (${country.code})"),
+                                                onTap: () {
+                                                  Navigator.pop(context, country);
+                                                },
+                                              );
+                                            },
+                                          );//
+                                        },
+                                      );
 
-                                        if (selected_country != null) {
-                                          _country_controller.text = selected_country.name;
-                                          _country_code_controller.text = selected_country.code;
-                                        }
-                                      },
-                                    ),
+                                      if (selected_country != null) {
+                                        _country_controller.text = selected_country.name;
+                                        _country_code_controller.text = selected_country.code;
+                                      }
+                                    },
+                                  ),
 
-                                  ],
-                                ),
+                                ],
                               ),
                             ),
 

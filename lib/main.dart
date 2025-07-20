@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:simple_chat/configuration/colort_list_invoke.dart';
 import 'package:simple_chat/configuration/config_invoke.dart';
 import 'package:simple_chat/configuration/countries_invoke.dart';
 import 'package:simple_chat/utils/logger_config.dart';
@@ -19,6 +20,7 @@ void main() async{
   //Load configurations
   await initialize_config();
   await initialize_countries();
+  await initialize_color_name_to_hex_map();
 
   //Wake up backend
   await root_endpoint(); //Ping the backend

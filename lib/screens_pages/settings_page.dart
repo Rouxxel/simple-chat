@@ -108,7 +108,7 @@ class _settingsState extends State<settings> {
 
       //Actual content
       body: Padding(
-        padding: EdgeInsets.all(15),
+        padding: const EdgeInsets.all(15),
         child: Column(
           //Move children to the left
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -143,7 +143,7 @@ class _settingsState extends State<settings> {
                       ),
                     ),
                     child: Padding(
-                      padding: EdgeInsets.fromLTRB(16, 0, 16, 0),
+                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
                       child: Column(
                         //AI title
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -162,7 +162,7 @@ class _settingsState extends State<settings> {
 
                           //Main directory
                           Padding(
-                            padding: EdgeInsets.fromLTRB(16, 0, 0, 0),
+                            padding: const EdgeInsets.fromLTRB(16, 0, 0, 0),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -222,7 +222,7 @@ class _settingsState extends State<settings> {
 
                           //Verbose level
                           Padding(
-                            padding: EdgeInsets.fromLTRB(16, 0, 0, 16),
+                            padding: const EdgeInsets.fromLTRB(16, 0, 0, 16),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -256,16 +256,15 @@ class _settingsState extends State<settings> {
                                             _button_locked = false; //unlock after sound finishes
                                           });
                                           log_handler?.i(
-                                              "low button pressed, verbose: ${_verbose_level_controller}");
+                                              "low button pressed, verbose: $_verbose_level_controller");
                                         },
                                         child: Container(
-                                          padding: EdgeInsets.symmetric(
-                                              vertical: 12),
+                                          padding: const EdgeInsets.symmetric(vertical: 12),
                                           decoration: BoxDecoration(
                                             color: _verbose_level_controller == "low"
                                                 ? config_data.app_bar_color
                                                 : config_data.background_color,
-                                            borderRadius: BorderRadius.only(
+                                            borderRadius: const BorderRadius.only(
                                               topLeft: Radius.circular(10),
                                               bottomLeft: Radius.circular(10),
                                             ),
@@ -308,11 +307,10 @@ class _settingsState extends State<settings> {
                                             _button_locked = false; //unlock after sound finishes
                                           });
                                           log_handler?.i(
-                                              "medium button pressed, verbose: ${_verbose_level_controller}");
+                                              "medium button pressed, verbose: $_verbose_level_controller");
                                         },
                                         child: Container(
-                                          padding: EdgeInsets.symmetric(
-                                              vertical: 12),
+                                          padding: const EdgeInsets.symmetric(vertical: 12),
                                           decoration: BoxDecoration(
                                             color: _verbose_level_controller == "medium"
                                                 ? config_data.app_bar_color
@@ -356,16 +354,16 @@ class _settingsState extends State<settings> {
                                             _button_locked = false; //unlock after sound finishes
                                           });
                                           log_handler?.i(
-                                              "high button pressed, verbose: ${_verbose_level_controller}");
+                                              "high button pressed, verbose: $_verbose_level_controller");
                                         },
                                         child: Container(
-                                          padding: EdgeInsets.symmetric(
+                                          padding: const EdgeInsets.symmetric(
                                               vertical: 12),
                                           decoration: BoxDecoration(
                                             color: _verbose_level_controller == "high"
                                                 ? config_data.app_bar_color
                                                 : config_data.background_color,
-                                            borderRadius: BorderRadius.only(
+                                            borderRadius: const BorderRadius.only(
                                               topRight: Radius.circular(10),
                                               bottomRight: Radius.circular(10),
                                             ),
@@ -401,7 +399,7 @@ class _settingsState extends State<settings> {
                     ),
                   ),
 
-                  SizedBox(
+                  const SizedBox(
                     width: double.infinity,
                     height: 15,
                   ),
@@ -418,7 +416,7 @@ class _settingsState extends State<settings> {
                       ),
                     ),
                     child: Padding(
-                      padding: EdgeInsets.fromLTRB(16, 0, 16, 0),
+                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
                       child: Column(
                         //Colorimetry title
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -438,49 +436,47 @@ class _settingsState extends State<settings> {
                           //Color options
                           Padding(
                             padding: const EdgeInsets.fromLTRB(16, 0, 0, 6),
-                            child: Container(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  LabeledTextField(
-                                    label: "Background color",
-                                    controller: _background_color_controller,
-                                    hint_text: "Ivory",
-                                    text_color: config_data.text_color,
-                                    fill_color: config_data.user_text_box_color,
-                                    hint_color: config_data.suggest_input_color,
-                                  ),
-                                  SizedBox(height: 10),
-                                  LabeledTextField(
-                                    label: "Bar colors",
-                                    controller: _bar_colors_controller,
-                                    hint_text: "Indian Red",
-                                    text_color: config_data.text_color,
-                                    fill_color: config_data.user_text_box_color,
-                                    hint_color: config_data.suggest_input_color,
-                                  ),
-                                  SizedBox(height: 10),
-                                  LabeledTextField(
-                                    label: "Your textbox color",
-                                    controller: _user_textbox_color_controller,
-                                    hint_text: "Tan",
-                                    text_color: config_data.text_color,
-                                    fill_color: config_data.user_text_box_color,
-                                    hint_color: config_data.suggest_input_color,
-                                  ),
-                                  SizedBox(height: 10),
-                                  LabeledTextField(
-                                    label: "AI textbox color",
-                                    controller: _ai_textbox_color_controller,
-                                    hint_text: "Light Yellow",
-                                    text_color: config_data.text_color,
-                                    fill_color: config_data.user_text_box_color,
-                                    hint_color: config_data.suggest_input_color,
-                                  ),
-                                  SizedBox(height: 10),
-                                ],
-                              )
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                LabeledTextField(
+                                  label: "Background color",
+                                  controller: _background_color_controller,
+                                  hint_text: "Ivory",
+                                  text_color: config_data.text_color,
+                                  fill_color: config_data.user_text_box_color,
+                                  hint_color: config_data.suggest_input_color,
+                                ),
+                                const SizedBox(height: 10),
+                                LabeledTextField(
+                                  label: "Bar colors",
+                                  controller: _bar_colors_controller,
+                                  hint_text: "Indian Red",
+                                  text_color: config_data.text_color,
+                                  fill_color: config_data.user_text_box_color,
+                                  hint_color: config_data.suggest_input_color,
+                                ),
+                                const SizedBox(height: 10),
+                                LabeledTextField(
+                                  label: "Your textbox color",
+                                  controller: _user_textbox_color_controller,
+                                  hint_text: "Tan",
+                                  text_color: config_data.text_color,
+                                  fill_color: config_data.user_text_box_color,
+                                  hint_color: config_data.suggest_input_color,
+                                ),
+                                const SizedBox(height: 10),
+                                LabeledTextField(
+                                  label: "AI textbox color",
+                                  controller: _ai_textbox_color_controller,
+                                  hint_text: "Light Yellow",
+                                  text_color: config_data.text_color,
+                                  fill_color: config_data.user_text_box_color,
+                                  hint_color: config_data.suggest_input_color,
+                                ),
+                                const SizedBox(height: 10),
+                              ],
                             ),
                           ),
                         ],
@@ -488,7 +484,7 @@ class _settingsState extends State<settings> {
                     ),
                   ),
 
-                  SizedBox(
+                  const SizedBox(
                     width: double.infinity,
                     height: 15,
                   ),
@@ -505,7 +501,7 @@ class _settingsState extends State<settings> {
                       ),
                     ),
                     child: Padding(
-                      padding: EdgeInsets.fromLTRB(16, 0, 16, 0),
+                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
                       child: Column(
                         //AI Language title
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -524,7 +520,7 @@ class _settingsState extends State<settings> {
 
                           //Language input field
                           Padding(
-                            padding: EdgeInsets.fromLTRB(16, 0, 0, 0),
+                            padding: const EdgeInsets.fromLTRB(16, 0, 0, 0),
                             child: TextField(
                               controller: _language_controller,
                               style: GoogleFonts.roboto(
@@ -567,7 +563,7 @@ class _settingsState extends State<settings> {
                     ),
                   ),
 
-                  SizedBox(
+                  const SizedBox(
                     width: double.infinity,
                     height: 15,
                   ),
@@ -584,7 +580,7 @@ class _settingsState extends State<settings> {
                       ),
                     ),
                     child: Padding(
-                      padding: EdgeInsets.fromLTRB(16, 0, 16, 0),
+                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
                       child: Column(
                         //Background image title
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -603,7 +599,7 @@ class _settingsState extends State<settings> {
 
                           //Upload image and change background image
                           Padding(
-                            padding: EdgeInsets.fromLTRB(16, 0, 0, 16),
+                            padding: const EdgeInsets.fromLTRB(16, 0, 0, 16),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -651,7 +647,7 @@ class _settingsState extends State<settings> {
                     ),
                   ),
 
-                  SizedBox(
+                  const SizedBox(
                     width: double.infinity,
                     height: 15,
                   ),
@@ -668,7 +664,7 @@ class _settingsState extends State<settings> {
                       ),
                     ),
                     child: Padding(
-                      padding: EdgeInsets.fromLTRB(16, 0, 16, 0),
+                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
                       child: Column(
                         //Sound effects image title
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -688,7 +684,7 @@ class _settingsState extends State<settings> {
 
                           //Sound effect switch
                           Padding(
-                            padding: EdgeInsets.fromLTRB(16, 0, 0, 16),
+                            padding: const EdgeInsets.fromLTRB(16, 0, 0, 16),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -711,16 +707,15 @@ class _settingsState extends State<settings> {
                                             _button_locked = false; //unlock buttons
                                           });
                                           log_handler?.i(
-                                              "sound effects on button pressed, status: ${_sound_effect_controller}");
+                                              "sound effects on button pressed, status: $_sound_effect_controller");
                                         },
                                         child: Container(
-                                          padding: EdgeInsets.symmetric(
-                                              vertical: 12),
+                                          padding: const EdgeInsets.symmetric(vertical: 12),
                                           decoration: BoxDecoration(
                                             color: _sound_effect_controller == true
                                                 ? config_data.app_bar_color
                                                 : config_data.background_color,
-                                            borderRadius: BorderRadius.only(
+                                            borderRadius: const BorderRadius.only(
                                               topLeft: Radius.circular(10),
                                               bottomLeft: Radius.circular(10),
                                             ),
@@ -763,16 +758,15 @@ class _settingsState extends State<settings> {
                                             _button_locked = false; //unlock buttons
                                           });
                                           log_handler?.i(
-                                              "sound effects off button pressed, status: ${_sound_effect_controller}");
+                                              "sound effects off button pressed, status: $_sound_effect_controller");
                                         },
                                         child: Container(
-                                          padding: EdgeInsets.symmetric(
-                                              vertical: 12),
+                                          padding: const EdgeInsets.symmetric(vertical: 12),
                                           decoration: BoxDecoration(
                                             color: _sound_effect_controller == false
                                                 ? config_data.app_bar_color
                                                 : config_data.background_color,
-                                            borderRadius: BorderRadius.only(
+                                            borderRadius: const BorderRadius.only(
                                               topRight: Radius.circular(10),
                                               bottomRight: Radius.circular(10),
                                             ),
@@ -801,7 +795,7 @@ class _settingsState extends State<settings> {
                                   ],
                                 ),
 
-                                SizedBox(
+                                const SizedBox(
                                   width: double.infinity,
                                   height: 10,
                                 ),
@@ -819,7 +813,7 @@ class _settingsState extends State<settings> {
                     ),
                   ),
 
-                  SizedBox(
+                  const SizedBox(
                     width: double.infinity,
                     height: 15,
                   ),
@@ -836,7 +830,7 @@ class _settingsState extends State<settings> {
                       ),
                     ),
                     child: Padding(
-                      padding: EdgeInsets.fromLTRB(16, 0, 16, 0),
+                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
                       child: Column(
                         //Background image title
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -855,7 +849,7 @@ class _settingsState extends State<settings> {
 
                           //Send feedback
                           Padding(
-                            padding: EdgeInsets.fromLTRB(16, 0, 0, 16),
+                            padding: const EdgeInsets.fromLTRB(16, 0, 0, 16),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -942,7 +936,7 @@ class _settingsState extends State<settings> {
                     ),
                   ),
 
-                  SizedBox(
+                  const SizedBox(
                     width: double.infinity,
                     height: 15,
                   ),
@@ -979,7 +973,7 @@ class _settingsState extends State<settings> {
                         ),
                       ),
                       child: Padding(
-                        padding: EdgeInsets.fromLTRB(16, 0, 16, 0),
+                        padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
                         child: Column(
                           //AI title
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -998,7 +992,7 @@ class _settingsState extends State<settings> {
 
                             //Credits list
                             Padding(
-                              padding: EdgeInsets.fromLTRB(16, 0, 0, 0),
+                              padding: const EdgeInsets.fromLTRB(16, 0, 0, 0),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
@@ -1070,7 +1064,7 @@ class _settingsState extends State<settings> {
                                 ],
                               ),
                             ),
-                            SizedBox(
+                            const SizedBox(
                               width: double.infinity,
                               height: 10,
                             ),
@@ -1163,7 +1157,7 @@ class _settingsState extends State<settings> {
               ),
             ),
 
-            SizedBox(
+            const SizedBox(
               height: double.infinity,
               width: 10,
             ),

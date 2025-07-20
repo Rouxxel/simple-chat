@@ -28,7 +28,7 @@ class countries {
 
 //Countries file management------------------------------------
 //Holds the list globally
-late List<countries> list_of_countries = [];
+List<countries> list_of_countries = [];
 
 //Load countries from JSON asset
 Future<void> initialize_countries() async {

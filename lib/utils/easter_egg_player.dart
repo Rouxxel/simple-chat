@@ -8,10 +8,10 @@ class EasterEggPlayerInline extends StatefulWidget {
   final Color text_color;
 
   const EasterEggPlayerInline({
-    Key? key,
+    super.key,
     required this.asset_path,
     required this.text_color,
-  }) : super(key: key);
+  });
 
   @override
   State<EasterEggPlayerInline> createState() => _EasterEggPlayerInlineState();
@@ -92,7 +92,7 @@ class _EasterEggPlayerInlineState extends State<EasterEggPlayerInline> {
         ),
 
         Container(
-          padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
           decoration: BoxDecoration(
             color: config_data.background_color, // background color here
             borderRadius: BorderRadius.circular(8), // optional rounded corners
