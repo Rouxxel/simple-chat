@@ -52,6 +52,7 @@ void main() async{
           'backend_url_reset_password: ${config_data.backend_url_reset_password}\n'
           'backend_url_complete_profile: ${config_data.backend_url_complete_profile}\n'
           'backend_url_user_exists: ${config_data.backend_url_user_exists}\n'
+          'backend_url_user_preferences: ${config_data.backend_url_user_preferences}\n'
           'allowed_email_providers: ${config_data.allowed_email_providers}\n'
           'allowed_email_tlds: ${config_data.allowed_email_tlds}\n'
           'refresh_token_preemptive.s: ${config_data.refresh_token_preemptive}\n'
