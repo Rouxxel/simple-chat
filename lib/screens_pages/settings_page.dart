@@ -5,7 +5,7 @@ import 'package:simple_chat/functionality_n_scripts/session_related/app_storage_
 
 import 'package:simple_chat/functionality_n_scripts/standalone_methods/general_methods.dart';
 import 'package:simple_chat/functionality_n_scripts/configuration_scripts/config_invoke.dart';
-import 'package:simple_chat/functionality_n_scripts/standalone_methods/user_entrypoint_methods.dart';
+import 'package:simple_chat/functionality_n_scripts/standalone_methods/user_profile_methods.dart';
 import 'package:simple_chat/widgets_and_ui_elements/alert_dialog_list.dart';
 import 'package:simple_chat/widgets_and_ui_elements/labeled_text_field.dart';
 import 'package:simple_chat/functionality_n_scripts/utils/logger_config.dart';

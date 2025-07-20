@@ -8,7 +8,7 @@ import 'package:simple_chat/functionality_n_scripts/session_related/refresh_tk_w
 import 'package:simple_chat/functionality_n_scripts/standalone_methods/general_methods.dart';
 import 'package:simple_chat/functionality_n_scripts/message_related/message_class.dart';
 import 'package:simple_chat/functionality_n_scripts/configuration_scripts/config_invoke.dart';
-import 'package:simple_chat/functionality_n_scripts/standalone_methods/user_entrypoint_methods.dart';
+import 'package:simple_chat/functionality_n_scripts/standalone_methods/session_methods.dart';
 import 'package:simple_chat/screens_pages/log_in_page.dart';
 import 'package:simple_chat/functionality_n_scripts/utils/logger_config.dart';
 

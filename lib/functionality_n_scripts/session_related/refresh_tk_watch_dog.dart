@@ -3,7 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:simple_chat/functionality_n_scripts/session_related/app_storage_class.dart';
 import 'package:simple_chat/functionality_n_scripts/configuration_scripts/config_invoke.dart';
 import 'package:simple_chat/functionality_n_scripts/utils/logger_config.dart';
-import 'package:simple_chat/functionality_n_scripts/standalone_methods/user_entrypoint_methods.dart';
+import 'package:simple_chat/functionality_n_scripts/standalone_methods/session_methods.dart';
 
 class TokenWatchdog {
   static final TokenWatchdog _instance = TokenWatchdog._internal();

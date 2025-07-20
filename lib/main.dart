@@ -4,7 +4,7 @@ import 'package:simple_chat/functionality_n_scripts/configuration_scripts/config
 import 'package:simple_chat/functionality_n_scripts/configuration_scripts/countries_invoke.dart';
 import 'package:simple_chat/functionality_n_scripts/utils/logger_config.dart';
 import 'package:simple_chat/screens_pages/log_in_page.dart';
-import 'package:simple_chat/functionality_n_scripts/standalone_methods/user_entrypoint_methods.dart';
+import 'package:simple_chat/functionality_n_scripts/standalone_methods/session_methods.dart';
 
 //imports
 /////////////////////////////////////////////////////////////////////////////
