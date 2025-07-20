@@ -40,6 +40,9 @@ class _settingsState extends State<settings> {
   int _tap_count = 0;
   Timer? _tap_timer;
 
+  //Boolean controller for send button and input controller hint text hiding
+  bool _is_processing = false;
+
   Future<void> _handle_ten_taps_gesture(VoidCallback on_ten_taps) async {
     _tap_count = _tap_count + 1;
 
@@ -73,7 +76,9 @@ class _settingsState extends State<settings> {
             icon: const Icon(Icons.close_sharp),
             iconSize: 40,
             color: Colors.black,
-            onPressed: () async {
+            onPressed: _is_processing
+                ? null  //disables the button when true
+                : () async {
               //play sound effect
               await play_effect_sound(config_data.button_pressed_effect);
 
@@ -151,7 +156,7 @@ class _settingsState extends State<settings> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            "AI",
+                            "AI personality",
                             style: GoogleFonts.bebasNeue(
                               textStyle: TextStyle(
                                 fontSize: 35,
@@ -162,65 +167,24 @@ class _settingsState extends State<settings> {
                             ),
                           ),
 
-                          //Main directory
+                          //Main directory field
                           Padding(
                             padding: const EdgeInsets.fromLTRB(16, 0, 0, 0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                //Title
-                                Text(
-                                  "Personality",
-                                  style: GoogleFonts.roboto(
-                                    textStyle: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 18,
-                                      color: config_data.text_color,
-                                    ),
-                                  ),
-                                ),
-                                //Textfield for personality
-                                TextField(
-                                  controller: _personality_controller,
-                                  style: GoogleFonts.roboto(
-                                    textStyle: TextStyle(
-                                      fontSize:
-                                          18, // match markdown paragraph font size
-                                      fontWeight: FontWeight
-                                          .normal, // normal weight like markdown p
-                                      fontStyle: FontStyle
-                                          .normal, // normal style (not italic by default)
-                                      color: config_data.text_color,
-                                    ),
-                                  ),
-                                  maxLines: 8, // Allows up to 8 lines
-                                  minLines: 4, // Starts with 4 lines of height
-                                  maxLength:
-                                      150, // Limit the number of characters
-                                  decoration: InputDecoration(
-                                    filled: true,
-                                    fillColor: config_data.user_text_box_color,
-                                    hintText:
-                                        "Example: ${config_data.default_directive}",
-                                    hintStyle: GoogleFonts.roboto(
-                                      textStyle: TextStyle(
-                                        fontSize: 18,
-                                        fontStyle: FontStyle.italic,
-                                        fontWeight: FontWeight.normal,
-                                        color: config_data.suggest_input_color,
-                                      ),
-                                    ),
-                                    border: const OutlineInputBorder(
-                                      borderRadius: BorderRadius.all(
-                                        Radius.circular(5.0),
-                                      ),
-                                    ),
-                                  ),
-                                  cursorColor: Colors.black,
-                                ),
-                              ],
+                            child: LabeledTextField(
+                              label: "Personality",
+                              controller: _personality_controller,
+                              hint_text: "Example: ${config_data.default_directive}",
+                              text_color: config_data.text_color,
+                              fill_color: config_data.user_text_box_color,
+                              hint_color: config_data.suggest_input_color,
+                              enabled: !_is_processing,
+                              max_length: 150,
+                              max_lines: 8,
+                              min_lines: 4,
+                              height: 180, // adjust height to visually match multiline content
                             ),
                           ),
+
 
                           //Verbose level
                           Padding(
@@ -245,7 +209,9 @@ class _settingsState extends State<settings> {
                                     // Low Button
                                     Expanded(
                                       child: GestureDetector(
-                                        onTap: () async {
+                                        onTap: _is_processing
+                                            ? null  //disables the button when true
+                                            : () async {
                                           if (_button_locked) return; //prevent spam
                                           setState(() {
                                             _button_locked = true; //Lock buttons
@@ -296,7 +262,9 @@ class _settingsState extends State<settings> {
                                     // Medium Button
                                     Expanded(
                                       child: GestureDetector(
-                                        onTap: () async {
+                                        onTap: _is_processing
+                                            ? null  //disables the button when true
+                                            : () async {
                                           if (_button_locked) return; //prevent spam
                                           setState(() {
                                             _button_locked = true; //Lock buttons
@@ -343,7 +311,9 @@ class _settingsState extends State<settings> {
                                     // High Button
                                     Expanded(
                                       child: GestureDetector(
-                                        onTap: () async {
+                                        onTap: _is_processing
+                                            ? null  //disables the button when true
+                                            : () async {
                                           if (_button_locked) return; //prevent spam
                                           setState(() {
                                             _button_locked = true; //Lock buttons
@@ -449,6 +419,7 @@ class _settingsState extends State<settings> {
                                   text_color: config_data.text_color,
                                   fill_color: config_data.user_text_box_color,
                                   hint_color: config_data.suggest_input_color,
+                                  enabled: !_is_processing, //disable while processing
                                 ),
                                 const SizedBox(height: 10),
                                 LabeledTextField(
@@ -458,6 +429,7 @@ class _settingsState extends State<settings> {
                                   text_color: config_data.text_color,
                                   fill_color: config_data.user_text_box_color,
                                   hint_color: config_data.suggest_input_color,
+                                  enabled: !_is_processing, //disable while processing
                                 ),
                                 const SizedBox(height: 10),
                                 LabeledTextField(
@@ -467,6 +439,7 @@ class _settingsState extends State<settings> {
                                   text_color: config_data.text_color,
                                   fill_color: config_data.user_text_box_color,
                                   hint_color: config_data.suggest_input_color,
+                                  enabled: !_is_processing, //disable while processing
                                 ),
                                 const SizedBox(height: 10),
                                 LabeledTextField(
@@ -476,6 +449,7 @@ class _settingsState extends State<settings> {
                                   text_color: config_data.text_color,
                                   fill_color: config_data.user_text_box_color,
                                   hint_color: config_data.suggest_input_color,
+                                  enabled: !_is_processing, //disable while processing
                                 ),
                                 const SizedBox(height: 10),
                               ],
@@ -522,41 +496,15 @@ class _settingsState extends State<settings> {
 
                           //Language input field
                           Padding(
-                            padding: const EdgeInsets.fromLTRB(16, 0, 0, 0),
-                            child: TextField(
+                            padding: const EdgeInsets.fromLTRB(16, 0, 0, 16),
+                            child: LabeledTextField(
+                              label: "Language",
                               controller: _language_controller,
-                              style: GoogleFonts.roboto(
-                                textStyle: TextStyle(
-                                  fontSize:
-                                  18, // match markdown paragraph font size
-                                  fontWeight: FontWeight
-                                      .normal, // normal weight like markdown p
-                                  fontStyle: FontStyle
-                                      .normal, // normal style (not italic by default)
-                                  color: config_data.text_color,
-                                ),
-                              ),
-                              maxLength:20, // Limit the number of characters
-                              decoration: InputDecoration(
-                                filled: true,
-                                fillColor: config_data.user_text_box_color,
-                                hintText:
-                                "Example: ${config_data.default_language}",
-                                hintStyle: GoogleFonts.roboto(
-                                  textStyle: TextStyle(
-                                    fontSize: 18,
-                                    fontStyle: FontStyle.italic,
-                                    fontWeight: FontWeight.normal,
-                                    color: config_data.suggest_input_color,
-                                  ),
-                                ),
-                                border: const OutlineInputBorder(
-                                  borderRadius: BorderRadius.all(
-                                    Radius.circular(5.0),
-                                  ),
-                                ),
-                              ),
-                              cursorColor: Colors.black,
+                              hint_text: "Example: ${config_data.default_language}",
+                              text_color: config_data.text_color,
+                              fill_color: config_data.user_text_box_color,
+                              hint_color: config_data.suggest_input_color,
+                              enabled: !_is_processing, //disable while processing
                             ),
                           ),
 
@@ -609,7 +557,9 @@ class _settingsState extends State<settings> {
                                   width: double.infinity,
                                   height: 45,
                                   child: GestureDetector(
-                                    onTap: () async {
+                                    onTap: _is_processing
+                                        ? null  //disables the button when true
+                                        : () async {
                                       //play sound effect
                                       await play_effect_sound(config_data.miscellanous_effect);
                                       //TODO: add functionality to change background image
@@ -696,7 +646,9 @@ class _settingsState extends State<settings> {
                                     // On Button
                                     Expanded(
                                       child: GestureDetector(
-                                        onTap: () async {
+                                        onTap: _is_processing
+                                            ? null  //disables the button when true
+                                            : () async {
                                           if (_button_locked) return; //prevent spam
                                           setState(() {
                                             _button_locked = true; //Lock buttons
@@ -747,7 +699,9 @@ class _settingsState extends State<settings> {
                                     // Off Button
                                     Expanded(
                                       child: GestureDetector(
-                                        onTap: () async {
+                                        onTap: _is_processing
+                                            ? null  //disables the button when true
+                                            : () async {
                                           if (_button_locked) return; //prevent spam
                                           setState(() {
                                             _button_locked = true; //Lock buttons
@@ -855,50 +809,29 @@ class _settingsState extends State<settings> {
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                //Textfield for feedback
-                                TextField(
+                                //Labeled textfield for feedback
+                                LabeledTextField(
+                                  label: "Feedback",
                                   controller: _feedback_controller,
-                                  style: GoogleFonts.roboto(
-                                    textStyle: TextStyle(
-                                      fontSize:
-                                      18, // match markdown paragraph font size
-                                      fontWeight: FontWeight
-                                          .normal, // normal weight like markdown p
-                                      fontStyle: FontStyle
-                                          .normal, // normal style (not italic by default)
-                                      color: config_data.text_color,
-                                    ),
-                                  ),
-                                  maxLines: 8, // Allows up to 8 lines
-                                  minLines: 4, // Starts with 4 lines of height
-                                  maxLength: 300, // Limit the number of characters
-                                  decoration: InputDecoration(
-                                    filled: true,
-                                    fillColor: config_data.user_text_box_color,
-                                    hintText:
-                                    "Example: This app is not good, please delete "
-                                        "the source code, the repo and Android Studio.",
-                                    hintStyle: GoogleFonts.roboto(
-                                      textStyle: TextStyle(
-                                        fontSize: 18,
-                                        fontStyle: FontStyle.italic,
-                                        fontWeight: FontWeight.normal,
-                                        color: config_data.suggest_input_color,
-                                      ),
-                                    ),
-                                    border: const OutlineInputBorder(
-                                      borderRadius: BorderRadius.all(
-                                        Radius.circular(5.0),
-                                      ),
-                                    ),
-                                  ),
-                                  cursorColor: Colors.black,
+                                  hint_text:
+                                  "Example: This app is not good, please delete the source code, the repo and Android Studio.",
+                                  text_color: config_data.text_color,
+                                  fill_color: config_data.user_text_box_color,
+                                  hint_color: config_data.suggest_input_color,
+                                  enabled: !_is_processing,
+                                  max_length: 300,
+                                  max_lines: 8,
+                                  min_lines: 4,
+                                  height: 150, // approximate height for multiline
                                 ),
+
                                 SizedBox(
                                   width: double.infinity,
                                   height: 45,
                                   child: GestureDetector(
-                                    onTap: () async {
+                                    onTap: _is_processing
+                                        ? null  //disables the button when true
+                                        : () async {
                                       setState(() async {
                                         //Send feedback
                                          await send_feedback_by_email(context,_feedback_controller.text);
@@ -1093,7 +1026,9 @@ class _settingsState extends State<settings> {
             Expanded(
               //Reset button
               child: GestureDetector(
-                onDoubleTap: () async {
+                onDoubleTap: _is_processing
+                    ? null  //disables the button when true
+                    : () async {
                   //play sound effect
                   await play_effect_sound(config_data.button_pressed_effect);
 
@@ -1130,6 +1065,9 @@ class _settingsState extends State<settings> {
                         "Reset sound status: ${config_data.sound_effects_status}\n"
                     );
 
+                    //Start reset user preferences request
+                    setState(() => _is_processing = true);
+
                     //Reset preferences to cloud
                     final String? access_token = await AppStorage.get_access_token();
                     final String? user_id = await AppStorage.get_user_id();
@@ -1148,6 +1086,7 @@ class _settingsState extends State<settings> {
                     //play sound effect
                     await play_effect_sound(config_data.miscellanous_effect);
                     show_changes_reset(context);
+                    setState(() => _is_processing = false);
                   },
                   );
                 },
@@ -1186,7 +1125,9 @@ class _settingsState extends State<settings> {
             Expanded(
               //Save button
               child: GestureDetector(
-                onTap: () async {
+                onTap: _is_processing
+                    ? null  //disables the button when true
+                    : () async {
                   //play sound effect
                   await play_effect_sound(config_data.button_pressed_effect);
 
@@ -1236,6 +1177,9 @@ class _settingsState extends State<settings> {
                           "Saved easter egg: ${config_data.easter_egg_found}\n"
                       );
 
+                      //Start Save user preferences request
+                      setState(() => _is_processing = true);
+
                       //Save preferences to cloud with reloaded configuration
                       final String? access_token = await AppStorage.get_access_token();
                       final String? user_id = await AppStorage.get_user_id();
@@ -1255,6 +1199,7 @@ class _settingsState extends State<settings> {
                       //play sound effect//
                       await play_effect_sound(config_data.miscellanous_effect);
                       show_changes_saved(context);
+                      setState(() => _is_processing = false);
                     },
                   );
                 },
