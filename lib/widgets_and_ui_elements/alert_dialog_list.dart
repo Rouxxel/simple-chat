@@ -1,6 +1,6 @@
 import "package:flutter/material.dart";
 import "package:google_fonts/google_fonts.dart";
-import "package:simple_chat/configuration/config_invoke.dart";
+import "package:simple_chat/functionality_n_scripts/configuration_scripts/config_invoke.dart";
 
 //TODO:Create a single alert dialog that can be modified to have title and paragraph
 //Alert dialogs------------------------------------------------------
@@ -216,7 +216,7 @@ void show_changes_saved(BuildContext context) {
       ),
     ),
     content: Text(
-      "All changes were successfully saved, configuration applied",
+      "All changes were successfully saved, configuration_scripts applied",
       style: GoogleFonts.handjet(
         textStyle: const TextStyle(
           fontSize: 25,

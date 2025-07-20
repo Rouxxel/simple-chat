@@ -1,6 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/services.dart';
-import 'package:simple_chat/utils/logger_config.dart';
+import 'package:simple_chat/functionality_n_scripts/utils/logger_config.dart';
 
 //Extract countries values
 class countries {

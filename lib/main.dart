@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:simple_chat/configuration/colort_list_invoke.dart';
-import 'package:simple_chat/configuration/config_invoke.dart';
-import 'package:simple_chat/configuration/countries_invoke.dart';
-import 'package:simple_chat/utils/logger_config.dart';
+import 'package:simple_chat/functionality_n_scripts/configuration_scripts/colort_list_invoke.dart';
+import 'package:simple_chat/functionality_n_scripts/configuration_scripts/config_invoke.dart';
+import 'package:simple_chat/functionality_n_scripts/configuration_scripts/countries_invoke.dart';
+import 'package:simple_chat/functionality_n_scripts/utils/logger_config.dart';
 import 'package:simple_chat/screens_pages/log_in_page.dart';
-import 'package:simple_chat/standalone_methods_functions/user_entrypoint_methods.dart';
+import 'package:simple_chat/functionality_n_scripts/standalone_methods/user_entrypoint_methods.dart';
 
 //imports
 /////////////////////////////////////////////////////////////////////////////
@@ -25,7 +25,7 @@ void main() async{
   //Wake up backend
   await root_endpoint(); //Ping the backend
 
-  //Check loaded configuration (I know its horrible coding)
+  //Check loaded configuration_scripts (I know its horrible coding)
   log_handler?.i(
       'directive: ${config_data.directive}\n'
           'default_directive: ${config_data.default_directive}\n'

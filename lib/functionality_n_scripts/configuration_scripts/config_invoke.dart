@@ -4,9 +4,9 @@ import 'package:flutter/services.dart'; // For rootBundle
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 
-import 'package:simple_chat/utils/logger_config.dart';
+import 'package:simple_chat/functionality_n_scripts/utils/logger_config.dart';
 
-//Extract configuration values
+//Extract configuration_scripts values
 class app_configuration {
   final String main_title;
 
@@ -227,7 +227,7 @@ String color_to_hex(Color color) {
       '${color.blue.toRadixString(16).padLeft(2, '0').toUpperCase()}';
 }
 
-//To load configuration once
+//To load configuration_scripts once
 late app_configuration config_data;
 late Map<String, dynamic> raw_config_json;
 

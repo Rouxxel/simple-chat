@@ -3,14 +3,14 @@ import 'package:google_fonts/google_fonts.dart';   //Fonts
 import 'package:icons_flutter/icons_flutter.dart'; //Extra icons
 import 'package:intl/intl.dart'; //For date and time formatting
 import 'package:flutter_markdown/flutter_markdown.dart'; //For markdown
-import 'package:simple_chat/session_related/refresh_tk_watch_dog.dart';
+import 'package:simple_chat/functionality_n_scripts/session_related/refresh_tk_watch_dog.dart';
 
-import 'package:simple_chat/standalone_methods_functions/general_methods.dart';
-import 'package:simple_chat/message_related/message_class.dart';
-import 'package:simple_chat/configuration/config_invoke.dart';
-import 'package:simple_chat/standalone_methods_functions/user_entrypoint_methods.dart';
+import 'package:simple_chat/functionality_n_scripts/standalone_methods/general_methods.dart';
+import 'package:simple_chat/functionality_n_scripts/message_related/message_class.dart';
+import 'package:simple_chat/functionality_n_scripts/configuration_scripts/config_invoke.dart';
+import 'package:simple_chat/functionality_n_scripts/standalone_methods/user_entrypoint_methods.dart';
 import 'package:simple_chat/screens_pages/log_in_page.dart';
-import 'package:simple_chat/utils/logger_config.dart';
+import 'package:simple_chat/functionality_n_scripts/utils/logger_config.dart';
 
 //Other screens
 import 'package:simple_chat/screens_pages/settings_page.dart';
@@ -109,7 +109,9 @@ class _landing_pageState extends State<landing_page> {
                     icon: const Icon(Icons.settings),
                     iconSize: 35,
                     color: Colors.black,
-                    onPressed: () async {
+                    onPressed: _is_processing
+                        ? null  //disable during processing
+                        : () async {
 
                       //play the button sound
                       await play_effect_sound(config_data.button_pressed_effect);

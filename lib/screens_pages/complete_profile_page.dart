@@ -1,16 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';   //Fonts
 import 'package:intl/intl.dart';
-import 'package:simple_chat/configuration/countries_invoke.dart';
-
-import 'package:simple_chat/standalone_methods_functions/general_methods.dart';
-import 'package:simple_chat/standalone_methods_functions/user_entrypoint_methods.dart';
-import 'package:simple_chat/configuration/config_invoke.dart';
+import 'package:simple_chat/functionality_n_scripts/configuration_scripts/countries_invoke.dart';
+import 'package:simple_chat/functionality_n_scripts/standalone_methods/general_methods.dart';
+import 'package:simple_chat/functionality_n_scripts/standalone_methods/user_entrypoint_methods.dart';
+import 'package:simple_chat/functionality_n_scripts/configuration_scripts/config_invoke.dart';
 import 'package:simple_chat/screens_pages/landing_page.dart';
-import 'package:simple_chat/utils/widgets_and_ui_elements/alert_dialog_list.dart';
-import 'package:simple_chat/utils/logger_config.dart';
-import 'package:simple_chat/session_related/app_storage_class.dart';
-import 'package:simple_chat/utils/widgets_and_ui_elements/labeled_text_field.dart';
+import 'package:simple_chat/widgets_and_ui_elements/alert_dialog_list.dart';
+import 'package:simple_chat/functionality_n_scripts/utils/logger_config.dart';
+import 'package:simple_chat/functionality_n_scripts/session_related/app_storage_class.dart';
+import 'package:simple_chat/widgets_and_ui_elements/labeled_text_field.dart';
 
 //imports
 /////////////////////////////////////////////////////////////////////////////
