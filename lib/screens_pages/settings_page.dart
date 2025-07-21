@@ -814,7 +814,9 @@ class _settingsState extends State<settings> {
                                   label: "Feedback",
                                   controller: _feedback_controller,
                                   hint_text:
-                                  "Example: This app is not good, please delete the source code, the repo and Android Studio.",
+                                  "Example: This app is not good, please delete "
+                                      "the source code, the repo and Android "
+                                      "Studio.",
                                   text_color: config_data.text_color,
                                   fill_color: config_data.user_text_box_color,
                                   hint_color: config_data.suggest_input_color,
@@ -823,6 +825,10 @@ class _settingsState extends State<settings> {
                                   max_lines: 8,
                                   min_lines: 4,
                                   height: 150, // approximate height for multiline
+                                ),
+
+                                SizedBox(
+                                  height: 10,
                                 ),
 
                                 SizedBox(

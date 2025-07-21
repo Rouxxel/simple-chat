@@ -107,7 +107,7 @@ class _sign_up_pageState extends State<sign_up_page> {
                           children: [
                             //Title of card
                             Text(
-                              "Sign up",
+                              "Sign to app",
                               style: GoogleFonts.bebasNeue(
                                 textStyle: TextStyle(
                                   fontSize: 35,

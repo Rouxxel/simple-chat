@@ -113,7 +113,7 @@ class _log_in_pageState extends State<log_in_page> {
                           children: [
                             //Title of card
                             Text(
-                              "Log in",
+                              "Log to app",
                               style: GoogleFonts.bebasNeue(
                                 textStyle: TextStyle(
                                   fontSize: 35,

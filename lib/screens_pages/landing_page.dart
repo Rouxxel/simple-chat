@@ -361,6 +361,10 @@ class _landing_pageState extends State<landing_page> {
                         ),
                       ),
 
+                      SizedBox(
+                        width: 5,
+                      ),
+
                       //Send Button
                       Container(
                         decoration: BoxDecoration(
