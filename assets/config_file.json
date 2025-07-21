@@ -2,7 +2,7 @@
   "ai": {
     "directive": "You are 'Montgomery', an AI assistant with a polite, refined manner of a British butler with a formal respectful language, helpful and eloquent",
     "default_directive": "You are 'Montgomery', an AI assistant with a polite, refined manner of a British butler with a formal respectful language, helpful and eloquent",
-    "max_api_response_time_limit.s": 7,
+    "max_api_response_time_limit.s": 9,
     "ai_api_model": "gemini-2.0-flash",
     "response_length_limit.tokens": 250,
     "response_length_tolerance.tokens": 30,
@@ -12,7 +12,20 @@
   },
   "backend": {
     "backend_url": "https://example_endpoint_deployment.com",
-    "backend_url_generate_ai_response": "https://example_endpoint_deployment.com/generate_ai_response"
+    "backend_url_generate_ai_response": "https://example_endpoint_deployment.com/generate_ai_response",
+    "backend_url_sign_up": "https://example_endpoint_deployment.com/auth/sign_up_email",
+    "backend_url_log_in": "https://example_endpoint_deployment.com/auth/log_in_email_pw",
+    "backend_url_log_out": "https://example_endpoint_deployment.com/auth/log_out",
+    "backend_url_refresh_token": "https://example_endpoint_deployment.com/auth/refresh_token",
+    "backend_url_reset_password": "https://example_endpoint_deployment.com/auth/reset_password",
+    "backend_url_complete_profile": "https://example_endpoint_deployment.com/user_profile/complete_profile",
+    "backend_url_check_user_exists": "https://example_endpoint_deployment.com/user_profile/user_exists",
+    "backend_url_user_preferences": "https://example_endpoint_deployment.com/user_profile/user_preferences"
+  },
+  "db": {
+    "allowed_email_providers": ["gmail","outlook","yahoo","hotmail","icloud","protonmail","aol","zoho","gmx","mail"],
+    "allowed_email_tlds": ["com", "org", "net", "co", "io", "edu", "gov"],
+    "refresh_token_preemptive.s": 30
   },
   "colors":{
     "background.color": "#FFFCF9FB",
@@ -34,8 +47,8 @@
     "theme": "dark"
   },
   "images": {
-    "default_image.path": "images/background.jpeg",
-    "image.path": "images/background.jpeg"
+    "default_background_image.path": "images/background.jpeg",
+    "background_image.path": "images/background.jpeg"
   },
   "audio": {
     "button_pressed_effect.mp3": "audio/button_press_effect.mp3",
@@ -46,7 +59,7 @@
     "easter_egg_found": false
   },
   "app_info": {
-    "version": "2.7.1",
+    "version": "2.11.2",
     "legal_notice": "All rights reserved © 2025 Simple Chat"
   }
 }

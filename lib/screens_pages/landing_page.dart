@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';   //Fonts
 import 'package:icons_flutter/icons_flutter.dart'; //Extra icons
 import 'package:intl/intl.dart'; //For date and time formatting
 import 'package:flutter_markdown/flutter_markdown.dart'; //For markdown
+import 'package:simple_chat/functionality_n_scripts/session_related/refresh_tk_watch_dog.dart';
 
-import 'package:simple_chat/methods_functions/methods.dart';
-import 'package:simple_chat/classes/classes.dart';
-import 'package:simple_chat/configurations/config_invoke.dart';
-import 'package:simple_chat/utils/logger_config.dart';
+import 'package:simple_chat/functionality_n_scripts/standalone_methods/general_methods.dart';
+import 'package:simple_chat/functionality_n_scripts/message_related/message_class.dart';
+import 'package:simple_chat/functionality_n_scripts/configuration_scripts/config_invoke.dart';
+import 'package:simple_chat/functionality_n_scripts/standalone_methods/session_methods.dart';
+import 'package:simple_chat/screens_pages/log_in_page.dart';
+import 'package:simple_chat/functionality_n_scripts/utils/logger_config.dart';
 
 //Other screens
 import 'package:simple_chat/screens_pages/settings_page.dart';
@@ -100,31 +102,67 @@ class _landing_pageState extends State<landing_page> {
                   ),
                 ],
               ),
-              IconButton(
-                icon: const Icon(Icons.settings),
-                iconSize: 35,
-                color: Colors.black,
-                onPressed: () async {
+              Row(
 
-                  //play the button sound
-                  await play_effect_sound(config_data.button_pressed_effect);
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.settings),
+                    iconSize: 35,
+                    color: Colors.black,
+                    onPressed: _is_processing
+                        ? null  //disable during processing
+                        : () async {
 
-                  //Navigate to settings page with fade transition
-                  await Navigator.push(
-                    context,
-                    PageRouteBuilder(
-                      pageBuilder: (context, animation, secondaryAnimation) => const settings(),
-                      transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                        return FadeTransition(
-                          opacity: animation,
-                          child: child,
-                        );
-                      },
-                    ),
-                  );
-                  //Run after returning from the settings screen
-                  _load_system_prompt();
-                },
+                      //play the button sound
+                      await play_effect_sound(config_data.button_pressed_effect);
+
+                      //Navigate to settings page with fade transition
+                      await Navigator.push(
+                        context,
+                        PageRouteBuilder(
+                          pageBuilder: (context, animation, secondaryAnimation) => const settings(),
+                          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                            return FadeTransition(
+                              opacity: animation,
+                              child: child,
+                            );
+                          },
+                        ),
+                      );
+                      //Run after returning from the settings screen
+                      _load_system_prompt();
+                    },
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.logout),
+                    iconSize: 35,
+                    color: Colors.black,
+                    onPressed: () async {
+
+                      //play the button sound
+                      await play_effect_sound(config_data.button_pressed_effect);
+
+                      await log_out(context);
+                      //Stop watch dog for token refresh
+                      TokenWatchdog().stop();
+                      log_handler?.i("User logged out. Returning to log in page");
+
+                      //Navigate to login page with fade transition
+                      await Navigator.push(
+                        context,
+                        PageRouteBuilder(
+                          pageBuilder: (context, animation, secondaryAnimation) => const log_in_page(),
+                          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                            return FadeTransition(
+                              opacity: animation,
+                              child: child,
+                            );
+                          },
+                        ),
+                      );
+                    },
+                  ),
+                ],
               )
             ],
           ),
@@ -135,7 +173,7 @@ class _landing_pageState extends State<landing_page> {
           children: [
             //Background image
             Image.asset(
-              config_data.image_path,
+              config_data.background_image_path,
               fit: BoxFit.cover,
               width: MediaQuery.of(context).size.width,
               height: MediaQuery.of(context).size.height,
@@ -321,6 +359,10 @@ class _landing_pageState extends State<landing_page> {
                           ),
                           cursorColor: Colors.black,
                         ),
+                      ),
+
+                      SizedBox(
+                        width: 5,
                       ),
 
                       //Send Button

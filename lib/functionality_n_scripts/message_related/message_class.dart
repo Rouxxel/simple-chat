@@ -5,11 +5,11 @@ import 'package:http/http.dart' as http;
 import "dart:async";
 
 //Import methods
-import 'package:simple_chat/methods_functions/methods.dart';
-import 'package:simple_chat/configurations/config_invoke.dart';
-import 'package:simple_chat/utils/logger_config.dart';
-//Import alert dialogs
-import "package:simple_chat/utils/alert_dialog_list.dart";
+import 'package:simple_chat/functionality_n_scripts/standalone_methods/general_methods.dart';
+import 'package:simple_chat/functionality_n_scripts/configuration_scripts/config_invoke.dart';
+import "package:simple_chat/functionality_n_scripts/session_related/app_storage_class.dart";
+import 'package:simple_chat/functionality_n_scripts/utils/logger_config.dart';
+import "package:simple_chat/widgets_and_ui_elements/alert_dialog_list.dart";
 
 //imports
 /////////////////////////////////////////////////////////////////////////////
@@ -54,12 +54,20 @@ class Message {
       String history = build_conversation_context(message_list);
       String new_prompt = "$history\nUser: ${input_controller.text}\nAI:";
 
+      //Obtain critical user data
+      final String? user_id = await AppStorage.get_user_id();
+      final String? access_token = await AppStorage.get_access_token();
+
       //Prepare request payload
       final body_for_backend = jsonEncode({
         "prompt": new_prompt,
         "ai_model": config_data.ai_api_model,
         "time_limit": config_data.max_api_response_time_limit,
+        "user_id": user_id,
+        "access_token": access_token
       });
+
+      //log_handler?.w(body_for_backend);
 
       //POST request to your backend URL
       final response = await http
@@ -76,6 +84,7 @@ class Message {
         },
       );
 
+      //Check response status code
       switch(response.statusCode){
         case 200:
           //Log and proceed
@@ -87,15 +96,15 @@ class Message {
           return;
         case 500:
           log_handler?.e("Server error: ${response.statusCode} - ${response.body}");
-          show_ai_response_error(context);
+          show_server_error(context);
           return;
         case 429:
           log_handler?.e("Backend error: ${response.statusCode} - ${response.body}");
-          show_ai_response_error(context);
+          show_server_error(context);
           return;
         default:
           log_handler?.w("Unexpected status code: ${response.statusCode}");
-          show_ai_response_error(context);
+          show_unexpected_backend_error(context);
           return;
       }
 

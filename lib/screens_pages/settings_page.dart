@@ -1,15 +1,15 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart'; //Fonts
+import 'package:simple_chat/functionality_n_scripts/session_related/app_storage_class.dart';
 
-import 'package:simple_chat/methods_functions/methods.dart';
-import 'package:simple_chat/configurations/config_invoke.dart';
-import 'package:simple_chat/utils/alert_dialog_list.dart';
-import 'package:simple_chat/utils/colorimetry_blueprints.dart';
-
-import 'package:simple_chat/utils/logger_config.dart';
-
-import '../classes/easter_egg_player.dart';
+import 'package:simple_chat/functionality_n_scripts/standalone_methods/general_methods.dart';
+import 'package:simple_chat/functionality_n_scripts/configuration_scripts/config_invoke.dart';
+import 'package:simple_chat/functionality_n_scripts/standalone_methods/user_profile_methods.dart';
+import 'package:simple_chat/widgets_and_ui_elements/alert_dialog_list.dart';
+import 'package:simple_chat/widgets_and_ui_elements/labeled_text_field.dart';
+import 'package:simple_chat/functionality_n_scripts/utils/logger_config.dart';
+import 'package:simple_chat/functionality_n_scripts/utils/easter_egg_player.dart';
 
 class settings extends StatefulWidget {
   const settings({super.key});
@@ -39,6 +39,9 @@ class _settingsState extends State<settings> {
   //Easter egg
   int _tap_count = 0;
   Timer? _tap_timer;
+
+  //Boolean controller for send button and input controller hint text hiding
+  bool _is_processing = false;
 
   Future<void> _handle_ten_taps_gesture(VoidCallback on_ten_taps) async {
     _tap_count = _tap_count + 1;
@@ -73,7 +76,9 @@ class _settingsState extends State<settings> {
             icon: const Icon(Icons.close_sharp),
             iconSize: 40,
             color: Colors.black,
-            onPressed: () async {
+            onPressed: _is_processing
+                ? null  //disables the button when true
+                : () async {
               //play sound effect
               await play_effect_sound(config_data.button_pressed_effect);
 
@@ -110,7 +115,7 @@ class _settingsState extends State<settings> {
 
       //Actual content
       body: Padding(
-        padding: EdgeInsets.all(15),
+        padding: const EdgeInsets.all(15),
         child: Column(
           //Move children to the left
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -145,13 +150,13 @@ class _settingsState extends State<settings> {
                       ),
                     ),
                     child: Padding(
-                      padding: EdgeInsets.fromLTRB(16, 0, 16, 0),
+                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
                       child: Column(
                         //AI title
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            "AI",
+                            "AI personality",
                             style: GoogleFonts.bebasNeue(
                               textStyle: TextStyle(
                                 fontSize: 35,
@@ -162,69 +167,28 @@ class _settingsState extends State<settings> {
                             ),
                           ),
 
-                          //Main directory
+                          //Main directory field
                           Padding(
-                            padding: EdgeInsets.fromLTRB(16, 0, 0, 0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                //Title
-                                Text(
-                                  "Personality",
-                                  style: GoogleFonts.roboto(
-                                    textStyle: TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 18,
-                                      color: config_data.text_color,
-                                    ),
-                                  ),
-                                ),
-                                //Textfield for personality
-                                TextField(
-                                  controller: _personality_controller,
-                                  style: GoogleFonts.roboto(
-                                    textStyle: TextStyle(
-                                      fontSize:
-                                          18, // match markdown paragraph font size
-                                      fontWeight: FontWeight
-                                          .normal, // normal weight like markdown p
-                                      fontStyle: FontStyle
-                                          .normal, // normal style (not italic by default)
-                                      color: config_data.text_color,
-                                    ),
-                                  ),
-                                  maxLines: 8, // Allows up to 8 lines
-                                  minLines: 4, // Starts with 4 lines of height
-                                  maxLength:
-                                      150, // Limit the number of characters
-                                  decoration: InputDecoration(
-                                    filled: true,
-                                    fillColor: config_data.user_text_box_color,
-                                    hintText:
-                                        "Example: ${config_data.default_directive}",
-                                    hintStyle: GoogleFonts.roboto(
-                                      textStyle: TextStyle(
-                                        fontSize: 18,
-                                        fontStyle: FontStyle.italic,
-                                        fontWeight: FontWeight.normal,
-                                        color: config_data.suggest_input_color,
-                                      ),
-                                    ),
-                                    border: const OutlineInputBorder(
-                                      borderRadius: BorderRadius.all(
-                                        Radius.circular(5.0),
-                                      ),
-                                    ),
-                                  ),
-                                  cursorColor: Colors.black,
-                                ),
-                              ],
+                            padding: const EdgeInsets.fromLTRB(16, 0, 0, 0),
+                            child: LabeledTextField(
+                              label: "Personality",
+                              controller: _personality_controller,
+                              hint_text: "Example: ${config_data.default_directive}",
+                              text_color: config_data.text_color,
+                              fill_color: config_data.user_text_box_color,
+                              hint_color: config_data.suggest_input_color,
+                              enabled: !_is_processing,
+                              max_length: 150,
+                              max_lines: 8,
+                              min_lines: 4,
+                              height: 180, // adjust height to visually match multiline content
                             ),
                           ),
 
+
                           //Verbose level
                           Padding(
-                            padding: EdgeInsets.fromLTRB(16, 0, 0, 16),
+                            padding: const EdgeInsets.fromLTRB(16, 0, 0, 16),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -245,7 +209,9 @@ class _settingsState extends State<settings> {
                                     // Low Button
                                     Expanded(
                                       child: GestureDetector(
-                                        onTap: () async {
+                                        onTap: _is_processing
+                                            ? null  //disables the button when true
+                                            : () async {
                                           if (_button_locked) return; //prevent spam
                                           setState(() {
                                             _button_locked = true; //Lock buttons
@@ -258,16 +224,15 @@ class _settingsState extends State<settings> {
                                             _button_locked = false; //unlock after sound finishes
                                           });
                                           log_handler?.i(
-                                              "low button pressed, verbose: ${_verbose_level_controller}");
+                                              "low button pressed, verbose: $_verbose_level_controller");
                                         },
                                         child: Container(
-                                          padding: EdgeInsets.symmetric(
-                                              vertical: 12),
+                                          padding: const EdgeInsets.symmetric(vertical: 12),
                                           decoration: BoxDecoration(
                                             color: _verbose_level_controller == "low"
                                                 ? config_data.app_bar_color
                                                 : config_data.background_color,
-                                            borderRadius: BorderRadius.only(
+                                            borderRadius: const BorderRadius.only(
                                               topLeft: Radius.circular(10),
                                               bottomLeft: Radius.circular(10),
                                             ),
@@ -297,7 +262,9 @@ class _settingsState extends State<settings> {
                                     // Medium Button
                                     Expanded(
                                       child: GestureDetector(
-                                        onTap: () async {
+                                        onTap: _is_processing
+                                            ? null  //disables the button when true
+                                            : () async {
                                           if (_button_locked) return; //prevent spam
                                           setState(() {
                                             _button_locked = true; //Lock buttons
@@ -310,11 +277,10 @@ class _settingsState extends State<settings> {
                                             _button_locked = false; //unlock after sound finishes
                                           });
                                           log_handler?.i(
-                                              "medium button pressed, verbose: ${_verbose_level_controller}");
+                                              "medium button pressed, verbose: $_verbose_level_controller");
                                         },
                                         child: Container(
-                                          padding: EdgeInsets.symmetric(
-                                              vertical: 12),
+                                          padding: const EdgeInsets.symmetric(vertical: 12),
                                           decoration: BoxDecoration(
                                             color: _verbose_level_controller == "medium"
                                                 ? config_data.app_bar_color
@@ -345,7 +311,9 @@ class _settingsState extends State<settings> {
                                     // High Button
                                     Expanded(
                                       child: GestureDetector(
-                                        onTap: () async {
+                                        onTap: _is_processing
+                                            ? null  //disables the button when true
+                                            : () async {
                                           if (_button_locked) return; //prevent spam
                                           setState(() {
                                             _button_locked = true; //Lock buttons
@@ -358,16 +326,16 @@ class _settingsState extends State<settings> {
                                             _button_locked = false; //unlock after sound finishes
                                           });
                                           log_handler?.i(
-                                              "high button pressed, verbose: ${_verbose_level_controller}");
+                                              "high button pressed, verbose: $_verbose_level_controller");
                                         },
                                         child: Container(
-                                          padding: EdgeInsets.symmetric(
+                                          padding: const EdgeInsets.symmetric(
                                               vertical: 12),
                                           decoration: BoxDecoration(
                                             color: _verbose_level_controller == "high"
                                                 ? config_data.app_bar_color
                                                 : config_data.background_color,
-                                            borderRadius: BorderRadius.only(
+                                            borderRadius: const BorderRadius.only(
                                               topRight: Radius.circular(10),
                                               bottomRight: Radius.circular(10),
                                             ),
@@ -403,7 +371,7 @@ class _settingsState extends State<settings> {
                     ),
                   ),
 
-                  SizedBox(
+                  const SizedBox(
                     width: double.infinity,
                     height: 15,
                   ),
@@ -420,7 +388,7 @@ class _settingsState extends State<settings> {
                       ),
                     ),
                     child: Padding(
-                      padding: EdgeInsets.fromLTRB(16, 0, 16, 0),
+                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
                       child: Column(
                         //Colorimetry title
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -440,49 +408,51 @@ class _settingsState extends State<settings> {
                           //Color options
                           Padding(
                             padding: const EdgeInsets.fromLTRB(16, 0, 0, 6),
-                            child: Container(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  LabeledTextField(
-                                    label: "Background color",
-                                    controller: _background_color_controller,
-                                    hint_text: "Ivory",
-                                    text_color: config_data.text_color,
-                                    fill_color: config_data.user_text_box_color,
-                                    hint_color: config_data.suggest_input_color,
-                                  ),
-                                  SizedBox(height: 10),
-                                  LabeledTextField(
-                                    label: "Bar colors",
-                                    controller: _bar_colors_controller,
-                                    hint_text: "Indian Red",
-                                    text_color: config_data.text_color,
-                                    fill_color: config_data.user_text_box_color,
-                                    hint_color: config_data.suggest_input_color,
-                                  ),
-                                  SizedBox(height: 10),
-                                  LabeledTextField(
-                                    label: "Your textbox color",
-                                    controller: _user_textbox_color_controller,
-                                    hint_text: "Tan",
-                                    text_color: config_data.text_color,
-                                    fill_color: config_data.user_text_box_color,
-                                    hint_color: config_data.suggest_input_color,
-                                  ),
-                                  SizedBox(height: 10),
-                                  LabeledTextField(
-                                    label: "AI textbox color",
-                                    controller: _ai_textbox_color_controller,
-                                    hint_text: "Light Yellow",
-                                    text_color: config_data.text_color,
-                                    fill_color: config_data.user_text_box_color,
-                                    hint_color: config_data.suggest_input_color,
-                                  ),
-                                  SizedBox(height: 10),
-                                ],
-                              )
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                LabeledTextField(
+                                  label: "Background color",
+                                  controller: _background_color_controller,
+                                  hint_text: "Ivory",
+                                  text_color: config_data.text_color,
+                                  fill_color: config_data.user_text_box_color,
+                                  hint_color: config_data.suggest_input_color,
+                                  enabled: !_is_processing, //disable while processing
+                                ),
+                                const SizedBox(height: 10),
+                                LabeledTextField(
+                                  label: "Bar colors",
+                                  controller: _bar_colors_controller,
+                                  hint_text: "Indian Red",
+                                  text_color: config_data.text_color,
+                                  fill_color: config_data.user_text_box_color,
+                                  hint_color: config_data.suggest_input_color,
+                                  enabled: !_is_processing, //disable while processing
+                                ),
+                                const SizedBox(height: 10),
+                                LabeledTextField(
+                                  label: "Your textbox color",
+                                  controller: _user_textbox_color_controller,
+                                  hint_text: "Tan",
+                                  text_color: config_data.text_color,
+                                  fill_color: config_data.user_text_box_color,
+                                  hint_color: config_data.suggest_input_color,
+                                  enabled: !_is_processing, //disable while processing
+                                ),
+                                const SizedBox(height: 10),
+                                LabeledTextField(
+                                  label: "AI textbox color",
+                                  controller: _ai_textbox_color_controller,
+                                  hint_text: "Light Yellow",
+                                  text_color: config_data.text_color,
+                                  fill_color: config_data.user_text_box_color,
+                                  hint_color: config_data.suggest_input_color,
+                                  enabled: !_is_processing, //disable while processing
+                                ),
+                                const SizedBox(height: 10),
+                              ],
                             ),
                           ),
                         ],
@@ -490,7 +460,7 @@ class _settingsState extends State<settings> {
                     ),
                   ),
 
-                  SizedBox(
+                  const SizedBox(
                     width: double.infinity,
                     height: 15,
                   ),
@@ -507,7 +477,7 @@ class _settingsState extends State<settings> {
                       ),
                     ),
                     child: Padding(
-                      padding: EdgeInsets.fromLTRB(16, 0, 16, 0),
+                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
                       child: Column(
                         //AI Language title
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -526,41 +496,15 @@ class _settingsState extends State<settings> {
 
                           //Language input field
                           Padding(
-                            padding: EdgeInsets.fromLTRB(16, 0, 0, 0),
-                            child: TextField(
+                            padding: const EdgeInsets.fromLTRB(16, 0, 0, 16),
+                            child: LabeledTextField(
+                              label: "Language",
                               controller: _language_controller,
-                              style: GoogleFonts.roboto(
-                                textStyle: TextStyle(
-                                  fontSize:
-                                  18, // match markdown paragraph font size
-                                  fontWeight: FontWeight
-                                      .normal, // normal weight like markdown p
-                                  fontStyle: FontStyle
-                                      .normal, // normal style (not italic by default)
-                                  color: config_data.text_color,
-                                ),
-                              ),
-                              maxLength:20, // Limit the number of characters
-                              decoration: InputDecoration(
-                                filled: true,
-                                fillColor: config_data.user_text_box_color,
-                                hintText:
-                                "Example: ${config_data.default_language}",
-                                hintStyle: GoogleFonts.roboto(
-                                  textStyle: TextStyle(
-                                    fontSize: 18,
-                                    fontStyle: FontStyle.italic,
-                                    fontWeight: FontWeight.normal,
-                                    color: config_data.suggest_input_color,
-                                  ),
-                                ),
-                                border: const OutlineInputBorder(
-                                  borderRadius: BorderRadius.all(
-                                    Radius.circular(5.0),
-                                  ),
-                                ),
-                              ),
-                              cursorColor: Colors.black,
+                              hint_text: "Example: ${config_data.default_language}",
+                              text_color: config_data.text_color,
+                              fill_color: config_data.user_text_box_color,
+                              hint_color: config_data.suggest_input_color,
+                              enabled: !_is_processing, //disable while processing
                             ),
                           ),
 
@@ -569,7 +513,7 @@ class _settingsState extends State<settings> {
                     ),
                   ),
 
-                  SizedBox(
+                  const SizedBox(
                     width: double.infinity,
                     height: 15,
                   ),
@@ -586,7 +530,7 @@ class _settingsState extends State<settings> {
                       ),
                     ),
                     child: Padding(
-                      padding: EdgeInsets.fromLTRB(16, 0, 16, 0),
+                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
                       child: Column(
                         //Background image title
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -605,7 +549,7 @@ class _settingsState extends State<settings> {
 
                           //Upload image and change background image
                           Padding(
-                            padding: EdgeInsets.fromLTRB(16, 0, 0, 16),
+                            padding: const EdgeInsets.fromLTRB(16, 0, 0, 16),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -613,7 +557,9 @@ class _settingsState extends State<settings> {
                                   width: double.infinity,
                                   height: 45,
                                   child: GestureDetector(
-                                    onTap: () async {
+                                    onTap: _is_processing
+                                        ? null  //disables the button when true
+                                        : () async {
                                       //play sound effect
                                       await play_effect_sound(config_data.miscellanous_effect);
                                       //TODO: add functionality to change background image
@@ -653,7 +599,7 @@ class _settingsState extends State<settings> {
                     ),
                   ),
 
-                  SizedBox(
+                  const SizedBox(
                     width: double.infinity,
                     height: 15,
                   ),
@@ -670,7 +616,7 @@ class _settingsState extends State<settings> {
                       ),
                     ),
                     child: Padding(
-                      padding: EdgeInsets.fromLTRB(16, 0, 16, 0),
+                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
                       child: Column(
                         //Sound effects image title
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -690,7 +636,7 @@ class _settingsState extends State<settings> {
 
                           //Sound effect switch
                           Padding(
-                            padding: EdgeInsets.fromLTRB(16, 0, 0, 16),
+                            padding: const EdgeInsets.fromLTRB(16, 0, 0, 16),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
@@ -700,7 +646,9 @@ class _settingsState extends State<settings> {
                                     // On Button
                                     Expanded(
                                       child: GestureDetector(
-                                        onTap: () async {
+                                        onTap: _is_processing
+                                            ? null  //disables the button when true
+                                            : () async {
                                           if (_button_locked) return; //prevent spam
                                           setState(() {
                                             _button_locked = true; //Lock buttons
@@ -713,16 +661,15 @@ class _settingsState extends State<settings> {
                                             _button_locked = false; //unlock buttons
                                           });
                                           log_handler?.i(
-                                              "sound effects on button pressed, status: ${_sound_effect_controller}");
+                                              "sound effects on button pressed, status: $_sound_effect_controller");
                                         },
                                         child: Container(
-                                          padding: EdgeInsets.symmetric(
-                                              vertical: 12),
+                                          padding: const EdgeInsets.symmetric(vertical: 12),
                                           decoration: BoxDecoration(
                                             color: _sound_effect_controller == true
                                                 ? config_data.app_bar_color
                                                 : config_data.background_color,
-                                            borderRadius: BorderRadius.only(
+                                            borderRadius: const BorderRadius.only(
                                               topLeft: Radius.circular(10),
                                               bottomLeft: Radius.circular(10),
                                             ),
@@ -752,7 +699,9 @@ class _settingsState extends State<settings> {
                                     // Off Button
                                     Expanded(
                                       child: GestureDetector(
-                                        onTap: () async {
+                                        onTap: _is_processing
+                                            ? null  //disables the button when true
+                                            : () async {
                                           if (_button_locked) return; //prevent spam
                                           setState(() {
                                             _button_locked = true; //Lock buttons
@@ -765,16 +714,15 @@ class _settingsState extends State<settings> {
                                             _button_locked = false; //unlock buttons
                                           });
                                           log_handler?.i(
-                                              "sound effects off button pressed, status: ${_sound_effect_controller}");
+                                              "sound effects off button pressed, status: $_sound_effect_controller");
                                         },
                                         child: Container(
-                                          padding: EdgeInsets.symmetric(
-                                              vertical: 12),
+                                          padding: const EdgeInsets.symmetric(vertical: 12),
                                           decoration: BoxDecoration(
                                             color: _sound_effect_controller == false
                                                 ? config_data.app_bar_color
                                                 : config_data.background_color,
-                                            borderRadius: BorderRadius.only(
+                                            borderRadius: const BorderRadius.only(
                                               topRight: Radius.circular(10),
                                               bottomRight: Radius.circular(10),
                                             ),
@@ -803,7 +751,7 @@ class _settingsState extends State<settings> {
                                   ],
                                 ),
 
-                                SizedBox(
+                                const SizedBox(
                                   width: double.infinity,
                                   height: 10,
                                 ),
@@ -821,7 +769,7 @@ class _settingsState extends State<settings> {
                     ),
                   ),
 
-                  SizedBox(
+                  const SizedBox(
                     width: double.infinity,
                     height: 15,
                   ),
@@ -838,7 +786,7 @@ class _settingsState extends State<settings> {
                       ),
                     ),
                     child: Padding(
-                      padding: EdgeInsets.fromLTRB(16, 0, 16, 0),
+                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
                       child: Column(
                         //Background image title
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -857,54 +805,39 @@ class _settingsState extends State<settings> {
 
                           //Send feedback
                           Padding(
-                            padding: EdgeInsets.fromLTRB(16, 0, 0, 16),
+                            padding: const EdgeInsets.fromLTRB(16, 0, 0, 16),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                //Textfield for feedback
-                                TextField(
+                                //Labeled textfield for feedback
+                                LabeledTextField(
+                                  label: "Feedback",
                                   controller: _feedback_controller,
-                                  style: GoogleFonts.roboto(
-                                    textStyle: TextStyle(
-                                      fontSize:
-                                      18, // match markdown paragraph font size
-                                      fontWeight: FontWeight
-                                          .normal, // normal weight like markdown p
-                                      fontStyle: FontStyle
-                                          .normal, // normal style (not italic by default)
-                                      color: config_data.text_color,
-                                    ),
-                                  ),
-                                  maxLines: 8, // Allows up to 8 lines
-                                  minLines: 4, // Starts with 4 lines of height
-                                  maxLength: 300, // Limit the number of characters
-                                  decoration: InputDecoration(
-                                    filled: true,
-                                    fillColor: config_data.user_text_box_color,
-                                    hintText:
-                                    "Example: This app is not good, please delete "
-                                        "the source code, the repo and Android Studio.",
-                                    hintStyle: GoogleFonts.roboto(
-                                      textStyle: TextStyle(
-                                        fontSize: 18,
-                                        fontStyle: FontStyle.italic,
-                                        fontWeight: FontWeight.normal,
-                                        color: config_data.suggest_input_color,
-                                      ),
-                                    ),
-                                    border: const OutlineInputBorder(
-                                      borderRadius: BorderRadius.all(
-                                        Radius.circular(5.0),
-                                      ),
-                                    ),
-                                  ),
-                                  cursorColor: Colors.black,
+                                  hint_text:
+                                  "Example: This app is not good, please delete "
+                                      "the source code, the repo and Android "
+                                      "Studio.",
+                                  text_color: config_data.text_color,
+                                  fill_color: config_data.user_text_box_color,
+                                  hint_color: config_data.suggest_input_color,
+                                  enabled: !_is_processing,
+                                  max_length: 300,
+                                  max_lines: 8,
+                                  min_lines: 4,
+                                  height: 150, // approximate height for multiline
                                 ),
+
+                                SizedBox(
+                                  height: 10,
+                                ),
+
                                 SizedBox(
                                   width: double.infinity,
                                   height: 45,
                                   child: GestureDetector(
-                                    onTap: () async {
+                                    onTap: _is_processing
+                                        ? null  //disables the button when true
+                                        : () async {
                                       setState(() async {
                                         //Send feedback
                                          await send_feedback_by_email(context,_feedback_controller.text);
@@ -944,7 +877,7 @@ class _settingsState extends State<settings> {
                     ),
                   ),
 
-                  SizedBox(
+                  const SizedBox(
                     width: double.infinity,
                     height: 15,
                   ),
@@ -981,7 +914,7 @@ class _settingsState extends State<settings> {
                         ),
                       ),
                       child: Padding(
-                        padding: EdgeInsets.fromLTRB(16, 0, 16, 0),
+                        padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
                         child: Column(
                           //AI title
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -1000,7 +933,7 @@ class _settingsState extends State<settings> {
 
                             //Credits list
                             Padding(
-                              padding: EdgeInsets.fromLTRB(16, 0, 0, 0),
+                              padding: const EdgeInsets.fromLTRB(16, 0, 0, 0),
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
@@ -1072,7 +1005,7 @@ class _settingsState extends State<settings> {
                                 ],
                               ),
                             ),
-                            SizedBox(
+                            const SizedBox(
                               width: double.infinity,
                               height: 10,
                             ),
@@ -1099,9 +1032,11 @@ class _settingsState extends State<settings> {
             Expanded(
               //Reset button
               child: GestureDetector(
-                onDoubleTap: () async {
+                onDoubleTap: _is_processing
+                    ? null  //disables the button when true
+                    : () async {
                   //play sound effect
-                  await play_effect_sound(config_data.miscellanous_effect);
+                  await play_effect_sound(config_data.button_pressed_effect);
 
                   setState(() async {
                     //Reset to default all changes by user
@@ -1125,7 +1060,7 @@ class _settingsState extends State<settings> {
 
                     //Reload config_data for runtime reset changes
                     config_data = app_configuration.fromJson(raw_config_json);
-                    log_handler?.i("Save button pressed\n"
+                    log_handler?.i("Reset button pressed\n"
                         "Reset directory: ${config_data.directive}\n"
                         "Reset verbose: ${config_data.verbose}\n"
                         "Reset Background color: ${config_data.background_color}\n"
@@ -1135,7 +1070,29 @@ class _settingsState extends State<settings> {
                         "Reset language: ${config_data.user_language}\n"
                         "Reset sound status: ${config_data.sound_effects_status}\n"
                     );
+
+                    //Start reset user preferences request
+                    setState(() => _is_processing = true);
+
+                    //Reset preferences to cloud
+                    final String? access_token = await AppStorage.get_access_token();
+                    final String? user_id = await AppStorage.get_user_id();
+                    await save_user_preferences(context,
+                      access_token: access_token.toString(),
+                      user_id: user_id.toString(),
+                      ai_personality: config_data.directive,
+                      verbose_level: config_data.verbose,
+                      background_color: color_to_hex(config_data.background_color),
+                      bar_colors: color_to_hex(config_data.app_bar_color),
+                      user_text_box_color: color_to_hex(config_data.user_text_box_color),
+                      ai_text_box_color: color_to_hex(config_data.ai_text_box_color),
+                      ai_language: config_data.user_language,
+                      sound_effects_on: config_data.sound_effects_status,
+                    );
+                    //play sound effect
+                    await play_effect_sound(config_data.miscellanous_effect);
                     show_changes_reset(context);
+                    setState(() => _is_processing = false);
                   },
                   );
                 },
@@ -1165,7 +1122,7 @@ class _settingsState extends State<settings> {
               ),
             ),
 
-            SizedBox(
+            const SizedBox(
               height: double.infinity,
               width: 10,
             ),
@@ -1174,9 +1131,11 @@ class _settingsState extends State<settings> {
             Expanded(
               //Save button
               child: GestureDetector(
-                onTap: () async {
+                onTap: _is_processing
+                    ? null  //disables the button when true
+                    : () async {
                   //play sound effect
-                  await play_effect_sound(config_data.miscellanous_effect);
+                  await play_effect_sound(config_data.button_pressed_effect);
 
                   setState(() async {
                       //Only save AI directory if input is not empty
@@ -1215,15 +1174,38 @@ class _settingsState extends State<settings> {
                       log_handler?.i("Save button pressed\n"
                           "Saved directory: ${config_data.directive}\n"
                           "Saved verbose: ${config_data.verbose}\n"
-                          "Saved Background color: ${config_data.background_color}\n"
-                          "Saved Bar colors: ${config_data.app_bar_color}\n"
-                          "Saved User textbox color: ${config_data.user_text_box_color}\n"
-                          "Saved AI textbox color: ${config_data.ai_text_box_color}\n"
+                          "Saved Background color: ${color_to_hex(config_data.background_color)}\n"
+                          "Saved Bar colors: ${color_to_hex(config_data.app_bar_color)}\n"
+                          "Saved User textbox color: ${color_to_hex(config_data.user_text_box_color)}\n"
+                          "Saved AI textbox color: ${color_to_hex(config_data.ai_text_box_color)}\n"
                           "Saved language: ${config_data.user_language}\n"
                           "Saved sound status: ${config_data.sound_effects_status}\n"
                           "Saved easter egg: ${config_data.easter_egg_found}\n"
                       );
+
+                      //Start Save user preferences request
+                      setState(() => _is_processing = true);
+
+                      //Save preferences to cloud with reloaded configuration
+                      final String? access_token = await AppStorage.get_access_token();
+                      final String? user_id = await AppStorage.get_user_id();
+                      await save_user_preferences(context,
+                        access_token: access_token.toString(),
+                        user_id: user_id.toString(),
+                        ai_personality: config_data.directive,
+                        verbose_level: config_data.verbose,
+                        background_color: color_to_hex(config_data.background_color),
+                        bar_colors: color_to_hex(config_data.app_bar_color),
+                        user_text_box_color: color_to_hex(config_data.user_text_box_color),
+                        ai_text_box_color: color_to_hex(config_data.ai_text_box_color),
+                        ai_language: config_data.user_language,
+                        sound_effects_on: config_data.sound_effects_status,
+                      );
+
+                      //play sound effect//
+                      await play_effect_sound(config_data.miscellanous_effect);
                       show_changes_saved(context);
+                      setState(() => _is_processing = false);
                     },
                   );
                 },

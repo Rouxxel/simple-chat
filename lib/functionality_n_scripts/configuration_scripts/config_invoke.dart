@@ -4,9 +4,9 @@ import 'package:flutter/services.dart'; // For rootBundle
 import 'dart:io';
 import 'package:path_provider/path_provider.dart';
 
-import 'package:simple_chat/utils/logger_config.dart';
+import 'package:simple_chat/functionality_n_scripts/utils/logger_config.dart';
 
-//Extract configuration values
+//Extract configuration_scripts values
 class app_configuration {
   final String main_title;
 
@@ -22,6 +22,18 @@ class app_configuration {
 
   final String backend_url;
   final String backend_url_generate_ai_response;
+  final String backend_url_sign_up;
+  final String backend_url_log_in;
+  final String backend_url_log_out;
+  final String backend_url_refresh_token;
+  final String backend_url_reset_password;
+  final String backend_url_complete_profile;
+  final String backend_url_user_exists;
+  final String backend_url_user_preferences;
+
+  final List<dynamic> allowed_email_providers;
+  final List<dynamic> allowed_email_tlds;
+  final int refresh_token_preemptive;
 
   final Color background_color;
   final Color default_background_color;
@@ -39,8 +51,8 @@ class app_configuration {
   final String default_language;
   final String user_theme;
 
-  final String default_image_path;
-  final String image_path;
+  final String default_background_image_path;
+  final String background_image_path;
 
   final String button_pressed_effect;
   final String miscellanous_effect;
@@ -67,6 +79,18 @@ class app_configuration {
 
     required this.backend_url,
     required this.backend_url_generate_ai_response,
+    required this.backend_url_sign_up,
+    required this.backend_url_log_in,
+    required this.backend_url_log_out,
+    required this.backend_url_refresh_token,
+    required this.backend_url_reset_password,
+    required this.backend_url_complete_profile,
+    required this.backend_url_user_exists,
+    required this.backend_url_user_preferences,
+
+    required this.allowed_email_providers,
+    required this.allowed_email_tlds,
+    required this.refresh_token_preemptive,
 
     required this.background_color,
     required this.default_background_color,
@@ -84,8 +108,8 @@ class app_configuration {
     required this.default_language,
     required this.user_theme,
 
-    required this.default_image_path,
-    required this.image_path,
+    required this.default_background_image_path,
+    required this.background_image_path,
 
     required this.button_pressed_effect,
     required this.miscellanous_effect,
@@ -102,6 +126,7 @@ class app_configuration {
     final ai = json['ai'] ?? {};
     final colors = json['colors'] ?? {};
     final backend = json["backend"] ?? {};
+    final db = json["db"] ?? {};
     final user_defaults = json['user_defaults'] ?? {};
     final image_paths = json['images'] ?? {};
     final audio_paths = json['audio'] ?? {};
@@ -122,6 +147,18 @@ class app_configuration {
 
       backend_url: backend["backend_url"]?? 'invalid://missing-host',
       backend_url_generate_ai_response: backend["backend_url_generate_ai_response"]?? 'invalid://missing-host',
+      backend_url_sign_up: backend["backend_url_sign_up"]?? 'invalid://missing-host',
+      backend_url_log_in: backend["backend_url_log_in"]?? 'invalid://missing-host',
+      backend_url_log_out: backend["backend_url_log_out"]?? 'invalid://missing-host',
+      backend_url_refresh_token: backend["backend_url_refresh_token"]?? 'invalid://missing-host',
+      backend_url_reset_password: backend["backend_url_reset_password"]?? 'invalid://missing-host',
+      backend_url_complete_profile: backend["backend_url_complete_profile"]?? 'invalid://missing-host',
+      backend_url_user_exists: backend["backend_url_check_user_exists"]?? 'invalid://missing-host',
+      backend_url_user_preferences: backend["backend_url_user_preferences"]?? 'invalid://missing-host',
+
+      allowed_email_providers: db["allowed_email_providers"]?? [''],
+      allowed_email_tlds: db["allowed_email_tlds"]?? [''],
+      refresh_token_preemptive: db["refresh_token_preemptive.s"]?? 10,
 
       background_color: hex_to_color(colors['background.color'] ?? '#FFFFFFFF'),
       default_background_color: hex_to_color(colors['default_background.color'] ?? '#FFFFFFFF'),
@@ -139,8 +176,8 @@ class app_configuration {
       default_language: user_defaults['default_language'] ?? 'default_language',
       user_theme: user_defaults['theme'] ?? 'theme',
 
-      default_image_path: image_paths["default_image.path"] ?? 'not_found',
-      image_path: image_paths["image.path"] ?? 'not_found',
+      default_background_image_path: image_paths["default_background_image.path"] ?? 'not_found',
+      background_image_path: image_paths["background_image.path"] ?? 'not_found',
 
       button_pressed_effect: audio_paths["button_pressed_effect.mp3"] ?? 'not_found',
       miscellanous_effect: audio_paths["miscellanous_effect.mp3"] ?? 'not_found',
@@ -180,7 +217,17 @@ Color hex_to_color(String hex) {
   return Color(int.parse(hex.replaceFirst('#', '0x')));
 }
 
-//To load configuration once
+//Helper function to convert a Color to hex string including alpha (#FFA62987)
+String color_to_hex(Color color) {
+  log_handler?.d("[------color_to_hex function executing------]");
+  return '#'
+      '${color.alpha.toRadixString(16).padLeft(2, '0').toUpperCase()}'
+      '${color.red.toRadixString(16).padLeft(2, '0').toUpperCase()}'
+      '${color.green.toRadixString(16).padLeft(2, '0').toUpperCase()}'
+      '${color.blue.toRadixString(16).padLeft(2, '0').toUpperCase()}';
+}
+
+//To load configuration_scripts once
 late app_configuration config_data;
 late Map<String, dynamic> raw_config_json;
 

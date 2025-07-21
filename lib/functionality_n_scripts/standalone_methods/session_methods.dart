@@ -1,0 +1,286 @@
+import "dart:io";
+
+import "package:flutter/cupertino.dart";
+import "package:flutter/material.dart";
+import "dart:async";
+import "dart:convert";
+import 'package:http/http.dart' as http;
+import "package:simple_chat/functionality_n_scripts/session_related/app_storage_class.dart";
+
+//Import alert dialogs and others
+import "package:simple_chat/widgets_and_ui_elements/alert_dialog_list.dart";
+import 'package:simple_chat/functionality_n_scripts/configuration_scripts/config_invoke.dart';
+import 'package:simple_chat/functionality_n_scripts/utils/logger_config.dart';
+
+//imports
+/////////////////////////////////////////////////////////////////////////////
+//Methods
+
+//Session handling--------------------------------------------------
+//Root method to wake the backend up (SHOULD NOT BE BUT ANYWAYS)
+Future<void> root_endpoint() async {
+  final Uri url = Uri.parse('${config_data.backend_url}/');
+
+  try {
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      log_handler?.i("Backend running: ${data['message']}");
+    } else {
+      log_handler?.w("Backend start up failed with status: ${response.statusCode}");
+    }
+  } catch (e) {
+    log_handler?.e("Failed to connect to backend: $e");
+  }
+}
+
+Future<bool> check_user_exists(
+    BuildContext context, {
+      required String access_token,
+      required String user_id,
+    }) async {
+  log_handler?.d("[------check_user_exists function executing------]");
+
+  //Basic client-side validation
+  if (access_token.trim().isEmpty || user_id.trim().isEmpty) {
+    show_invalid_parameters_error(context);
+    return false;
+  }
+
+  final body = jsonEncode({
+    "access_token": access_token,
+    "user_id": user_id,
+  });
+
+  http.Response response;
+  try {
+    response = await http
+        .post(
+      Uri.parse(config_data.backend_url_user_exists),
+      headers: {"Content-Type": "application/json"},
+      body: body,
+    )
+        .timeout(
+      Duration(seconds: config_data.max_api_response_time_limit + 5),
+      onTimeout: () {
+        show_ai_took_too_long_error(context);
+        throw TimeoutException('Server took too long');
+      },
+    );
+  } on SocketException catch (e) {
+    log_handler?.e("Network error: $e");
+    show_network_error(context);
+    return false;
+  } on TimeoutException {
+    return false;
+  } catch (e) {
+    log_handler?.e("Unexpected error: $e");
+    show_unexpected_backend_error(context);
+    return false;
+  }
+
+  try {
+    switch (response.statusCode) {
+      case 200:
+        final data = jsonDecode(response.body);
+        log_handler?.i("User existence check success: exists=${data['exists']}");
+        return data['exists'];
+      case 400:
+        log_handler?.e("Invalid parameters: ${response.statusCode} - ${response.body}");
+        show_invalid_parameters_error(context);
+        return false;
+      case 401:
+        log_handler?.w("Unauthorized: ${response.statusCode} - ${response.body}");
+        show_invalid_credentials(context);
+        return false;
+      case 429:
+        log_handler?.e("Rate limited: ${response.statusCode} - ${response.body}");
+        show_unexpected_backend_error(context);
+        return false;
+      case 500:
+        log_handler?.e("Server error: ${response.statusCode} - ${response.body}");
+        show_server_error(context);
+        return false;
+      default:
+        log_handler?.w("Unhandled status code: ${response.statusCode}");
+        show_unexpected_backend_error(context);
+        return false;
+    }
+  } catch (er) {
+    log_handler?.e("Error processing response: $er");
+    return false;
+  }
+}
+
+Future<void> refresh_access(
+    BuildContext context
+    ) async {
+  log_handler?.d("[------refresh_access function executing------]");
+  //Get access_token
+  final String? refresh_token = await AppStorage.get_refresh_token();
+
+  if (refresh_token == null || refresh_token.trim().isEmpty) {
+    show_invalid_parameters_error(context);
+    return;
+  }
+
+  final body = jsonEncode({
+    "refresh_token": refresh_token,
+  });
+
+  http.Response response;
+  try {
+    response = await http
+        .post(
+      Uri.parse(config_data.backend_url_refresh_token),
+      headers: {"Content-Type": "application/json"},
+      body: body,
+    )
+        .timeout(
+      Duration(seconds: config_data.max_api_response_time_limit + 5),
+      onTimeout: () {
+        show_ai_took_too_long_error(context);
+        throw TimeoutException('Server took too long');
+      },
+    );
+  } on SocketException catch (e) {
+    log_handler?.e("Network error: $e");
+    show_network_error(context);
+    return;
+  } on TimeoutException {
+    // dialog already shown in onTimeout
+    return;
+  } catch (e) {
+    log_handler?.e("Unexpected error: $e");
+    show_unexpected_backend_error(context);
+    return;
+  }
+
+  try {
+    //---------- Status‑code handling ----------
+    switch (response.statusCode) {
+      case 200:
+        log_handler?.i("Backend response successful ${response.statusCode}");
+        final data = jsonDecode(response.body);
+
+        await AppStorage.save_token_related(
+          data["data"]["access_token"],
+          data["data"]["refresh_token"],
+          data["data"]["expires_in"],
+          data["data"]["token_type"],
+        );
+
+        //TODO: Start timer for token refresh watch dog
+        //TokenWatchdog().start(context);
+
+        log_handler?.i("User token refreshed successfully");
+        return;
+      case 400:
+        log_handler?.e("Parameters error: ${response.statusCode} - ${response.body}");
+        show_invalid_parameters_error(context);
+        return;
+      case 401:
+        log_handler?.w("Unauthorized access: ${response.statusCode} - ${response.body}");
+        show_invalid_credentials(context);
+        return;
+      case 429:
+        log_handler?.e("Backend error: ${response.statusCode} - ${response.body}");
+        show_unexpected_backend_error(context);
+        return;
+      case 500:
+        log_handler?.e("Server error: ${response.statusCode} - ${response.body}");
+        show_server_error(context);
+        return;
+      default:
+        log_handler?.w("Unhandled status code: ${response.statusCode}");
+        show_unexpected_backend_error(context);
+        return;
+    }
+  } catch (er){
+    log_handler?.e("Error: $er");
+    return;
+  }
+}
+
+Future<void> log_out(
+    BuildContext context,
+    ) async {
+  log_handler?.d("[------log_out function executing------]");
+
+  //Get access_token
+  final String? access_token = await AppStorage.get_access_token();
+
+  if (access_token == null || access_token.trim().isEmpty) {
+    show_invalid_parameters_error(context);
+    return;
+  }
+
+  final body = jsonEncode({
+    "access_token": access_token,
+  });
+
+  http.Response response;
+  try {
+    response = await http
+        .post(
+      Uri.parse(config_data.backend_url_log_out),
+      headers: {"Content-Type": "application/json"},
+      body: body,
+    )
+        .timeout(
+      Duration(seconds: config_data.max_api_response_time_limit + 5),
+      onTimeout: () {
+        show_ai_took_too_long_error(context);
+        throw TimeoutException('Server took too long');
+      },
+    );
+  } on SocketException catch (e) {
+    log_handler?.e("Network error: $e");
+    show_network_error(context);
+    return;
+  } on TimeoutException {
+    // dialog already shown in onTimeout
+    return;
+  } catch (e) {
+    log_handler?.e("Unexpected error: $e");
+    show_unexpected_backend_error(context);
+    return;
+  }
+
+  try {
+    //---------- Status‑code handling ----------
+    switch (response.statusCode) {
+      case 200:
+        log_handler?.i("Backend response successful ${response.statusCode}");
+        //Remove all global variables
+        await AppStorage.clear_tokens();
+        //TODO: Stop watch dog for token refresh
+        //TokenWatchdog().stop();
+        return;
+      case 400:
+        log_handler?.e("Parameters error: ${response.statusCode} - ${response.body}");
+        show_invalid_parameters_error(context);
+        return;
+      case 401:
+        log_handler?.w("Unauthorized access: ${response.statusCode} - ${response.body}");
+        show_invalid_credentials(context);
+        return;
+      case 429:
+        log_handler?.e("Backend error: ${response.statusCode} - ${response.body}");
+        show_unexpected_backend_error(context);
+        return;
+      case 500:
+        log_handler?.e("Server error: ${response.statusCode} - ${response.body}");
+        show_server_error(context);
+        return;
+      default:
+        log_handler?.w("Unhandled status code: ${response.statusCode}");
+        show_unexpected_backend_error(context);
+        return;
+    }
+  } catch (er){
+    log_handler?.e("Error: $er");
+    return;
+  }
+}
