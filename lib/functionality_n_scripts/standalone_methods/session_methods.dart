@@ -8,7 +8,7 @@ import 'package:http/http.dart' as http;
 import "package:simple_chat/functionality_n_scripts/session_related/app_storage_class.dart";
 
 //Import alert dialogs and others
-import "package:simple_chat/widgets_and_ui_elements/alert_dialog_list.dart";
+import "package:simple_chat/widgets_and_ui_elements/alert_dialog_builders.dart";
 import 'package:simple_chat/functionality_n_scripts/configuration_scripts/config_invoke.dart';
 import 'package:simple_chat/functionality_n_scripts/utils/logger_config.dart';
 
@@ -44,7 +44,12 @@ Future<bool> check_user_exists(
 
   //Basic client-side validation
   if (access_token.trim().isEmpty || user_id.trim().isEmpty) {
-    show_invalid_parameters_error(context);
+    build_informative_alert_dialog(
+      context,
+      "Ok",
+      "Invalid entered values",
+      "You have entered invalid values, please enter valid values.",
+    );
     return false;
   }
 
@@ -64,19 +69,34 @@ Future<bool> check_user_exists(
         .timeout(
       Duration(seconds: config_data.max_api_response_time_limit + 5),
       onTimeout: () {
-        show_ai_took_too_long_error(context);
+        build_informative_alert_dialog(
+          context,
+          "Ok",
+          "Error 227", //AI response took too long
+          "There was an error with the processing time, please try again later",
+        );
         throw TimeoutException('Server took too long');
       },
     );
   } on SocketException catch (e) {
     log_handler?.e("Network error: $e");
-    show_network_error(context);
+    build_informative_alert_dialog(
+      context,
+      "Ok",
+      "Error 234", //Network error
+      "There has been an error with the network, please try again later",
+    );
     return false;
   } on TimeoutException {
     return false;
   } catch (e) {
     log_handler?.e("Unexpected error: $e");
-    show_unexpected_backend_error(context);
+    build_informative_alert_dialog(
+      context,
+      "Ok",
+      "Error 231", //Unexpected unknown server error
+      "There has been an unexpected backend error, please try again later.",
+    );
     return false;
   }
 
@@ -88,23 +108,49 @@ Future<bool> check_user_exists(
         return data['exists'];
       case 400:
         log_handler?.e("Invalid parameters: ${response.statusCode} - ${response.body}");
-        show_invalid_parameters_error(context);
+        build_informative_alert_dialog(
+          context,
+          "Ok",
+          "Invalid entered values",
+          "You have entered invalid values, please enter valid values.",
+        );
         return false;
       case 401:
         log_handler?.w("Unauthorized: ${response.statusCode} - ${response.body}");
-        show_invalid_credentials(context);
+        build_informative_alert_dialog(
+          context,
+          "Ok",
+          "Invalid user",
+          "We were not able to find your user, please ensure you have signed up and"
+              "confirmed your email before trying again",
+        );
         return false;
       case 429:
         log_handler?.e("Rate limited: ${response.statusCode} - ${response.body}");
-        show_unexpected_backend_error(context);
+        build_informative_alert_dialog(
+          context,
+          "Ok",
+          "Error 231", //Unexpected unknown server error
+          "There has been an unexpected backend error, please try again later.",
+        );
         return false;
       case 500:
         log_handler?.e("Server error: ${response.statusCode} - ${response.body}");
-        show_server_error(context);
+        build_informative_alert_dialog(
+          context,
+          "Ok",
+          "Error 230", //Server error
+          "There has been an error with the server, please try again later",
+        );
         return false;
       default:
         log_handler?.w("Unhandled status code: ${response.statusCode}");
-        show_unexpected_backend_error(context);
+        build_informative_alert_dialog(
+          context,
+          "Ok",
+          "Error 231", //Unexpected unknown server error
+          "There has been an unexpected backend error, please try again later.",
+        );
         return false;
     }
   } catch (er) {
@@ -121,7 +167,12 @@ Future<void> refresh_access(
   final String? refresh_token = await AppStorage.get_refresh_token();
 
   if (refresh_token == null || refresh_token.trim().isEmpty) {
-    show_invalid_parameters_error(context);
+    build_informative_alert_dialog(
+      context,
+      "Ok",
+      "Invalid entered values",
+      "You have entered invalid values, please enter valid values.",
+    );
     return;
   }
 
@@ -140,20 +191,35 @@ Future<void> refresh_access(
         .timeout(
       Duration(seconds: config_data.max_api_response_time_limit + 5),
       onTimeout: () {
-        show_ai_took_too_long_error(context);
+        build_informative_alert_dialog(
+          context,
+          "Ok",
+          "Error 227", //AI response took too long
+          "There was an error with the processing time, please try again later",
+        );
         throw TimeoutException('Server took too long');
       },
     );
   } on SocketException catch (e) {
     log_handler?.e("Network error: $e");
-    show_network_error(context);
+    build_informative_alert_dialog(
+      context,
+      "Ok",
+      "Error 234", //Network error
+      "There has been an error with the network, please try again later",
+    );
     return;
   } on TimeoutException {
     // dialog already shown in onTimeout
     return;
   } catch (e) {
     log_handler?.e("Unexpected error: $e");
-    show_unexpected_backend_error(context);
+    build_informative_alert_dialog(
+      context,
+      "Ok",
+      "Error 231", //Unexpected unknown server error
+      "There has been an unexpected backend error, please try again later.",
+    );
     return;
   }
 
@@ -171,30 +237,56 @@ Future<void> refresh_access(
           data["data"]["token_type"],
         );
 
-        //TODO: Start timer for token refresh watch dog
+        //Start timer for token refresh watch dog
         //TokenWatchdog().start(context);
 
         log_handler?.i("User token refreshed successfully");
         return;
       case 400:
         log_handler?.e("Parameters error: ${response.statusCode} - ${response.body}");
-        show_invalid_parameters_error(context);
+        build_informative_alert_dialog(
+          context,
+          "Ok",
+          "Invalid entered values",
+          "You have entered invalid values, please enter valid values.",
+        );
         return;
       case 401:
         log_handler?.w("Unauthorized access: ${response.statusCode} - ${response.body}");
-        show_invalid_credentials(context);
+        build_informative_alert_dialog(
+          context,
+          "Ok",
+          "Invalid user",
+          "We were not able to find your user, please ensure you have signed up and"
+              "confirmed your email before trying again",
+        );
         return;
       case 429:
         log_handler?.e("Backend error: ${response.statusCode} - ${response.body}");
-        show_unexpected_backend_error(context);
+        build_informative_alert_dialog(
+          context,
+          "Ok",
+          "Error 231", //Unexpected unknown server error
+          "There has been an unexpected backend error, please try again later.",
+        );
         return;
       case 500:
         log_handler?.e("Server error: ${response.statusCode} - ${response.body}");
-        show_server_error(context);
+        build_informative_alert_dialog(
+          context,
+          "Ok",
+          "Error 230", //Server error
+          "There has been an error with the server, please try again later",
+        );
         return;
       default:
         log_handler?.w("Unhandled status code: ${response.statusCode}");
-        show_unexpected_backend_error(context);
+        build_informative_alert_dialog(
+          context,
+          "Ok",
+          "Error 231", //Unexpected unknown server error
+          "There has been an unexpected backend error, please try again later.",
+        );
         return;
     }
   } catch (er){
@@ -212,7 +304,12 @@ Future<void> log_out(
   final String? access_token = await AppStorage.get_access_token();
 
   if (access_token == null || access_token.trim().isEmpty) {
-    show_invalid_parameters_error(context);
+    build_informative_alert_dialog(
+      context,
+      "Ok",
+      "Invalid entered values",
+      "You have entered invalid values, please enter valid values.",
+    );
     return;
   }
 
@@ -231,20 +328,35 @@ Future<void> log_out(
         .timeout(
       Duration(seconds: config_data.max_api_response_time_limit + 5),
       onTimeout: () {
-        show_ai_took_too_long_error(context);
+        build_informative_alert_dialog(
+          context,
+          "Ok",
+          "Error 227", //AI response took too long
+          "There was an error with the processing time, please try again later",
+        );
         throw TimeoutException('Server took too long');
       },
     );
   } on SocketException catch (e) {
     log_handler?.e("Network error: $e");
-    show_network_error(context);
+    build_informative_alert_dialog(
+      context,
+      "Ok",
+      "Error 234", //Network error
+      "There has been an error with the network, please try again later",
+    );
     return;
   } on TimeoutException {
     // dialog already shown in onTimeout
     return;
   } catch (e) {
     log_handler?.e("Unexpected error: $e");
-    show_unexpected_backend_error(context);
+    build_informative_alert_dialog(
+      context,
+      "Ok",
+      "Error 231", //Unexpected unknown server error
+      "There has been an unexpected backend error, please try again later.",
+    );
     return;
   }
 
@@ -255,28 +367,54 @@ Future<void> log_out(
         log_handler?.i("Backend response successful ${response.statusCode}");
         //Remove all global variables
         await AppStorage.clear_tokens();
-        //TODO: Stop watch dog for token refresh
+        //Stop watch dog for token refresh
         //TokenWatchdog().stop();
         return;
       case 400:
         log_handler?.e("Parameters error: ${response.statusCode} - ${response.body}");
-        show_invalid_parameters_error(context);
+        build_informative_alert_dialog(
+          context,
+          "Ok",
+          "Invalid entered values",
+          "You have entered invalid values, please enter valid values.",
+        );
         return;
       case 401:
         log_handler?.w("Unauthorized access: ${response.statusCode} - ${response.body}");
-        show_invalid_credentials(context);
+        build_informative_alert_dialog(
+          context,
+          "Ok",
+          "Invalid user",
+          "We were not able to find your user, please ensure you have signed up and"
+              "confirmed your email before trying again",
+        );
         return;
       case 429:
         log_handler?.e("Backend error: ${response.statusCode} - ${response.body}");
-        show_unexpected_backend_error(context);
+        build_informative_alert_dialog(
+          context,
+          "Ok",
+          "Error 231", //Unexpected unknown server error
+          "There has been an unexpected backend error, please try again later.",
+        );
         return;
       case 500:
         log_handler?.e("Server error: ${response.statusCode} - ${response.body}");
-        show_server_error(context);
+        build_informative_alert_dialog(
+          context,
+          "Ok",
+          "Error 230", //Server error
+          "There has been an error with the server, please try again later",
+        );
         return;
       default:
         log_handler?.w("Unhandled status code: ${response.statusCode}");
-        show_unexpected_backend_error(context);
+        build_informative_alert_dialog(
+          context,
+          "Ok",
+          "Error 231", //Unexpected unknown server error
+          "There has been an unexpected backend error, please try again later.",
+        );
         return;
     }
   } catch (er){

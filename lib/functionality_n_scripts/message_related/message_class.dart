@@ -9,7 +9,7 @@ import 'package:simple_chat/functionality_n_scripts/standalone_methods/general_m
 import 'package:simple_chat/functionality_n_scripts/configuration_scripts/config_invoke.dart';
 import "package:simple_chat/functionality_n_scripts/session_related/app_storage_class.dart";
 import 'package:simple_chat/functionality_n_scripts/utils/logger_config.dart';
-import "package:simple_chat/widgets_and_ui_elements/alert_dialog_list.dart";
+import "package:simple_chat/widgets_and_ui_elements/alert_dialog_builders.dart";
 
 //imports
 /////////////////////////////////////////////////////////////////////////////
@@ -79,7 +79,12 @@ class Message {
           .timeout(
         Duration(seconds: config_data.max_api_response_time_limit + 5),
         onTimeout: () {
-          show_ai_took_too_long_error(context);
+          build_informative_alert_dialog(
+            context,
+            "Ok",
+            "Error 227", //AI response took too long
+            "There was an error with the processing time, please try again later",
+          );
           throw TimeoutException('AI response took too long');
         },
       );
@@ -92,19 +97,39 @@ class Message {
           break;
         case 504:
           log_handler?.e("AI timeout: ${response.statusCode} - ${response.body}");
-          show_ai_response_error(context);
+          build_informative_alert_dialog(
+            context,
+            "OK",
+            "Error 224", //API error
+            "There was an error with AI response or when trying to communicate with AI",
+          );
           return;
         case 500:
           log_handler?.e("Server error: ${response.statusCode} - ${response.body}");
-          show_server_error(context);
+          build_informative_alert_dialog(
+            context,
+            "Ok",
+            "Error 230", //Server error
+            "There has been an error with the server, please try again later",
+          );
           return;
         case 429:
           log_handler?.e("Backend error: ${response.statusCode} - ${response.body}");
-          show_server_error(context);
+          build_informative_alert_dialog(
+            context,
+            "Ok",
+            "Error 230", //Server error
+            "There has been an error with the server, please try again later",
+          );
           return;
         default:
           log_handler?.w("Unexpected status code: ${response.statusCode}");
-          show_unexpected_backend_error(context);
+          build_informative_alert_dialog(
+            context,
+            "Ok",
+            "Error 231", //Unexpected unknown server error
+            "There has been an unexpected backend error, please try again later.",
+          );
           return;
       }
 
@@ -129,7 +154,12 @@ class Message {
       log_handler?.d("---AI successfully responded back---");
     } catch (er) {
       log_handler?.e("Error: $er");
-      show_ai_response_error(context);
+      build_informative_alert_dialog(
+        context,
+        "OK",
+        "Error 224", //API error
+        "There was an error with AI response or when trying to communicate with AI",
+      );
     }
   }
 }

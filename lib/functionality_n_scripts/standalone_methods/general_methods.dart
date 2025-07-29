@@ -11,7 +11,7 @@ import 'package:archive/archive.dart';
 import 'package:archive/archive_io.dart';
 
 //Import alert dialogs and others
-import "package:simple_chat/widgets_and_ui_elements/alert_dialog_list.dart";
+import "package:simple_chat/widgets_and_ui_elements/alert_dialog_builders.dart";
 import 'package:simple_chat/functionality_n_scripts/configuration_scripts/config_invoke.dart';
 import "package:simple_chat/functionality_n_scripts/message_related/message_class.dart";
 import 'package:simple_chat/functionality_n_scripts/configuration_scripts/colort_list_invoke.dart';
@@ -45,7 +45,12 @@ bool validate_user_input(BuildContext context, String user_input) {
 
   //Check if input is empty or only whitespace
   if (user_input.trim().isEmpty) {
-    show_empty_input(context);
+    build_informative_alert_dialog(
+      context,
+      "Ok",
+      "Empty input",
+      "Please, fill all fields before proceeding.",
+    );
     throw ArgumentError("Input is empty");
   }
 
@@ -55,7 +60,12 @@ bool validate_user_input(BuildContext context, String user_input) {
 
   //Check for suspicious content (excluding math blocks)
   if (_contains_suspicious_patterns(sanitized_input)) {
-    show_possible_attack_dialog(context);
+    build_informative_alert_dialog(
+      context,
+      "OK",
+      "Error 221", //Invalid characters
+      "There was an error processing your query, try avoiding special characters",
+    );
     log_handler?.w("Possible attack detected in sanitized input");
     return false;
   }
@@ -351,7 +361,13 @@ Future<void> send_feedback_by_email(BuildContext context, String feedback) async
         .toList();
 
     if (generated_files.isEmpty) {
-      show_one_feedback_per_session(context);
+      build_informative_alert_dialog(
+        context,
+        "Ok",
+        "Feedback limit reached",
+        "Sorry, you can only send your feedback once per session, please restart "
+            "the app to send your feedback.",
+      );
       log_handler?.w("No generated files found.");
       return;
     }
