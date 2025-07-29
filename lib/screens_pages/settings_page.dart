@@ -1050,11 +1050,26 @@ class _settingsState extends State<settings> {
             Expanded(
               //Reset button
               child: GestureDetector(
-                onDoubleTap: _is_processing
+                onTap: _is_processing
                     ? null  //disables the button when true
                     : () async {
                   //play sound effect
                   await play_effect_sound(config_data.button_pressed_effect);
+
+                  //Ask user if they want to reset
+                  bool? user_decision = await build_yes_no_alert_dialog(
+                    context,
+                    "Confirm",
+                    "Cancel",
+                    "Reset to factory settings",
+                    "Are you sure you want to reset all changes to factory settings?, "
+                        "this will also modify your saved preferences data like "
+                        "AI personality, verbose level among others.",
+                  );
+                  if (user_decision != true) {
+                    log_handler?.i("User cancelled reset.");
+                    return;
+                  }
 
                   setState(() async {
                     //Reset to default all changes by user
@@ -1159,6 +1174,21 @@ class _settingsState extends State<settings> {
                     : () async {
                   //play sound effect
                   await play_effect_sound(config_data.button_pressed_effect);
+
+                  //Ask user if they want to save changes
+                  bool? user_decision = await build_yes_no_alert_dialog(
+                    context,
+                    "Confirm",
+                    "Cancel",
+                    "Save new changes",
+                    "Are you sure you want to save the selected changes?, "
+                        "this will also modify your saved preferences data on the "
+                        "fields you have selected.",
+                  );
+                  if (user_decision != true) {
+                    log_handler?.i("User cancelled saving.");
+                    return;
+                  }
 
                   setState(() async {
                       //Only save AI directory if input is not empty
