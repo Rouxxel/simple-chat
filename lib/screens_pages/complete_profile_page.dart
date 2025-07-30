@@ -70,23 +70,25 @@ class _complete_profileState extends State<complete_profile> {
           ),
         ),
 
-        //Avoid background to resize with keyboard render
-        resizeToAvoidBottomInset: false,
         body: Stack(
           children: [
             //Background image
-            Image.asset(
-              config_data.background_image_path,
-              fit: BoxFit.cover,
-              width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.height,
-              errorBuilder: (context, error, stackTrace) {
-                return Container(
-                  color: config_data.background_color,  // fallback color or widget
-                  width: MediaQuery.of(context).size.width,
-                  height: MediaQuery.of(context).size.height,
-                );
-              },
+            MediaQuery.removeViewInsets(
+              removeBottom: true,
+              context: context,
+              child: Image.asset(
+                config_data.background_image_path,
+                fit: BoxFit.cover,
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                errorBuilder: (context, error, stackTrace) {
+                  return Container(
+                    color: config_data.background_color,  // fallback color or widget
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                  );
+                },
+              ),
             ),
 
             //Actual content
