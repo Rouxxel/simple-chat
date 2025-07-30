@@ -14,6 +14,7 @@ import 'package:simple_chat/functionality_n_scripts/utils/logger_config.dart';
 
 //Other screens
 import 'package:simple_chat/screens_pages/settings_page.dart';
+import 'package:simple_chat/widgets_and_ui_elements/alert_dialog_builders.dart';
 
 //imports
 /////////////////////////////////////////////////////////////////////////////
@@ -137,29 +138,44 @@ class _landing_pageState extends State<landing_page> {
                     icon: const Icon(Icons.logout),
                     iconSize: 35,
                     color: Colors.black,
-                    onPressed: () async {
+                    onPressed: _is_processing
+                        ? null  //disable during processing
+                        : () async {
 
                       //play the button sound
                       await play_effect_sound(config_data.button_pressed_effect);
 
-                      await log_out(context);
-                      //Stop watch dog for token refresh
-                      TokenWatchdog().stop();
-                      log_handler?.i("User logged out. Returning to log in page");
-
-                      //Navigate to login page with fade transition
-                      await Navigator.push(
+                      bool? user_decision = await build_yes_no_alert_dialog(
                         context,
-                        PageRouteBuilder(
-                          pageBuilder: (context, animation, secondaryAnimation) => const log_in_page(),
-                          transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                            return FadeTransition(
-                              opacity: animation,
-                              child: child,
-                            );
-                          },
-                        ),
+                        "Confirm",
+                        "Cancel",
+                        "Log out of app",
+                        "Do you wish to log out of the current session?, any unsaved"
+                            "conversations will be lost",
                       );
+                      if (user_decision == true){
+                        await log_out(context);
+                        //Stop watch dog for token refresh
+                        TokenWatchdog().stop();
+                        log_handler?.i("User logged out. Returning to log in page");
+
+                        //Navigate to login page with fade transition
+                        await Navigator.push(
+                          context,
+                          PageRouteBuilder(
+                            pageBuilder: (context, animation, secondaryAnimation) => const log_in_page(),
+                            transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                              return FadeTransition(
+                                opacity: animation,
+                                child: child,
+                              );
+                            },
+                          ),
+                        );
+                      } else {
+                        //User cancelled or dismissed the dialog
+                        log_handler?.i("Logout cancelled by user");
+                      }
                     },
                   ),
                 ],
@@ -172,18 +188,23 @@ class _landing_pageState extends State<landing_page> {
         body: Stack(
           children: [
             //Background image
-            Image.asset(
-              config_data.background_image_path,
-              fit: BoxFit.cover,
-              width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.height,
-              errorBuilder: (context, error, stackTrace) {
-                return Container(
-                  color: config_data.background_color,  // fallback color or widget
-                  width: MediaQuery.of(context).size.width,
-                  height: MediaQuery.of(context).size.height,
-                );
-              },
+            //TODO: add a method to save and load conversations somewhere
+            MediaQuery.removeViewInsets(
+              removeBottom: true,
+              context: context,
+              child: Image.asset(
+                config_data.background_image_path,
+                fit: BoxFit.cover,
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                errorBuilder: (context, error, stackTrace) {
+                  return Container(
+                    color: config_data.background_color,  // fallback color or widget
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                  );
+                },
+              ),
             ),
 
             //Actual content

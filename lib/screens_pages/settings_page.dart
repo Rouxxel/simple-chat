@@ -6,7 +6,7 @@ import 'package:simple_chat/functionality_n_scripts/session_related/app_storage_
 import 'package:simple_chat/functionality_n_scripts/standalone_methods/general_methods.dart';
 import 'package:simple_chat/functionality_n_scripts/configuration_scripts/config_invoke.dart';
 import 'package:simple_chat/functionality_n_scripts/standalone_methods/user_profile_methods.dart';
-import 'package:simple_chat/widgets_and_ui_elements/alert_dialog_list.dart';
+import 'package:simple_chat/widgets_and_ui_elements/alert_dialog_builders.dart';
 import 'package:simple_chat/widgets_and_ui_elements/labeled_text_field.dart';
 import 'package:simple_chat/functionality_n_scripts/utils/logger_config.dart';
 import 'package:simple_chat/functionality_n_scripts/utils/easter_egg_player.dart';
@@ -564,7 +564,13 @@ class _settingsState extends State<settings> {
                                       await play_effect_sound(config_data.miscellanous_effect);
                                       //TODO: add functionality to change background image
                                       log_handler?.i("Update background image pressed despite big ahh warning");
-                                      show_feature_in_progress(context);
+                                      build_informative_alert_dialog(
+                                        context,
+                                        "Ok",
+                                        "Feature in progress...",
+                                        "The feature you just tried to use is in development. Please enjoy"
+                                            "all the other features and stay tuned for future updates",
+                                      );
                                     },
                                     child: Container(
                                       decoration: BoxDecoration(
@@ -842,7 +848,12 @@ class _settingsState extends State<settings> {
                                         //Send feedback
                                          await send_feedback_by_email(context,_feedback_controller.text);
                                       });
-                                      show_feedback_sent(context);
+                                      build_informative_alert_dialog(
+                                        context,
+                                        "Ok",
+                                        "Feedback Sent!!!",
+                                        "Your Feedback has been sent through the email/s you selected",
+                                      );
                                     },
                                     child: Container(
                                       decoration: BoxDecoration(
@@ -896,7 +907,14 @@ class _settingsState extends State<settings> {
 
                             log_handler?.i("Easter egg found");
                           });
-                          show_easter_egg_discovered(context);
+                          build_informative_alert_dialog(
+                            context,
+                            "Ok",
+                            "You discovered the easter egg!!!",
+                            "Congratulations!, either by chance, luck or consciously, you have"
+                                "discovered the easter egg in this app, enjoy it in the sound "
+                                "effects section after restarting the app",
+                          );
                         });
                       } else {
                         log_handler?.d("Easter egg already found");
@@ -1032,11 +1050,26 @@ class _settingsState extends State<settings> {
             Expanded(
               //Reset button
               child: GestureDetector(
-                onDoubleTap: _is_processing
+                onTap: _is_processing
                     ? null  //disables the button when true
                     : () async {
                   //play sound effect
                   await play_effect_sound(config_data.button_pressed_effect);
+
+                  //Ask user if they want to reset
+                  bool? user_decision = await build_yes_no_alert_dialog(
+                    context,
+                    "Confirm",
+                    "Cancel",
+                    "Reset to factory settings",
+                    "Are you sure you want to reset all changes to factory settings?, "
+                        "this will also modify your saved preferences data like "
+                        "AI personality, verbose level among others.",
+                  );
+                  if (user_decision != true) {
+                    log_handler?.i("User cancelled reset.");
+                    return;
+                  }
 
                   setState(() async {
                     //Reset to default all changes by user
@@ -1091,7 +1124,12 @@ class _settingsState extends State<settings> {
                     );
                     //play sound effect
                     await play_effect_sound(config_data.miscellanous_effect);
-                    show_changes_reset(context);
+                    build_informative_alert_dialog(
+                      context,
+                      "Ok",
+                      "Changes Reset!!!",
+                      "All changes were successfully reset",
+                    );
                     setState(() => _is_processing = false);
                   },
                   );
@@ -1136,6 +1174,21 @@ class _settingsState extends State<settings> {
                     : () async {
                   //play sound effect
                   await play_effect_sound(config_data.button_pressed_effect);
+
+                  //Ask user if they want to save changes
+                  bool? user_decision = await build_yes_no_alert_dialog(
+                    context,
+                    "Confirm",
+                    "Cancel",
+                    "Save new changes",
+                    "Are you sure you want to save the selected changes?, "
+                        "this will also modify your saved preferences data on the "
+                        "fields you have selected.",
+                  );
+                  if (user_decision != true) {
+                    log_handler?.i("User cancelled saving.");
+                    return;
+                  }
 
                   setState(() async {
                       //Only save AI directory if input is not empty
@@ -1204,7 +1257,12 @@ class _settingsState extends State<settings> {
 
                       //play sound effect//
                       await play_effect_sound(config_data.miscellanous_effect);
-                      show_changes_saved(context);
+                      build_informative_alert_dialog(
+                        context,
+                        "Ok",
+                        "Changes saved!!!",
+                        "All changes were successfully saved, configuration_scripts applied",
+                      );
                       setState(() => _is_processing = false);
                     },
                   );

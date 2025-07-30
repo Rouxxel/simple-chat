@@ -4,7 +4,7 @@ import 'package:google_fonts/google_fonts.dart';   //Fonts
 import 'package:simple_chat/functionality_n_scripts/standalone_methods/general_methods.dart';
 import 'package:simple_chat/functionality_n_scripts/standalone_methods/user_entrypoint_methods.dart';
 import 'package:simple_chat/functionality_n_scripts/configuration_scripts/config_invoke.dart';
-import 'package:simple_chat/widgets_and_ui_elements/alert_dialog_list.dart';
+import 'package:simple_chat/widgets_and_ui_elements/alert_dialog_builders.dart';
 import 'package:simple_chat/functionality_n_scripts/utils/logger_config.dart';
 import 'package:simple_chat/screens_pages/log_in_page.dart';
 import 'package:simple_chat/widgets_and_ui_elements/labeled_text_field.dart';
@@ -67,18 +67,22 @@ class _sign_up_pageState extends State<sign_up_page> {
         body: Stack(
           children: [
             //Background image
-            Image.asset(
-              config_data.background_image_path,
-              fit: BoxFit.cover,
-              width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.height,
-              errorBuilder: (context, error, stackTrace) {
-                return Container(
-                  color: config_data.background_color,  // fallback color or widget
-                  width: MediaQuery.of(context).size.width,
-                  height: MediaQuery.of(context).size.height,
-                );
-              },
+            MediaQuery.removeViewInsets(
+              removeBottom: true,
+              context: context,
+              child: Image.asset(
+                config_data.background_image_path,
+                fit: BoxFit.cover,
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                errorBuilder: (context, error, stackTrace) {
+                  return Container(
+                    color: config_data.background_color,  // fallback color or widget
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                  );
+                },
+              ),
             ),
 
             //Actual content
@@ -183,7 +187,13 @@ class _sign_up_pageState extends State<sign_up_page> {
                                     //Ensure passwords match
                                     if(password != confirm_password){
                                       log_handler?.w("Password and password confirm are not the same");
-                                      show_nonmatching_passwords(context);
+                                      build_informative_alert_dialog(
+                                        context,
+                                        "Ok",
+                                        "Passwords don't match",
+                                        "The passwords you provided do not match, please ensure they both"
+                                            "match before continuing",
+                                      );
                                       setState(() {_is_processing = false;});
                                       return;
                                     }
