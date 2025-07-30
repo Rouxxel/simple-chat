@@ -113,6 +113,8 @@ class _settingsState extends State<settings> {
         ),
       ),
 
+      //Avoid background to resize with keyboard render
+      resizeToAvoidBottomInset: false,
       //Actual content
       body: Padding(
         padding: const EdgeInsets.all(15),

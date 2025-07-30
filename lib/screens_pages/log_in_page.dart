@@ -70,6 +70,8 @@ class _log_in_pageState extends State<log_in_page> {
           ),
         ),
 
+        //Avoid background to resize with keyboard render
+        resizeToAvoidBottomInset: false,
         body: Stack(
           children: [
             //Background image

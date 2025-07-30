@@ -70,6 +70,8 @@ class _complete_profileState extends State<complete_profile> {
           ),
         ),
 
+        //Avoid background to resize with keyboard render
+        resizeToAvoidBottomInset: false,
         body: Stack(
           children: [
             //Background image

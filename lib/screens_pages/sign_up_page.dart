@@ -64,6 +64,8 @@ class _sign_up_pageState extends State<sign_up_page> {
           ),
         ),
 
+        //Avoid background to resize with keyboard render
+        resizeToAvoidBottomInset: false,
         body: Stack(
           children: [
             //Background image

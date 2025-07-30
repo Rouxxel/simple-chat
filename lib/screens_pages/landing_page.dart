@@ -184,10 +184,13 @@ class _landing_pageState extends State<landing_page> {
           ),
         ),
 
+        //Avoid background to resize with keyboard render
+        resizeToAvoidBottomInset: false,
         //Main content
         body: Stack(
           children: [
             //Background image
+            //TODO: add a method to save and load conversations somewhere
             Image.asset(
               config_data.background_image_path,
               fit: BoxFit.cover,
