@@ -1261,7 +1261,7 @@ class _settingsState extends State<settings> {
                         context,
                         "Ok",
                         "Changes saved!!!",
-                        "All changes were successfully saved, configuration_scripts applied",
+                        "All changes were successfully saved",
                       );
                       setState(() => _is_processing = false);
                     },
