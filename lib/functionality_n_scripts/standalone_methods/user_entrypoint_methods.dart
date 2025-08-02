@@ -85,7 +85,7 @@ Future<bool> sign_up(
     //---------- Status‑code handling ----------
     switch(response.statusCode){
       case 200:
-      //Log and proceed
+        //Sign and proceed
         log_handler?.i("Backend response successful ${response.statusCode}");
         break;
       case 500:
@@ -141,14 +141,6 @@ Future<bool> sign_up(
     final user = data['user'];
 
     log_handler?.d("User confirmed (${user['confirmed']}) signed in with email ${user['email']} at ${user['created_at']}");
-    build_informative_alert_dialog(
-      context,
-      "Ok",
-      "Successful Sign up!!!",
-      "You have been successfully signed into our app, please check the email you "
-          "provided to confirm your onboarding and enjoy the app. Returning to log in "
-          "now.",
-    );
     return true;
   } catch (er){
     log_handler?.e("Error: $er");
