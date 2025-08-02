@@ -5,6 +5,7 @@ import 'package:simple_chat/functionality_n_scripts/session_related/app_storage_
 
 import 'package:simple_chat/functionality_n_scripts/standalone_methods/general_methods.dart';
 import 'package:simple_chat/functionality_n_scripts/configuration_scripts/config_invoke.dart';
+import 'package:simple_chat/functionality_n_scripts/standalone_methods/session_methods.dart';
 import 'package:simple_chat/functionality_n_scripts/standalone_methods/user_profile_methods.dart';
 import 'package:simple_chat/widgets_and_ui_elements/alert_dialog_builders.dart';
 import 'package:simple_chat/widgets_and_ui_elements/labeled_text_field.dart';
@@ -564,7 +565,7 @@ class _settingsState extends State<settings> {
                                       await play_effect_sound(config_data.miscellanous_effect);
                                       //TODO: add functionality to change background image
                                       log_handler?.i("Update background image pressed despite big ahh warning");
-                                      build_informative_alert_dialog(
+                                      await build_informative_alert_dialog(
                                         context,
                                         "Ok",
                                         "Feature in progress...",
@@ -848,7 +849,7 @@ class _settingsState extends State<settings> {
                                         //Send feedback
                                          await send_feedback_by_email(context,_feedback_controller.text);
                                       });
-                                      build_informative_alert_dialog(
+                                      await build_informative_alert_dialog(
                                         context,
                                         "Ok",
                                         "Feedback Sent!!!",
@@ -899,15 +900,16 @@ class _settingsState extends State<settings> {
                       if (!config_data.easter_egg_found) {
                         await _handle_ten_taps_gesture(() async {
                           setState(() {
-                            // Update easter egg found
+                            //Update easter egg found, locally and remotely
                             _easter_egg_found_controller = true;
                             update_easter_egg_found(_easter_egg_found_controller);
-                            // Reload config_data for runtime changes
+                            save_easter_egg_status(context);
+                            //Reload config_data for runtime changes
                             config_data = app_configuration.fromJson(raw_config_json);
 
                             log_handler?.i("Easter egg found");
                           });
-                          build_informative_alert_dialog(
+                          await build_informative_alert_dialog(
                             context,
                             "Ok",
                             "You discovered the easter egg!!!",
@@ -1033,6 +1035,161 @@ class _settingsState extends State<settings> {
                     ),
                   ),
 
+                  const SizedBox(
+                    width: double.infinity,
+                    height: 15,
+                  ),
+
+                  Container(
+                    decoration: BoxDecoration(
+                      color: config_data.ai_text_box_color, // Background color
+                      borderRadius:
+                      BorderRadius.circular(12), // Smooth (rounded) edges
+                      border: Border.all(
+                          color: config_data.user_text_box_color,
+                          width: 2.0
+                      ),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(16, 0, 16, 0),
+                      child: Column(
+                        //AI title
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "Profile actions",
+                            style: GoogleFonts.bebasNeue(
+                              textStyle: TextStyle(
+                                fontSize: 35,
+                                fontWeight: FontWeight.normal,
+                                fontStyle: FontStyle.normal,
+                                color: config_data.text_color,
+                              ),
+                            ),
+                          ),
+
+                          //Credits list
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(16, 0, 0, 0),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                //Retrieve saved profile button
+                                Expanded(
+                                  child: GestureDetector(
+                                    onTap: _is_processing
+                                        ? null  //disables the button when true
+                                        : () async {
+                                      //play sound effect
+                                      await play_effect_sound(config_data.button_pressed_effect);
+                                      //Ask user if they want to override local changes
+                                      bool? user_decision = await build_yes_no_alert_dialog(
+                                        context,
+                                        "Confirm",
+                                        "Cancel",
+                                        "Load saved profile preferences",
+                                        "Are you sure you want to retrieve your saved preferences?, "
+                                            "this action will override all local changes",
+                                      );
+                                      if (user_decision != true) {
+                                        log_handler?.i("User cancelled reset.");
+                                        return;
+                                      }
+
+                                      //Start load from cloud profile preferences request
+                                      setState(() => _is_processing = true);
+                                      //Load preferences from cloud
+                                      final retrieved_data = await retrieve_user_preferences(context);
+
+                                      //Update to saved data of user
+                                      //Load saved in cloud directive
+                                      await update_directive(context, retrieved_data["ai_personality"]);
+
+                                      //Load saved in cloud verbose level
+                                      await update_verbose_level(retrieved_data["verbose_level"]);
+
+                                      //Load saved in cloud colorimetry
+                                      await update_color_value("background.color", retrieved_data["background_color"]);
+                                      await update_color_value("app_bar.color", retrieved_data["bar_colors"]);
+                                      await update_color_value("user_text_boxes.color", retrieved_data["user_text_box_color"]);
+                                      await update_color_value("ai_text_boxes.color", retrieved_data["ai_text_box_color"]);
+
+                                      //Load saved in cloud Language
+                                      await update_user_language(context, retrieved_data["ai_language"]);
+
+                                      //Load saved in cloud sound effect status
+                                      await update_sound_effect_status(retrieved_data["sound_effects_on"]);
+
+                                      //Load easter egg status just in case
+                                      log_handler?.w(retrieved_data["easter_egg_status"]);
+                                      await update_easter_egg_found(retrieved_data["easter_egg_status"]);
+
+                                      //Refresh config data and UI
+                                      setState(() {
+                                        config_data = app_configuration.fromJson(raw_config_json);
+                                        _is_processing = false;
+                                      });
+
+                                      //Reload config_data for runtime reset changes
+                                      log_handler?.i("Load profile button pressed\n"
+                                          "Loaded from cloud directory: ${config_data.directive}\n"
+                                          "Loaded from cloud verbose: ${config_data.verbose}\n"
+                                          "Loaded from cloud Background color: ${config_data.background_color}\n"
+                                          "Loaded from cloud Bar colors: ${config_data.app_bar_color}\n"
+                                          "Loaded from cloud User textbox color: ${config_data.user_text_box_color}\n"
+                                          "Loaded from cloud AI textbox color: ${config_data.ai_text_box_color}\n"
+                                          "Loaded from cloud language: ${config_data.user_language}\n"
+                                          "Loaded from cloud sound status: ${config_data.sound_effects_status}\n"
+                                      );
+
+                                      //play sound effect
+                                      await play_effect_sound(config_data.miscellanous_effect);
+                                      await build_informative_alert_dialog(
+                                        context,
+                                        "Ok",
+                                        "User preferences retrieved!!!",
+                                        "All of your preferences saved in your profile "
+                                            "have been successfully retrieved and updated "
+                                            "in your app",
+                                      );
+                                    },
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        color: config_data.background_color,
+                                        borderRadius: BorderRadius.circular(16),
+                                        border: Border.all(
+                                          color: Colors.black, //Outline color
+                                          width: 2.0,          //Outline thickness
+                                        ),
+                                      ),
+                                      child: Center(
+                                        child: Text(
+                                          "Load profile",
+                                          style: GoogleFonts.bebasNeue(
+                                            textStyle: TextStyle(
+                                              fontSize: 35,
+                                              fontWeight: FontWeight.normal,
+                                              fontStyle: FontStyle.normal,
+                                              color: config_data.text_color,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(
+                            width: double.infinity,
+                            height: 10,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+
                 ],
               ),
             ),
@@ -1080,10 +1237,14 @@ class _settingsState extends State<settings> {
                     await update_verbose_level(config_data.default_verbose);
 
                     //Reset colorimetry
-                    await update_color_value("background.color", "mistwhite");
-                    await update_color_value("app_bar.color", "deepmagenta");
-                    await update_color_value("user_text_boxes.color", "softorchid");
-                    await update_color_value("ai_text_boxes.color", "blushpink");
+                    String backgr_colr = color_to_hex(config_data.default_background_color);
+                    String appbr_colr = color_to_hex(config_data.default_app_bar_color);
+                    String usr_textbx_clr = color_to_hex(config_data.default_user_text_boxes_color);
+                    String ai_textbx_clr = color_to_hex(config_data.default_ai_text_boxes_color);
+                    await update_color_value("background.color", backgr_colr);
+                    await update_color_value("app_bar.color", appbr_colr);
+                    await update_color_value("user_text_boxes.color", usr_textbx_clr);
+                    await update_color_value("ai_text_boxes.color", ai_textbx_clr);
 
                     //Reset Language
                     await update_user_language(context, config_data.default_language);
@@ -1107,24 +1268,9 @@ class _settingsState extends State<settings> {
                     //Start reset user preferences request
                     setState(() => _is_processing = true);
 
-                    //Reset preferences to cloud
-                    final String? access_token = await AppStorage.get_access_token();
-                    final String? user_id = await AppStorage.get_user_id();
-                    await save_user_preferences(context,
-                      access_token: access_token.toString(),
-                      user_id: user_id.toString(),
-                      ai_personality: config_data.directive,
-                      verbose_level: config_data.verbose,
-                      background_color: color_to_hex(config_data.background_color),
-                      bar_colors: color_to_hex(config_data.app_bar_color),
-                      user_text_box_color: color_to_hex(config_data.user_text_box_color),
-                      ai_text_box_color: color_to_hex(config_data.ai_text_box_color),
-                      ai_language: config_data.user_language,
-                      sound_effects_on: config_data.sound_effects_status,
-                    );
                     //play sound effect
                     await play_effect_sound(config_data.miscellanous_effect);
-                    build_informative_alert_dialog(
+                    await build_informative_alert_dialog(
                       context,
                       "Ok",
                       "Changes Reset!!!",
@@ -1257,7 +1403,7 @@ class _settingsState extends State<settings> {
 
                       //play sound effect//
                       await play_effect_sound(config_data.miscellanous_effect);
-                      build_informative_alert_dialog(
+                      await build_informative_alert_dialog(
                         context,
                         "Ok",
                         "Changes saved!!!",

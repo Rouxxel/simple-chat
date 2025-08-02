@@ -12,6 +12,7 @@
   },
   "backend": {
     "backend_url": "https://example_endpoint_deployment.com",
+
     "generate_ai_response_suffix": "/ai/generate_ai_response",
 
     "sign_up_suffix": "/auth/sign_up_email",
@@ -23,8 +24,11 @@
     "complete_profile_suffix": "/user_profile/complete_profile",
     "check_user_exists_suffix": "/user_profile/user_exists",
     "user_preferences_suffix": "/user_profile/user_preferences",
+    "retrieve_user_preferences_suffix": "/user_profile/user_retrieve_profile",
 
-    "user_chat_save_suffix": "/chat/user_chat_save"
+    "user_chat_save_suffix": "/chat/user_chat_save",
+
+    "easter_egg_status_suffix": "/miscellaneous/easter_egg_found"
   },
   "db": {
     "allowed_email_providers": ["gmail","outlook","yahoo","hotmail","icloud","protonmail","aol","zoho","gmx","mail"],

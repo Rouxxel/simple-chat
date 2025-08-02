@@ -23,15 +23,21 @@ class app_configuration {
   final String backend_url;
 
   final String generate_ai_response_suffix;
+
   final String sign_up_suffix;
   final String log_in_suffix;
   final String log_out_suffix;
   final String refresh_token_suffix;
   final String reset_password_suffix;
+
   final String complete_profile_suffix;
   final String check_user_exists_suffix;
   final String user_preferences_suffix;
+  final String retrieve_user_preferences_suffix;
+
   final String user_chat_save_suffix;
+
+  final String easter_egg_status_suffix;
 
   final List<dynamic> allowed_email_providers;
   final List<dynamic> allowed_email_tlds;
@@ -80,16 +86,23 @@ class app_configuration {
     required this.character_render_speed_ms,
 
     required this.backend_url,
+
     required this.generate_ai_response_suffix,
+
     required this.sign_up_suffix,
     required this.log_in_suffix,
     required this.log_out_suffix,
     required this.refresh_token_suffix,
     required this.reset_password_suffix,
+
     required this.complete_profile_suffix,
     required this.check_user_exists_suffix,
     required this.user_preferences_suffix,
+    required this.retrieve_user_preferences_suffix,
+
     required this.user_chat_save_suffix,
+
+    required this.easter_egg_status_suffix,
 
     required this.allowed_email_providers,
     required this.allowed_email_tlds,
@@ -159,7 +172,9 @@ class app_configuration {
       complete_profile_suffix: backend["complete_profile_suffix"]?? '/invalid/suffix',
       check_user_exists_suffix: backend["check_user_exists_suffix"]?? '/invalid/suffix',
       user_preferences_suffix: backend["user_preferences_suffix"]?? '/invalid/suffix',
+      retrieve_user_preferences_suffix: backend["retrieve_user_preferences_suffix"]?? '/invalid/suffix',
       user_chat_save_suffix: backend["user_chat_save_suffix"]?? '/invalid/suffix',
+      easter_egg_status_suffix:backend["easter_egg_status_suffix"]?? '/invalid/suffix',
 
       allowed_email_providers: db["allowed_email_providers"]?? [''],
       allowed_email_tlds: db["allowed_email_tlds"]?? [''],
@@ -216,13 +231,13 @@ Future<Map<String, dynamic>?> read_data_json_asset(String file_path) async {
   }
 }
 
-//Helper function to convert hex string to Color
+//Converts a hex string like "#FFA62987" to a Color object.
 Color hex_to_color(String hex) {
   log_handler?.d("[------hex_to_color function executing------]");
   return Color(int.parse(hex.replaceFirst('#', '0x')));
 }
 
-//Helper function to convert a Color to hex string including alpha (#FFA62987)
+//Converts a Color object to a hex string like "#FFA62987"
 String color_to_hex(Color color) {
   log_handler?.d("[------color_to_hex function executing------]");
   return '#'
