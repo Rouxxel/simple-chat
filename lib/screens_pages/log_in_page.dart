@@ -7,7 +7,6 @@ import 'package:simple_chat/functionality_n_scripts/standalone_methods/general_m
 import 'package:simple_chat/functionality_n_scripts/configuration_scripts/config_invoke.dart';
 import 'package:simple_chat/screens_pages/landing_page.dart';
 import 'package:simple_chat/screens_pages/complete_profile_page.dart';
-import 'package:simple_chat/functionality_n_scripts/session_related/app_storage_class.dart';
 import 'package:simple_chat/functionality_n_scripts/utils/logger_config.dart';
 import 'package:simple_chat/screens_pages/sign_up_page.dart';
 
