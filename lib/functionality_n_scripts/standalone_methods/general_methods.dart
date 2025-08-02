@@ -299,20 +299,29 @@ Future<void> update_verbose_level(String new_verbose_level) async {
 }
 
 //Update color values
-Future<void> update_color_value(String section_key, String color_name) async {
+Future<void> update_color_value(String section_key, String color_input) async {
   final file = await get_local_config_file();
 
-  //Force string to be lowercase and delete whitespaces
-  final normalized_color_name = color_name
-      .toLowerCase()
-      .replaceAll(RegExp(r'[\s_\-]+'), '');
-  if (!color_name_to_hex_map.containsKey(normalized_color_name)) {
-    log_handler?.w("Not supported color name provided: '$color_name'. Update skipped.");
+  // Normalize input
+  final normalized_input = color_input.trim().toLowerCase().replaceAll(RegExp(r'[\s_\-]+'), '');
+
+  String? hex_color;
+
+  //Case 1: Check if it's a known color name
+  if (color_name_to_hex_map.containsKey(normalized_input)) {
+    hex_color = color_name_to_hex_map[normalized_input];
+    log_handler?.d("Color name '$color_input' resolved to hex '$hex_color'.");
+  }
+  //Case 2: Check if it's a valid hex code
+  else if (RegExp(r'^#?[A-Fa-f0-9]{6,8}$').hasMatch(color_input)) {
+    hex_color = color_input.startsWith('#') ? color_input.toUpperCase() : '#${color_input.toUpperCase()}';
+    log_handler?.d("Using direct hex input: '$hex_color'.");
+  } else {
+    log_handler?.w("Invalid color input: '$color_input'. Update skipped.");
     return;
   }
 
-  final hex_color = color_name_to_hex_map[normalized_color_name];
-
+  //Update config if key exists
   if (raw_config_json['colors'].containsKey(section_key)) {
     raw_config_json['colors'][section_key] = hex_color;
     await file.writeAsString(jsonEncode(raw_config_json));
