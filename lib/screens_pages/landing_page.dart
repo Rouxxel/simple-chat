@@ -62,7 +62,14 @@ class _landing_pageState extends State<landing_page> {
       }
     });
 
-    log_handler?.i("Loaded/saved directory: ${_message_list[0].text}");
+    int last_index = _message_list.length - 1;
+    log_handler?.i("Loaded/saved directory: ${_message_list[last_index].text}");
+    log_handler?.i(
+        "Loaded messages (Bottom up):\n\n" +
+            _message_list.map((m) =>
+            "${m.is_user}: ${m.text.replaceAll('\n', ' ')} | ${m.time_stamp}"
+            ).join('\n')
+    );
   }
 
   @override
@@ -79,29 +86,93 @@ class _landing_pageState extends State<landing_page> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               //Title column
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min, // Prevents the AppBar from expanding too much
-                children: [
-                  Text(
-                    "- ${config_data.main_title} -",
-                    style: GoogleFonts.bebasNeue(
-                      textStyle: TextStyle(
-                        fontSize: 35,
-                        fontWeight: FontWeight.normal,
-                        fontStyle: FontStyle.normal,
+              GestureDetector(
+                onTap: _is_processing
+                ? null  //disables the button when true
+                : () async {
+                  final RenderBox overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
+                  final RenderBox button = context.findRenderObject() as RenderBox;
+                  final Offset position = button.localToGlobal(Offset.zero, ancestor: overlay);
+
+                  final selected = await showMenu<String>(
+                    context: context,
+                    position: RelativeRect.fromLTRB(
+                      position.dx+30,
+                      position.dy+75,
+                      overlay.size.width - (position.dx + 30),
+                      overlay.size.height - (position.dy + 75),
+                    ),
+                    items: [
+                      PopupMenuItem<String>(
+                        value: 'save_new_chat',
+                        child: Text(
+                          'Save current chat',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.normal,
+                            color: config_data.text_color,
+                          ),
+                        ),
+                      ),
+                      PopupMenuItem<String>(
+                        value: 'saved_old_chats',
+                        child: Text(
+                          'See past chats',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.normal,
+                            color: config_data.text_color,
+                          ),
+                        ),
+                      ),
+                    ],
+                  );
+
+                  if (selected == 'save_new_chat') {
+                    log_handler?.d("Selected choice: $selected");
+                    setState(() => _is_processing = true); // Start processing
+
+                    //Save current chat
+                    await save_current_chat(
+                      context,
+                      chat_title: "chat_4",
+                      chat_list: _message_list,
+                    );
+
+                    setState(() => _is_processing = false); // End processing
+                  }
+                  if (selected == 'saved_old_chats') {
+                    log_handler?.d("Selected choice: $selected");
+
+                    //TODO: navigate to new screen
+
+                  }
+                },
+
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min, // Prevents the AppBar from expanding too much
+                  children: [
+                    Text(
+                      "- ${config_data.main_title} -",
+                      style: GoogleFonts.bebasNeue(
+                        textStyle: TextStyle(
+                          fontSize: 35,
+                          fontWeight: FontWeight.normal,
+                          fontStyle: FontStyle.normal,
+                          color: config_data.text_color,
+                        ),
+                      ),
+                    ),
+                    Text(
+                      "Google Gemini 2.0 Flash API powered",
+                      style: TextStyle(
+                        fontSize: 9,
                         color: config_data.text_color,
                       ),
                     ),
-                  ),
-                  Text(
-                    "Google Gemini 2.0 Flash API powered",
-                    style: TextStyle(
-                      fontSize: 9,
-                      color: config_data.text_color,
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
               Row(
 

@@ -127,6 +127,15 @@ Future<bool> check_user_exists(
               "confirmed your email before trying again",
         );
         return false;
+      case 422:
+        log_handler?.e("Validation error: ${response.statusCode} - ${response.body}");
+        build_informative_alert_dialog(
+          context,
+          "Ok",
+          "Error 245", //Unprocessable Entity
+          "There was an issue with the data provided. Please try again later",
+        );
+        return false;
       case 429:
         log_handler?.e("Rate limited: ${response.statusCode} - ${response.body}");
         build_informative_alert_dialog(
@@ -263,6 +272,15 @@ Future<void> refresh_access(
               "confirmed your email before trying again",
         );
         return;
+      case 422:
+        log_handler?.e("Validation error: ${response.statusCode} - ${response.body}");
+        build_informative_alert_dialog(
+          context,
+          "Ok",
+          "Error 245", //Unprocessable Entity
+          "There was an issue with the data provided. Please try again later",
+        );
+        return;
       case 429:
         log_handler?.e("Backend error: ${response.statusCode} - ${response.body}");
         build_informative_alert_dialog(
@@ -391,6 +409,15 @@ Future<void> log_out(
               "confirmed your email before trying again",
         );
         return;
+      case 422:
+        log_handler?.e("Validation error: ${response.statusCode} - ${response.body}");
+        build_informative_alert_dialog(
+          context,
+          "Ok",
+          "Error 245", //Unprocessable Entity
+          "There was an issue with the data provided. Please try again later",
+        );
+        return;
       case 429:
         log_handler?.e("Backend error: ${response.statusCode} - ${response.body}");
         build_informative_alert_dialog(
@@ -454,8 +481,8 @@ Future<void> save_current_chat(
   final body = jsonEncode({
     "access_token": access_token.toString(),
     "user_id":user_id.toString(),
-    "current_chat":chat_list,
-    "current_chat_title":converted_list
+    "current_chat":converted_list,
+    "current_chat_title":chat_title
   });
 
   http.Response response;
@@ -506,10 +533,13 @@ Future<void> save_current_chat(
     switch (response.statusCode) {
       case 200:
         log_handler?.i("Backend response successful ${response.statusCode}");
-        //Remove all global variables
-        await AppStorage.clear_tokens();
-        //Stop watch dog for token refresh
-        //TokenWatchdog().stop();
+        build_informative_alert_dialog(
+            context,
+            "Ok",
+            "Chat successfully saved!!!",
+            "The current chat has been saved, you can safely close the app and"
+                "reload the conversation from 'See past chats' section"
+        );
         return;
       case 400:
         log_handler?.e("Parameters error: ${response.statusCode} - ${response.body}");
@@ -528,6 +558,15 @@ Future<void> save_current_chat(
           "Invalid user",
           "We were not able to find your user, please ensure you have signed up and"
               "confirmed your email before trying again",
+        );
+        return;
+      case 422:
+        log_handler?.e("Validation error: ${response.statusCode} - ${response.body}");
+        build_informative_alert_dialog(
+          context,
+          "Ok",
+          "Error 245", //Unprocessable Entity
+          "There was an issue with the data provided. Please try again later",
         );
         return;
       case 429:
