@@ -3,12 +3,12 @@ import "package:google_fonts/google_fonts.dart";
 import "package:simple_chat/functionality_n_scripts/configuration_scripts/config_invoke.dart";
 
 //Alert dialog mehtod------------------------------------------------------
-void build_informative_alert_dialog(
+Future<void> build_informative_alert_dialog(
     BuildContext context,
     String button_text,
     String title,
     String description,
-    ) {
+    ) async {
   //Declare the buttons of alert
   Widget confirm_button = TextButton(
     child: Text(
@@ -27,7 +27,7 @@ void build_informative_alert_dialog(
     },
   );
 
-  showDialog(
+  return showDialog(
     context: context,
     builder: (context) {
       return AlertDialog(

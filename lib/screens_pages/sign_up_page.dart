@@ -9,6 +9,7 @@ import 'package:simple_chat/functionality_n_scripts/utils/logger_config.dart';
 import 'package:simple_chat/screens_pages/log_in_page.dart';
 import 'package:simple_chat/widgets_and_ui_elements/labeled_text_field.dart';
 
+//TODO: Auto navigate to log in after succesful sign in
 //imports
 /////////////////////////////////////////////////////////////////////////////
 //screen itself
@@ -209,6 +210,21 @@ class _sign_up_pageState extends State<sign_up_page> {
                                       _sign_in_controller.clear();
                                       _password_controller.clear();
                                       _confirm_password_controller.clear();
+
+                                      //Navigate to log in page
+                                      await Navigator.push(
+                                        context,
+                                        PageRouteBuilder(
+                                          pageBuilder: (context, animation, secondaryAnimation) =>
+                                          const log_in_page(),
+                                          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                                            return FadeTransition(
+                                              opacity: animation,
+                                              child: child,
+                                            );
+                                          },
+                                        ),
+                                      );
                                     }
                                     setState(() {_is_processing = false;});
                                   },
@@ -245,7 +261,7 @@ class _sign_up_pageState extends State<sign_up_page> {
                                   onTap: _is_processing
                                       ? null                           // Disable while processing
                                       : () async {
-                                    log_handler?.d("Navigate to sign‑up page");
+                                    log_handler?.d("Navigate to log-in page");
 
                                     await Navigator.push(
                                       context,

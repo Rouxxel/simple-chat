@@ -87,6 +87,14 @@ Future<bool> sign_up(
       case 200:
         //Sign and proceed
         log_handler?.i("Backend response successful ${response.statusCode}");
+        await build_informative_alert_dialog(
+          context,
+          "Ok",
+          "Successful Sign up!!!",
+          "You have been successfully signed into our app, please check the email you "
+              "provided to confirm your onboarding and enjoy the app. Returning to log in "
+              "now.",
+        );
         break;
       case 500:
         log_handler?.e("Server error: ${response.statusCode} - ${response.body}");
