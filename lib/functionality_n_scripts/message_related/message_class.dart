@@ -72,7 +72,7 @@ class Message {
       //POST request to your backend URL
       final response = await http
           .post(
-        Uri.parse(config_data.backend_url_generate_ai_response),
+        Uri.parse(config_data.backend_url + config_data.generate_ai_response_suffix),
         headers: {"Content-Type": "application/json"},
         body: body_for_backend,
       )

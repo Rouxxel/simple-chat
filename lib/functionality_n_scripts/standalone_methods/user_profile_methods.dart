@@ -64,7 +64,7 @@ Future<bool> save_user_preferences(
   try {
     response = await http
         .post(
-      Uri.parse(config_data.backend_url_user_preferences),
+      Uri.parse(config_data.backend_url + config_data.user_preferences_suffix),
       headers: {"Content-Type": "application/json"},
       body: payload_body,
     )

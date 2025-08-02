@@ -62,7 +62,7 @@ Future<bool> check_user_exists(
   try {
     response = await http
         .post(
-      Uri.parse(config_data.backend_url_user_exists),
+      Uri.parse(config_data.backend_url + config_data.check_user_exists_suffix),
       headers: {"Content-Type": "application/json"},
       body: body,
     )
@@ -184,7 +184,7 @@ Future<void> refresh_access(
   try {
     response = await http
         .post(
-      Uri.parse(config_data.backend_url_refresh_token),
+      Uri.parse(config_data.backend_url + config_data.refresh_token_suffix),
       headers: {"Content-Type": "application/json"},
       body: body,
     )
@@ -321,7 +321,7 @@ Future<void> log_out(
   try {
     response = await http
         .post(
-      Uri.parse(config_data.backend_url_log_out),
+      Uri.parse(config_data.backend_url + config_data.log_out_suffix),
       headers: {"Content-Type": "application/json"},
       body: body,
     )

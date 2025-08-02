@@ -65,7 +65,7 @@ Future<bool> sign_up(
     //POST request to your backend URL
     final response = await http
         .post(
-      Uri.parse(config_data.backend_url_sign_up),
+      Uri.parse(config_data.backend_url + config_data.sign_up_suffix),
       headers: {"Content-Type": "application/json"},
       body: body_for_backend,
     )
@@ -197,7 +197,7 @@ Future<bool> log_in(
   try {
     response = await http
         .post(
-      Uri.parse(config_data.backend_url_log_in),
+      Uri.parse(config_data.backend_url + config_data.log_in_suffix),
       headers: {"Content-Type": "application/json"},
       body: body,
     )
@@ -374,7 +374,7 @@ Future<bool> complete_user_profile(
   try {
     response = await http
         .post(
-      Uri.parse(config_data.backend_url_complete_profile),
+      Uri.parse(config_data.backend_url + config_data.complete_profile_suffix),
       headers: {"Content-Type": "application/json"},
       body: body,
     )
@@ -515,7 +515,7 @@ Future<bool> reset_password(
   try {
     final response = await http
         .post(
-      Uri.parse(config_data.backend_url_reset_password),
+      Uri.parse(config_data.backend_url + config_data.reset_password_suffix),
       headers: {"Content-Type": "application/json"},
       body: body,
     )

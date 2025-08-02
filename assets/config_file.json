@@ -12,15 +12,15 @@
   },
   "backend": {
     "backend_url": "https://example_endpoint_deployment.com",
-    "backend_url_generate_ai_response": "https://example_endpoint_deployment.com/generate_ai_response",
-    "backend_url_sign_up": "https://example_endpoint_deployment.com/auth/sign_up_email",
-    "backend_url_log_in": "https://example_endpoint_deployment.com/auth/log_in_email_pw",
-    "backend_url_log_out": "https://example_endpoint_deployment.com/auth/log_out",
-    "backend_url_refresh_token": "https://example_endpoint_deployment.com/auth/refresh_token",
-    "backend_url_reset_password": "https://example_endpoint_deployment.com/auth/reset_password",
-    "backend_url_complete_profile": "https://example_endpoint_deployment.com/user_profile/complete_profile",
-    "backend_url_check_user_exists": "https://example_endpoint_deployment.com/user_profile/user_exists",
-    "backend_url_user_preferences": "https://example_endpoint_deployment.com/user_profile/user_preferences"
+    "generate_ai_response_suffix": "/ai/generate_ai_response",
+    "sign_up_suffix": "/auth/sign_up_email",
+    "log_in_suffix": "/auth/log_in_email_pw",
+    "log_out_suffix": "/auth/log_out",
+    "refresh_token_suffix": "/auth/refresh_token",
+    "reset_password_suffix": "/auth/reset_password",
+    "complete_profile_suffix": "/user_profile/complete_profile",
+    "check_user_exists_suffix": "/user_profile/user_exists",
+    "user_preferences_suffix": "/user_profile/user_preferences"
   },
   "db": {
     "allowed_email_providers": ["gmail","outlook","yahoo","hotmail","icloud","protonmail","aol","zoho","gmx","mail"],

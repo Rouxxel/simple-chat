@@ -21,15 +21,16 @@ class app_configuration {
   final int character_render_speed_ms;
 
   final String backend_url;
-  final String backend_url_generate_ai_response;
-  final String backend_url_sign_up;
-  final String backend_url_log_in;
-  final String backend_url_log_out;
-  final String backend_url_refresh_token;
-  final String backend_url_reset_password;
-  final String backend_url_complete_profile;
-  final String backend_url_user_exists;
-  final String backend_url_user_preferences;
+
+  final String generate_ai_response_suffix;
+  final String sign_up_suffix;
+  final String log_in_suffix;
+  final String log_out_suffix;
+  final String refresh_token_suffix;
+  final String reset_password_suffix;
+  final String complete_profile_suffix;
+  final String check_user_exists_suffix;
+  final String user_preferences_suffix;
 
   final List<dynamic> allowed_email_providers;
   final List<dynamic> allowed_email_tlds;
@@ -78,15 +79,15 @@ class app_configuration {
     required this.character_render_speed_ms,
 
     required this.backend_url,
-    required this.backend_url_generate_ai_response,
-    required this.backend_url_sign_up,
-    required this.backend_url_log_in,
-    required this.backend_url_log_out,
-    required this.backend_url_refresh_token,
-    required this.backend_url_reset_password,
-    required this.backend_url_complete_profile,
-    required this.backend_url_user_exists,
-    required this.backend_url_user_preferences,
+    required this.generate_ai_response_suffix,
+    required this.sign_up_suffix,
+    required this.log_in_suffix,
+    required this.log_out_suffix,
+    required this.refresh_token_suffix,
+    required this.reset_password_suffix,
+    required this.complete_profile_suffix,
+    required this.check_user_exists_suffix,
+    required this.user_preferences_suffix,
 
     required this.allowed_email_providers,
     required this.allowed_email_tlds,
@@ -146,15 +147,16 @@ class app_configuration {
       character_render_speed_ms: ai['character_render_speed.ms'] ?? 10,
 
       backend_url: backend["backend_url"]?? 'invalid://missing-host',
-      backend_url_generate_ai_response: backend["backend_url_generate_ai_response"]?? 'invalid://missing-host',
-      backend_url_sign_up: backend["backend_url_sign_up"]?? 'invalid://missing-host',
-      backend_url_log_in: backend["backend_url_log_in"]?? 'invalid://missing-host',
-      backend_url_log_out: backend["backend_url_log_out"]?? 'invalid://missing-host',
-      backend_url_refresh_token: backend["backend_url_refresh_token"]?? 'invalid://missing-host',
-      backend_url_reset_password: backend["backend_url_reset_password"]?? 'invalid://missing-host',
-      backend_url_complete_profile: backend["backend_url_complete_profile"]?? 'invalid://missing-host',
-      backend_url_user_exists: backend["backend_url_check_user_exists"]?? 'invalid://missing-host',
-      backend_url_user_preferences: backend["backend_url_user_preferences"]?? 'invalid://missing-host',
+
+      generate_ai_response_suffix: backend["generate_ai_response_suffix"]?? '/invalid/suffix',
+      sign_up_suffix: backend["sign_up_suffix"]?? '/invalid/suffix',
+      log_in_suffix: backend["log_in_suffix"]?? '/invalid/suffix',
+      log_out_suffix: backend["log_out_suffix"]?? '/invalid/suffix',
+      refresh_token_suffix: backend["refresh_token_suffix"]?? '/invalid/suffix',
+      reset_password_suffix: backend["reset_password_suffix"]?? '/invalid/suffix',
+      complete_profile_suffix: backend["complete_profile_suffix"]?? '/invalid/suffix',
+      check_user_exists_suffix: backend["check_user_exists_suffix"]?? '/invalid/suffix',
+      user_preferences_suffix: backend["user_preferences_suffix"]?? '/invalid/suffix',
 
       allowed_email_providers: db["allowed_email_providers"]?? [''],
       allowed_email_tlds: db["allowed_email_tlds"]?? [''],
