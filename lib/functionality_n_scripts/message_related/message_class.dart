@@ -120,6 +120,15 @@ class Message {
             "There has been an error with the server, please try again later",
           );
           return;
+        case 422:
+          log_handler?.e("Validation error: ${response.statusCode} - ${response.body}");
+          build_informative_alert_dialog(
+            context,
+            "Ok",
+            "Error 245", //Unprocessable Entity
+            "There was an issue with the data provided. Please try again later",
+          );
+          return;
         case 429:
           log_handler?.e("Backend error: ${response.statusCode} - ${response.body}");
           build_informative_alert_dialog(

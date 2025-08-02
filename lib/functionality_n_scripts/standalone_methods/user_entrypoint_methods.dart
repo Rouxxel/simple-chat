@@ -106,6 +106,15 @@ Future<bool> sign_up(
           "You have entered invalid values, please enter valid values.",
         );
         return false;
+      case 422:
+        log_handler?.e("Validation error: ${response.statusCode} - ${response.body}");
+        build_informative_alert_dialog(
+          context,
+          "Ok",
+          "Error 245", //Unprocessable Entity
+          "There was an issue with the data provided. Please try again later",
+        );
+        return false;
       case 429:
         log_handler?.e("Backend error: ${response.statusCode} - ${response.body}");
         build_informative_alert_dialog(
@@ -279,6 +288,15 @@ Future<bool> log_in(
               "confirmed your email before trying again",
         );
         return false;
+      case 422:
+        log_handler?.e("Validation error: ${response.statusCode} - ${response.body}");
+        build_informative_alert_dialog(
+          context,
+          "Ok",
+          "Error 245", //Unprocessable Entity
+          "There was an issue with the data provided. Please try again later",
+        );
+        return false;
       case 429:
         log_handler?.e("Backend error: ${response.statusCode} - ${response.body}");
         build_informative_alert_dialog(
@@ -447,6 +465,15 @@ Future<bool> complete_user_profile(
           "The user you are trying to enter already exists, please try loggin in",
         );
         return false;
+      case 422:
+        log_handler?.e("Validation error: ${response.statusCode} - ${response.body}");
+        build_informative_alert_dialog(
+          context,
+          "Ok",
+          "Error 245", //Unprocessable Entity
+          "There was an issue with the data provided. Please try again later",
+        );
+        return false;
       case 429:
         log_handler?.e("Rate limited: ${response.statusCode} - ${response.body}");
         build_informative_alert_dialog(
@@ -563,7 +590,15 @@ Future<bool> reset_password(
               "before trying again",
         );
         return false;
-
+      case 422:
+        log_handler?.e("Validation error: ${response.statusCode} - ${response.body}");
+        build_informative_alert_dialog(
+          context,
+          "Ok",
+          "Error 245", //Unprocessable Entity
+          "There was an issue with the data provided. Please try again later",
+        );
+        return false;
       case 429:
         log_handler?.e("Rate limit hit: ${response.body}");
         build_informative_alert_dialog(

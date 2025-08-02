@@ -139,6 +139,21 @@ Future<bool> save_user_preferences(
         return false;
       case 409:
         log_handler?.w("Conflict: ${response.statusCode} - ${response.body}");
+        build_informative_alert_dialog(
+          context,
+          "Ok",
+          "Error 248", // Conflict
+          "A conflict occurred while saving your chat. A chat with this title might already exist. Try renaming it and try again.",
+        );
+        return false;
+      case 422:
+        log_handler?.e("Validation error: ${response.statusCode} - ${response.body}");
+        build_informative_alert_dialog(
+          context,
+          "Ok",
+          "Error 245", //Unprocessable Entity
+          "There was an issue with the data provided. Please try again later",
+        );
         return false;
       case 429:
         log_handler?.e("Rate limit: ${response.statusCode} - ${response.body}");
