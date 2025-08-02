@@ -11,6 +11,7 @@ import "package:simple_chat/functionality_n_scripts/session_related/app_storage_
 import "package:simple_chat/widgets_and_ui_elements/alert_dialog_builders.dart";
 import 'package:simple_chat/functionality_n_scripts/configuration_scripts/config_invoke.dart';
 import 'package:simple_chat/functionality_n_scripts/utils/logger_config.dart';
+import "package:simple_chat/functionality_n_scripts/message_related/message_class.dart";
 
 //imports
 /////////////////////////////////////////////////////////////////////////////
@@ -36,26 +37,27 @@ Future<void> root_endpoint() async {
 }
 
 Future<bool> check_user_exists(
-    BuildContext context, {
-      required String access_token,
-      required String user_id,
-    }) async {
+    BuildContext context,
+    ) async {
   log_handler?.d("[------check_user_exists function executing------]");
 
+  final String? user_id = await AppStorage.get_user_id();
+  final String? access_token = await AppStorage.get_access_token();
+
   //Basic client-side validation
-  if (access_token.trim().isEmpty || user_id.trim().isEmpty) {
+  if (access_token!.trim().isEmpty || user_id!.trim().isEmpty) {
     build_informative_alert_dialog(
       context,
       "Ok",
-      "Invalid entered values",
-      "You have entered invalid values, please enter valid values.",
+      "Invalid values",
+      "Please try again later",
     );
     return false;
   }
 
   final body = jsonEncode({
-    "access_token": access_token,
-    "user_id": user_id,
+    "access_token": access_token.toString(),
+    "user_id": user_id.toString(),
   });
 
   http.Response response;
@@ -160,7 +162,7 @@ Future<bool> check_user_exists(
 }
 
 Future<void> refresh_access(
-    BuildContext context
+    BuildContext context,
     ) async {
   log_handler?.d("[------refresh_access function executing------]");
   //Get access_token
@@ -322,6 +324,145 @@ Future<void> log_out(
     response = await http
         .post(
       Uri.parse(config_data.backend_url + config_data.log_out_suffix),
+      headers: {"Content-Type": "application/json"},
+      body: body,
+    )
+        .timeout(
+      Duration(seconds: config_data.max_api_response_time_limit + 5),
+      onTimeout: () {
+        build_informative_alert_dialog(
+          context,
+          "Ok",
+          "Error 227", //AI response took too long
+          "There was an error with the processing time, please try again later",
+        );
+        throw TimeoutException('Server took too long');
+      },
+    );
+  } on SocketException catch (e) {
+    log_handler?.e("Network error: $e");
+    build_informative_alert_dialog(
+      context,
+      "Ok",
+      "Error 234", //Network error
+      "There has been an error with the network, please try again later",
+    );
+    return;
+  } on TimeoutException {
+    // dialog already shown in onTimeout
+    return;
+  } catch (e) {
+    log_handler?.e("Unexpected error: $e");
+    build_informative_alert_dialog(
+      context,
+      "Ok",
+      "Error 231", //Unexpected unknown server error
+      "There has been an unexpected backend error, please try again later.",
+    );
+    return;
+  }
+
+  try {
+    //---------- Status‑code handling ----------
+    switch (response.statusCode) {
+      case 200:
+        log_handler?.i("Backend response successful ${response.statusCode}");
+        //Remove all global variables
+        await AppStorage.clear_tokens();
+        //Stop watch dog for token refresh
+        //TokenWatchdog().stop();
+        return;
+      case 400:
+        log_handler?.e("Parameters error: ${response.statusCode} - ${response.body}");
+        build_informative_alert_dialog(
+          context,
+          "Ok",
+          "Invalid entered values",
+          "You have entered invalid values, please enter valid values.",
+        );
+        return;
+      case 401:
+        log_handler?.w("Unauthorized access: ${response.statusCode} - ${response.body}");
+        build_informative_alert_dialog(
+          context,
+          "Ok",
+          "Invalid user",
+          "We were not able to find your user, please ensure you have signed up and"
+              "confirmed your email before trying again",
+        );
+        return;
+      case 429:
+        log_handler?.e("Backend error: ${response.statusCode} - ${response.body}");
+        build_informative_alert_dialog(
+          context,
+          "Ok",
+          "Error 231", //Unexpected unknown server error
+          "There has been an unexpected backend error, please try again later.",
+        );
+        return;
+      case 500:
+        log_handler?.e("Server error: ${response.statusCode} - ${response.body}");
+        build_informative_alert_dialog(
+          context,
+          "Ok",
+          "Error 230", //Server error
+          "There has been an error with the server, please try again later",
+        );
+        return;
+      default:
+        log_handler?.w("Unhandled status code: ${response.statusCode}");
+        build_informative_alert_dialog(
+          context,
+          "Ok",
+          "Error 231", //Unexpected unknown server error
+          "There has been an unexpected backend error, please try again later.",
+        );
+        return;
+    }
+  } catch (er){
+    log_handler?.e("Error: $er");
+    return;
+  }
+}
+
+Future<void> save_current_chat(
+    BuildContext context,
+    {
+      required String chat_title,
+      required List<Message> chat_list,
+    }
+    ) async {
+  log_handler?.d("[------save_current_chat function executing------]");
+
+  //Get access_token
+  final String? access_token = await AppStorage.get_access_token();
+  final String? user_id = await AppStorage.get_user_id();
+
+  if (access_token!.trim().isEmpty || user_id!.trim().isEmpty) {
+    build_informative_alert_dialog(
+      context,
+      "Ok",
+      "Invalid values",
+      "Please try again later",
+    );
+    return;
+  }
+
+  //Convert list of Messages to Maps
+  List<Map> converted_list = Message.message_to_json_list(chat_list);
+
+  final body = jsonEncode({
+    "access_token": access_token.toString(),
+    "user_id":user_id.toString(),
+    "current_chat":chat_list,
+    "current_chat_title":converted_list
+  });
+
+  http.Response response;
+  try {
+    response = await http
+        .post(
+      Uri.parse(config_data.backend_url + config_data.user_chat_save_suffix),
       headers: {"Content-Type": "application/json"},
       body: body,
     )

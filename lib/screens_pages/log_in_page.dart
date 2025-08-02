@@ -190,13 +190,8 @@ class _log_in_pageState extends State<log_in_page> {
                                       //Start timer for token refresh watch dog
                                       TokenWatchdog().start(context);
 
-                                      //Get access and user id
-                                      final String? user_id = await AppStorage.get_user_id();
-                                      final String? access_token = await AppStorage.get_access_token();
-                                      final bool user_exists = await check_user_exists(context,
-                                          access_token: access_token.toString(),
-                                          user_id: user_id.toString()
-                                      );
+                                      //Check user exists
+                                      final bool user_exists = await check_user_exists(context);
 
                                       if (user_exists){
                                         log_handler?.i("User profile complete, move to landing page");
