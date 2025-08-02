@@ -33,7 +33,7 @@ Future<bool> sign_up(
 
   //Validate email and password
   if(!is_valid_email(context, email)){
-    build_informative_alert_dialog(
+    await build_informative_alert_dialog(
       context,
       "Ok",
       "Invalid email",
@@ -43,7 +43,7 @@ Future<bool> sign_up(
     return false;
   }
   if(!is_valid_password(context, password)){
-    build_informative_alert_dialog(
+    await build_informative_alert_dialog(
       context,
       "Ok",
       "Invalid password",
@@ -71,8 +71,8 @@ Future<bool> sign_up(
     )
         .timeout(
       Duration(seconds: config_data.max_api_response_time_limit + 5),
-      onTimeout: () {
-        build_informative_alert_dialog(
+      onTimeout: () async {
+        await build_informative_alert_dialog(
           context,
           "Ok",
           "Error 227", //AI response took too long
@@ -98,7 +98,7 @@ Future<bool> sign_up(
         break;
       case 500:
         log_handler?.e("Server error: ${response.statusCode} - ${response.body}");
-        build_informative_alert_dialog(
+        await build_informative_alert_dialog(
           context,
           "Ok",
           "Error 230", //Server error
@@ -107,7 +107,7 @@ Future<bool> sign_up(
         return false;
       case 400:
         log_handler?.e("Parameters error: ${response.statusCode} - ${response.body}");
-        build_informative_alert_dialog(
+        await build_informative_alert_dialog(
           context,
           "Ok",
           "Invalid entered values",
@@ -116,7 +116,7 @@ Future<bool> sign_up(
         return false;
       case 422:
         log_handler?.e("Validation error: ${response.statusCode} - ${response.body}");
-        build_informative_alert_dialog(
+        await build_informative_alert_dialog(
           context,
           "Ok",
           "Error 245", //Unprocessable Entity
@@ -125,7 +125,7 @@ Future<bool> sign_up(
         return false;
       case 429:
         log_handler?.e("Backend error: ${response.statusCode} - ${response.body}");
-        build_informative_alert_dialog(
+        await build_informative_alert_dialog(
           context,
           "Ok",
           "Error 231", //Unexpected unknown server error
@@ -134,7 +134,7 @@ Future<bool> sign_up(
         return false;
       default:
         log_handler?.w("Unexpected status code: ${response.statusCode}");
-        build_informative_alert_dialog(
+        await build_informative_alert_dialog(
           context,
           "Ok",
           "Error 231", //Unexpected unknown server error
@@ -164,7 +164,7 @@ Future<bool> log_in(
   log_handler?.d("[------log_in function executing------]");
   //Basic empty check (client‑side)
   if (email.trim().isEmpty || password.isEmpty) {
-    build_informative_alert_dialog(
+    await build_informative_alert_dialog(
       context,
       "Ok",
       "Invalid entered values",
@@ -175,7 +175,7 @@ Future<bool> log_in(
 
   //Validate email and password
   if(!is_valid_email(context, email)){
-    build_informative_alert_dialog(
+    await build_informative_alert_dialog(
       context,
       "Ok",
       "Invalid email",
@@ -185,7 +185,7 @@ Future<bool> log_in(
     return false;
   }
   if(!is_valid_password(context, password)){
-    build_informative_alert_dialog(
+    await build_informative_alert_dialog(
       context,
       "Ok",
       "Invalid password",
@@ -212,8 +212,8 @@ Future<bool> log_in(
     )
         .timeout(
       Duration(seconds: config_data.max_api_response_time_limit + 5),
-      onTimeout: () {
-        build_informative_alert_dialog(
+      onTimeout: () async {
+        await build_informative_alert_dialog(
           context,
           "Ok",
           "Error 227", //AI response took too long
@@ -224,7 +224,7 @@ Future<bool> log_in(
     );
   } on SocketException catch (e) {
     log_handler?.e("Network error: $e");
-    build_informative_alert_dialog(
+    await build_informative_alert_dialog(
       context,
       "Ok",
       "Error 234", //Network error
@@ -236,7 +236,7 @@ Future<bool> log_in(
     return false;
   } catch (e) {
     log_handler?.e("Unexpected error: $e");
-    build_informative_alert_dialog(
+    await build_informative_alert_dialog(
       context,
       "Ok",
       "Error 231", //Unexpected unknown server error
@@ -271,7 +271,7 @@ Future<bool> log_in(
         return true;
       case 400:
         log_handler?.e("Parameters error: ${response.statusCode} - ${response.body}");
-        build_informative_alert_dialog(
+        await build_informative_alert_dialog(
           context,
           "Ok",
           "Invalid entered values",
@@ -280,7 +280,7 @@ Future<bool> log_in(
         return false;
       case 401:
         log_handler?.w("Unauthorized access: ${response.statusCode} - ${response.body}");
-        build_informative_alert_dialog(
+        await build_informative_alert_dialog(
           context,
           "Ok",
           "Invalid user",
@@ -290,7 +290,7 @@ Future<bool> log_in(
         return false;
       case 422:
         log_handler?.e("Validation error: ${response.statusCode} - ${response.body}");
-        build_informative_alert_dialog(
+        await build_informative_alert_dialog(
           context,
           "Ok",
           "Error 245", //Unprocessable Entity
@@ -299,7 +299,7 @@ Future<bool> log_in(
         return false;
       case 429:
         log_handler?.e("Backend error: ${response.statusCode} - ${response.body}");
-        build_informative_alert_dialog(
+        await build_informative_alert_dialog(
           context,
           "Ok",
           "Error 231", //Unexpected unknown server error
@@ -308,7 +308,7 @@ Future<bool> log_in(
         return false;
       case 500:
         log_handler?.e("Server error: ${response.statusCode} - ${response.body}");
-        build_informative_alert_dialog(
+        await build_informative_alert_dialog(
           context,
           "Ok",
           "Error 230", //Server error
@@ -317,7 +317,7 @@ Future<bool> log_in(
         return false;
       default:
         log_handler?.w("Unhandled status code: ${response.statusCode}");
-        build_informative_alert_dialog(
+        await build_informative_alert_dialog(
           context,
           "Ok",
           "Error 231", //Unexpected unknown server error
@@ -355,7 +355,7 @@ Future<bool> complete_user_profile(
       date_birth.trim().isEmpty ||
       country.trim().isEmpty ||
       country_code.trim().isEmpty) {
-    build_informative_alert_dialog(
+    await build_informative_alert_dialog(
       context,
       "Ok",
       "Invalid entered values",
@@ -365,7 +365,7 @@ Future<bool> complete_user_profile(
   }
 
   if (!is_valid_email(context, email)) {
-    build_informative_alert_dialog(
+    await build_informative_alert_dialog(
       context,
       "Ok",
       "Invalid email",
@@ -398,8 +398,8 @@ Future<bool> complete_user_profile(
     )
         .timeout(
       Duration(seconds: config_data.max_api_response_time_limit + 5),
-      onTimeout: () {
-        build_informative_alert_dialog(
+      onTimeout: () async {
+        await build_informative_alert_dialog(
           context,
           "Ok",
           "Error 227", //AI response took too long
@@ -410,7 +410,7 @@ Future<bool> complete_user_profile(
     );
   } on SocketException catch (e) {
     log_handler?.e("Network error: $e");
-    build_informative_alert_dialog(
+    await build_informative_alert_dialog(
       context,
       "Ok",
       "Error 234", //Network error
@@ -422,7 +422,7 @@ Future<bool> complete_user_profile(
     return false;
   } catch (e) {
     log_handler?.e("Unexpected error: $e");
-    build_informative_alert_dialog(
+    await build_informative_alert_dialog(
       context,
       "Ok",
       "Error 231", //Unexpected unknown server error
@@ -439,7 +439,7 @@ Future<bool> complete_user_profile(
         return true;
       case 400:
         log_handler?.e("Invalid parameters: ${response.statusCode} - ${response.body}");
-        build_informative_alert_dialog(
+        await build_informative_alert_dialog(
           context,
           "Ok",
           "Invalid entered values",
@@ -448,7 +448,7 @@ Future<bool> complete_user_profile(
         return false;
       case 401:
         log_handler?.w("Unauthorized: ${response.statusCode} - ${response.body}");
-        build_informative_alert_dialog(
+        await build_informative_alert_dialog(
           context,
           "Ok",
           "Invalid user",
@@ -458,7 +458,7 @@ Future<bool> complete_user_profile(
         return false;
       case 409:
         log_handler?.w("Profile already exists: ${response.statusCode} - ${response.body}");
-        build_informative_alert_dialog(
+        await build_informative_alert_dialog(
           context,
           "Ok",
           "User already exists",
@@ -467,7 +467,7 @@ Future<bool> complete_user_profile(
         return false;
       case 422:
         log_handler?.e("Validation error: ${response.statusCode} - ${response.body}");
-        build_informative_alert_dialog(
+        await build_informative_alert_dialog(
           context,
           "Ok",
           "Error 245", //Unprocessable Entity
@@ -476,7 +476,7 @@ Future<bool> complete_user_profile(
         return false;
       case 429:
         log_handler?.e("Rate limited: ${response.statusCode} - ${response.body}");
-        build_informative_alert_dialog(
+        await build_informative_alert_dialog(
           context,
           "Ok",
           "Error 231", //Unexpected unknown server error
@@ -485,7 +485,7 @@ Future<bool> complete_user_profile(
         return false;
       case 500:
         log_handler?.e("Server error: ${response.statusCode} - ${response.body}");
-        build_informative_alert_dialog(
+        await build_informative_alert_dialog(
           context,
           "Ok",
           "Error 230", //Server error
@@ -494,7 +494,7 @@ Future<bool> complete_user_profile(
         return false;
       default:
         log_handler?.w("Unhandled status code: ${response.statusCode}");
-        build_informative_alert_dialog(
+        await build_informative_alert_dialog(
           context,
           "Ok",
           "Error 231", //Unexpected unknown server error
@@ -516,7 +516,7 @@ Future<bool> reset_password(
 
   //Check for empty
   if (email.trim().isEmpty) {
-    build_informative_alert_dialog(
+    await build_informative_alert_dialog(
       context,
       "Ok",
       "Invalid entered values",
@@ -526,7 +526,7 @@ Future<bool> reset_password(
   }
   //Check for invalid email
   if (!is_valid_email(context, email)) {
-    build_informative_alert_dialog(
+    await build_informative_alert_dialog(
       context,
       "Ok",
       "Invalid email",
@@ -548,8 +548,8 @@ Future<bool> reset_password(
     )
         .timeout(
       Duration(seconds: config_data.max_api_response_time_limit + 5),
-      onTimeout: () {
-        build_informative_alert_dialog(
+      onTimeout: () async {
+        await build_informative_alert_dialog(
           context,
           "Ok",
           "Error 227", //AI response took too long
@@ -562,7 +562,7 @@ Future<bool> reset_password(
     switch (response.statusCode) {
       case 200:
         log_handler?.i("Password reset email sent successfully.");
-        build_informative_alert_dialog(
+        await build_informative_alert_dialog(
           context,
           "Ok",
           "Password reset successful!!!",

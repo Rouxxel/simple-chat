@@ -361,7 +361,7 @@ Future<void> send_feedback_by_email(BuildContext context, String feedback) async
         .toList();
 
     if (generated_files.isEmpty) {
-      build_informative_alert_dialog(
+      await build_informative_alert_dialog(
         context,
         "Ok",
         "Feedback limit reached",

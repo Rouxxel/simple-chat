@@ -33,7 +33,7 @@ Future<bool> save_user_preferences(
 
   //Validate required fields
   if (access_token.trim().isEmpty || user_id.trim().isEmpty) {
-    build_informative_alert_dialog(
+    await build_informative_alert_dialog(
       context,
       "Ok",
       "Invalid entered values",
@@ -70,8 +70,8 @@ Future<bool> save_user_preferences(
     )
         .timeout(
       Duration(seconds: config_data.max_api_response_time_limit + 5),
-      onTimeout: () {
-        build_informative_alert_dialog(
+      onTimeout: () async {
+        await build_informative_alert_dialog(
           context,
           "Ok",
           "Error 227", //AI response took too long
@@ -82,7 +82,7 @@ Future<bool> save_user_preferences(
     );
   } on SocketException catch (e) {
     log_handler?.e("Network error: $e");
-    build_informative_alert_dialog(
+    await build_informative_alert_dialog(
       context,
       "Ok",
       "Error 234", //Network error
@@ -93,7 +93,7 @@ Future<bool> save_user_preferences(
     return false;
   } catch (e) {
     log_handler?.e("Unexpected error: $e");
-    build_informative_alert_dialog(
+    await build_informative_alert_dialog(
       context,
       "Ok",
       "Error 231", //Unexpected unknown server error
@@ -110,7 +110,7 @@ Future<bool> save_user_preferences(
         return true;
       case 400:
         log_handler?.e("Invalid parameters: ${response.statusCode} - ${response.body}");
-        build_informative_alert_dialog(
+        await build_informative_alert_dialog(
           context,
           "Ok",
           "Invalid entered values",
@@ -119,7 +119,7 @@ Future<bool> save_user_preferences(
         return false;
       case 401:
         log_handler?.w("Unauthorized: ${response.statusCode} - ${response.body}");
-        build_informative_alert_dialog(
+        await build_informative_alert_dialog(
           context,
           "Ok",
           "Invalid user",
@@ -129,7 +129,7 @@ Future<bool> save_user_preferences(
         return false;
       case 404:
         log_handler?.w("User not found: ${response.statusCode} - ${response.body}");
-        build_informative_alert_dialog(
+        await build_informative_alert_dialog(
           context,
           "Ok",
           "User not found",
@@ -139,7 +139,7 @@ Future<bool> save_user_preferences(
         return false;
       case 409:
         log_handler?.w("Conflict: ${response.statusCode} - ${response.body}");
-        build_informative_alert_dialog(
+        await build_informative_alert_dialog(
           context,
           "Ok",
           "Error 248", // Conflict
@@ -148,7 +148,7 @@ Future<bool> save_user_preferences(
         return false;
       case 422:
         log_handler?.e("Validation error: ${response.statusCode} - ${response.body}");
-        build_informative_alert_dialog(
+        await build_informative_alert_dialog(
           context,
           "Ok",
           "Error 245", //Unprocessable Entity
@@ -157,7 +157,7 @@ Future<bool> save_user_preferences(
         return false;
       case 429:
         log_handler?.e("Rate limit: ${response.statusCode} - ${response.body}");
-        build_informative_alert_dialog(
+        await build_informative_alert_dialog(
           context,
           "Ok",
           "Error 231", //Unexpected unknown server error
@@ -166,7 +166,7 @@ Future<bool> save_user_preferences(
         return false;
       case 500:
         log_handler?.e("Server error: ${response.statusCode} - ${response.body}");
-        build_informative_alert_dialog(
+        await build_informative_alert_dialog(
           context,
           "Ok",
           "Error 230", //Server error
@@ -175,7 +175,7 @@ Future<bool> save_user_preferences(
         return false;
       default:
         log_handler?.w("Unhandled status code: ${response.statusCode}");
-        build_informative_alert_dialog(
+        await build_informative_alert_dialog(
           context,
           "Ok",
           "Error 231", //Unexpected unknown server error

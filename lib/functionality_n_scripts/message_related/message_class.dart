@@ -85,8 +85,8 @@ class Message {
       )
           .timeout(
         Duration(seconds: config_data.max_api_response_time_limit + 5),
-        onTimeout: () {
-          build_informative_alert_dialog(
+        onTimeout: () async {
+          await build_informative_alert_dialog(
             context,
             "Ok",
             "Error 227", //AI response took too long
@@ -104,7 +104,7 @@ class Message {
           break;
         case 504:
           log_handler?.e("AI timeout: ${response.statusCode} - ${response.body}");
-          build_informative_alert_dialog(
+          await build_informative_alert_dialog(
             context,
             "OK",
             "Error 224", //API error
@@ -113,7 +113,7 @@ class Message {
           return;
         case 500:
           log_handler?.e("Server error: ${response.statusCode} - ${response.body}");
-          build_informative_alert_dialog(
+          await build_informative_alert_dialog(
             context,
             "Ok",
             "Error 230", //Server error
@@ -122,7 +122,7 @@ class Message {
           return;
         case 422:
           log_handler?.e("Validation error: ${response.statusCode} - ${response.body}");
-          build_informative_alert_dialog(
+          await build_informative_alert_dialog(
             context,
             "Ok",
             "Error 245", //Unprocessable Entity
@@ -131,7 +131,7 @@ class Message {
           return;
         case 429:
           log_handler?.e("Backend error: ${response.statusCode} - ${response.body}");
-          build_informative_alert_dialog(
+          await build_informative_alert_dialog(
             context,
             "Ok",
             "Error 230", //Server error
@@ -140,7 +140,7 @@ class Message {
           return;
         default:
           log_handler?.w("Unexpected status code: ${response.statusCode}");
-          build_informative_alert_dialog(
+          await build_informative_alert_dialog(
             context,
             "Ok",
             "Error 231", //Unexpected unknown server error
@@ -170,7 +170,7 @@ class Message {
       log_handler?.d("---AI successfully responded back---");
     } catch (er) {
       log_handler?.e("Error: $er");
-      build_informative_alert_dialog(
+      await build_informative_alert_dialog(
         context,
         "OK",
         "Error 224", //API error

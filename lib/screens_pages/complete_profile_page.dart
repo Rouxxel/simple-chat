@@ -270,7 +270,7 @@ class _complete_profileState extends State<complete_profile> {
 
                                 //Validate phone number
                                 if (!is_valid_phone_number(context, phone_num)) {
-                                  build_informative_alert_dialog(
+                                  await build_informative_alert_dialog(
                                     context,
                                     "Ok",
                                     "Invalid phone number",

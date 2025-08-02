@@ -46,7 +46,7 @@ Future<bool> check_user_exists(
 
   //Basic client-side validation
   if (access_token!.trim().isEmpty || user_id!.trim().isEmpty) {
-    build_informative_alert_dialog(
+    await build_informative_alert_dialog(
       context,
       "Ok",
       "Invalid values",
@@ -70,8 +70,8 @@ Future<bool> check_user_exists(
     )
         .timeout(
       Duration(seconds: config_data.max_api_response_time_limit + 5),
-      onTimeout: () {
-        build_informative_alert_dialog(
+      onTimeout: () async {
+        await build_informative_alert_dialog(
           context,
           "Ok",
           "Error 227", //AI response took too long
@@ -82,7 +82,7 @@ Future<bool> check_user_exists(
     );
   } on SocketException catch (e) {
     log_handler?.e("Network error: $e");
-    build_informative_alert_dialog(
+    await build_informative_alert_dialog(
       context,
       "Ok",
       "Error 234", //Network error
@@ -93,7 +93,7 @@ Future<bool> check_user_exists(
     return false;
   } catch (e) {
     log_handler?.e("Unexpected error: $e");
-    build_informative_alert_dialog(
+    await build_informative_alert_dialog(
       context,
       "Ok",
       "Error 231", //Unexpected unknown server error
@@ -110,7 +110,7 @@ Future<bool> check_user_exists(
         return data['exists'];
       case 400:
         log_handler?.e("Invalid parameters: ${response.statusCode} - ${response.body}");
-        build_informative_alert_dialog(
+        await build_informative_alert_dialog(
           context,
           "Ok",
           "Invalid entered values",
@@ -119,7 +119,7 @@ Future<bool> check_user_exists(
         return false;
       case 401:
         log_handler?.w("Unauthorized: ${response.statusCode} - ${response.body}");
-        build_informative_alert_dialog(
+        await build_informative_alert_dialog(
           context,
           "Ok",
           "Invalid user",
@@ -129,7 +129,7 @@ Future<bool> check_user_exists(
         return false;
       case 422:
         log_handler?.e("Validation error: ${response.statusCode} - ${response.body}");
-        build_informative_alert_dialog(
+        await build_informative_alert_dialog(
           context,
           "Ok",
           "Error 245", //Unprocessable Entity
@@ -138,7 +138,7 @@ Future<bool> check_user_exists(
         return false;
       case 429:
         log_handler?.e("Rate limited: ${response.statusCode} - ${response.body}");
-        build_informative_alert_dialog(
+        await build_informative_alert_dialog(
           context,
           "Ok",
           "Error 231", //Unexpected unknown server error
@@ -147,7 +147,7 @@ Future<bool> check_user_exists(
         return false;
       case 500:
         log_handler?.e("Server error: ${response.statusCode} - ${response.body}");
-        build_informative_alert_dialog(
+        await build_informative_alert_dialog(
           context,
           "Ok",
           "Error 230", //Server error
@@ -156,7 +156,7 @@ Future<bool> check_user_exists(
         return false;
       default:
         log_handler?.w("Unhandled status code: ${response.statusCode}");
-        build_informative_alert_dialog(
+        await build_informative_alert_dialog(
           context,
           "Ok",
           "Error 231", //Unexpected unknown server error
@@ -178,7 +178,7 @@ Future<void> refresh_access(
   final String? refresh_token = await AppStorage.get_refresh_token();
 
   if (refresh_token == null || refresh_token.trim().isEmpty) {
-    build_informative_alert_dialog(
+    await build_informative_alert_dialog(
       context,
       "Ok",
       "Invalid entered values",
@@ -201,8 +201,8 @@ Future<void> refresh_access(
     )
         .timeout(
       Duration(seconds: config_data.max_api_response_time_limit + 5),
-      onTimeout: () {
-        build_informative_alert_dialog(
+      onTimeout: () async {
+        await build_informative_alert_dialog(
           context,
           "Ok",
           "Error 227", //AI response took too long
@@ -213,7 +213,7 @@ Future<void> refresh_access(
     );
   } on SocketException catch (e) {
     log_handler?.e("Network error: $e");
-    build_informative_alert_dialog(
+    await build_informative_alert_dialog(
       context,
       "Ok",
       "Error 234", //Network error
@@ -225,7 +225,7 @@ Future<void> refresh_access(
     return;
   } catch (e) {
     log_handler?.e("Unexpected error: $e");
-    build_informative_alert_dialog(
+    await build_informative_alert_dialog(
       context,
       "Ok",
       "Error 231", //Unexpected unknown server error
@@ -255,7 +255,7 @@ Future<void> refresh_access(
         return;
       case 400:
         log_handler?.e("Parameters error: ${response.statusCode} - ${response.body}");
-        build_informative_alert_dialog(
+        await build_informative_alert_dialog(
           context,
           "Ok",
           "Invalid entered values",
@@ -264,7 +264,7 @@ Future<void> refresh_access(
         return;
       case 401:
         log_handler?.w("Unauthorized access: ${response.statusCode} - ${response.body}");
-        build_informative_alert_dialog(
+        await build_informative_alert_dialog(
           context,
           "Ok",
           "Invalid user",
@@ -274,7 +274,7 @@ Future<void> refresh_access(
         return;
       case 422:
         log_handler?.e("Validation error: ${response.statusCode} - ${response.body}");
-        build_informative_alert_dialog(
+        await build_informative_alert_dialog(
           context,
           "Ok",
           "Error 245", //Unprocessable Entity
@@ -283,7 +283,7 @@ Future<void> refresh_access(
         return;
       case 429:
         log_handler?.e("Backend error: ${response.statusCode} - ${response.body}");
-        build_informative_alert_dialog(
+        await build_informative_alert_dialog(
           context,
           "Ok",
           "Error 231", //Unexpected unknown server error
@@ -292,7 +292,7 @@ Future<void> refresh_access(
         return;
       case 500:
         log_handler?.e("Server error: ${response.statusCode} - ${response.body}");
-        build_informative_alert_dialog(
+        await build_informative_alert_dialog(
           context,
           "Ok",
           "Error 230", //Server error
@@ -301,7 +301,7 @@ Future<void> refresh_access(
         return;
       default:
         log_handler?.w("Unhandled status code: ${response.statusCode}");
-        build_informative_alert_dialog(
+        await build_informative_alert_dialog(
           context,
           "Ok",
           "Error 231", //Unexpected unknown server error
@@ -324,7 +324,7 @@ Future<void> log_out(
   final String? access_token = await AppStorage.get_access_token();
 
   if (access_token == null || access_token.trim().isEmpty) {
-    build_informative_alert_dialog(
+    await build_informative_alert_dialog(
       context,
       "Ok",
       "Invalid entered values",
@@ -347,8 +347,8 @@ Future<void> log_out(
     )
         .timeout(
       Duration(seconds: config_data.max_api_response_time_limit + 5),
-      onTimeout: () {
-        build_informative_alert_dialog(
+      onTimeout: () async {
+        await build_informative_alert_dialog(
           context,
           "Ok",
           "Error 227", //AI response took too long
@@ -359,7 +359,7 @@ Future<void> log_out(
     );
   } on SocketException catch (e) {
     log_handler?.e("Network error: $e");
-    build_informative_alert_dialog(
+    await build_informative_alert_dialog(
       context,
       "Ok",
       "Error 234", //Network error
@@ -371,7 +371,7 @@ Future<void> log_out(
     return;
   } catch (e) {
     log_handler?.e("Unexpected error: $e");
-    build_informative_alert_dialog(
+    await build_informative_alert_dialog(
       context,
       "Ok",
       "Error 231", //Unexpected unknown server error
@@ -392,7 +392,7 @@ Future<void> log_out(
         return;
       case 400:
         log_handler?.e("Parameters error: ${response.statusCode} - ${response.body}");
-        build_informative_alert_dialog(
+        await build_informative_alert_dialog(
           context,
           "Ok",
           "Invalid entered values",
@@ -401,7 +401,7 @@ Future<void> log_out(
         return;
       case 401:
         log_handler?.w("Unauthorized access: ${response.statusCode} - ${response.body}");
-        build_informative_alert_dialog(
+        await build_informative_alert_dialog(
           context,
           "Ok",
           "Invalid user",
@@ -411,7 +411,7 @@ Future<void> log_out(
         return;
       case 422:
         log_handler?.e("Validation error: ${response.statusCode} - ${response.body}");
-        build_informative_alert_dialog(
+        await build_informative_alert_dialog(
           context,
           "Ok",
           "Error 245", //Unprocessable Entity
@@ -420,7 +420,7 @@ Future<void> log_out(
         return;
       case 429:
         log_handler?.e("Backend error: ${response.statusCode} - ${response.body}");
-        build_informative_alert_dialog(
+        await build_informative_alert_dialog(
           context,
           "Ok",
           "Error 231", //Unexpected unknown server error
@@ -429,7 +429,7 @@ Future<void> log_out(
         return;
       case 500:
         log_handler?.e("Server error: ${response.statusCode} - ${response.body}");
-        build_informative_alert_dialog(
+        await build_informative_alert_dialog(
           context,
           "Ok",
           "Error 230", //Server error
@@ -438,7 +438,7 @@ Future<void> log_out(
         return;
       default:
         log_handler?.w("Unhandled status code: ${response.statusCode}");
-        build_informative_alert_dialog(
+        await build_informative_alert_dialog(
           context,
           "Ok",
           "Error 231", //Unexpected unknown server error
@@ -466,7 +466,7 @@ Future<void> save_current_chat(
   final String? user_id = await AppStorage.get_user_id();
 
   if (access_token!.trim().isEmpty || user_id!.trim().isEmpty) {
-    build_informative_alert_dialog(
+    await build_informative_alert_dialog(
       context,
       "Ok",
       "Invalid values",
@@ -495,8 +495,8 @@ Future<void> save_current_chat(
     )
         .timeout(
       Duration(seconds: config_data.max_api_response_time_limit + 5),
-      onTimeout: () {
-        build_informative_alert_dialog(
+      onTimeout: () async {
+        await build_informative_alert_dialog(
           context,
           "Ok",
           "Error 227", //AI response took too long
@@ -507,7 +507,7 @@ Future<void> save_current_chat(
     );
   } on SocketException catch (e) {
     log_handler?.e("Network error: $e");
-    build_informative_alert_dialog(
+    await build_informative_alert_dialog(
       context,
       "Ok",
       "Error 234", //Network error
@@ -519,7 +519,7 @@ Future<void> save_current_chat(
     return;
   } catch (e) {
     log_handler?.e("Unexpected error: $e");
-    build_informative_alert_dialog(
+    await build_informative_alert_dialog(
       context,
       "Ok",
       "Error 231", //Unexpected unknown server error
@@ -533,7 +533,7 @@ Future<void> save_current_chat(
     switch (response.statusCode) {
       case 200:
         log_handler?.i("Backend response successful ${response.statusCode}");
-        build_informative_alert_dialog(
+        await build_informative_alert_dialog(
             context,
             "Ok",
             "Chat successfully saved!!!",
@@ -543,7 +543,7 @@ Future<void> save_current_chat(
         return;
       case 400:
         log_handler?.e("Parameters error: ${response.statusCode} - ${response.body}");
-        build_informative_alert_dialog(
+        await build_informative_alert_dialog(
           context,
           "Ok",
           "Invalid entered values",
@@ -552,7 +552,7 @@ Future<void> save_current_chat(
         return;
       case 401:
         log_handler?.w("Unauthorized access: ${response.statusCode} - ${response.body}");
-        build_informative_alert_dialog(
+        await build_informative_alert_dialog(
           context,
           "Ok",
           "Invalid user",
@@ -562,7 +562,7 @@ Future<void> save_current_chat(
         return;
       case 422:
         log_handler?.e("Validation error: ${response.statusCode} - ${response.body}");
-        build_informative_alert_dialog(
+        await build_informative_alert_dialog(
           context,
           "Ok",
           "Error 245", //Unprocessable Entity
@@ -571,7 +571,7 @@ Future<void> save_current_chat(
         return;
       case 429:
         log_handler?.e("Backend error: ${response.statusCode} - ${response.body}");
-        build_informative_alert_dialog(
+        await build_informative_alert_dialog(
           context,
           "Ok",
           "Error 231", //Unexpected unknown server error
@@ -580,7 +580,7 @@ Future<void> save_current_chat(
         return;
       case 500:
         log_handler?.e("Server error: ${response.statusCode} - ${response.body}");
-        build_informative_alert_dialog(
+        await build_informative_alert_dialog(
           context,
           "Ok",
           "Error 230", //Server error
@@ -589,7 +589,7 @@ Future<void> save_current_chat(
         return;
       default:
         log_handler?.w("Unhandled status code: ${response.statusCode}");
-        build_informative_alert_dialog(
+        await build_informative_alert_dialog(
           context,
           "Ok",
           "Error 231", //Unexpected unknown server error
