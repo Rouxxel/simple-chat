@@ -31,6 +31,7 @@ class app_configuration {
   final String complete_profile_suffix;
   final String check_user_exists_suffix;
   final String user_preferences_suffix;
+  final String user_chat_save_suffix;
 
   final List<dynamic> allowed_email_providers;
   final List<dynamic> allowed_email_tlds;
@@ -88,6 +89,7 @@ class app_configuration {
     required this.complete_profile_suffix,
     required this.check_user_exists_suffix,
     required this.user_preferences_suffix,
+    required this.user_chat_save_suffix,
 
     required this.allowed_email_providers,
     required this.allowed_email_tlds,
@@ -157,6 +159,7 @@ class app_configuration {
       complete_profile_suffix: backend["complete_profile_suffix"]?? '/invalid/suffix',
       check_user_exists_suffix: backend["check_user_exists_suffix"]?? '/invalid/suffix',
       user_preferences_suffix: backend["user_preferences_suffix"]?? '/invalid/suffix',
+      user_chat_save_suffix: backend["user_chat_save_suffix"]?? '/invalid/suffix',
 
       allowed_email_providers: db["allowed_email_providers"]?? [''],
       allowed_email_tlds: db["allowed_email_tlds"]?? [''],
