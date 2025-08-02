@@ -18,9 +18,16 @@ import "package:simple_chat/widgets_and_ui_elements/alert_dialog_builders.dart";
 class Message {
   String text;
   final bool is_user;
-  final DateTime time_stamp;
+  late final DateTime time_stamp;
 
+  //Normal constructor
   Message(this.text, this.is_user) : time_stamp = DateTime.now();
+
+  //Named constructor for deserialization
+  Message.fromJson(Map<String, dynamic> json)
+      : text = json['text'] ?? '',
+        is_user = json['is_user'] ?? false,
+        time_stamp = DateTime.parse(json['time_stamp']);
 
   //Function for user to send message
   void send_messages(TextEditingController input_controller,
@@ -161,5 +168,44 @@ class Message {
         "There was an error with AI response or when trying to communicate with AI",
       );
     }
+  }
+
+  //Old versions
+  // //Converts a List<Message> to a List<Map<String, dynamic>>
+  // static List<Map<String, dynamic>> message_to_json_list(List<Message> message_list) {
+  //   return message_list.map((message) {
+  //     return {
+  //       'text': message.text,
+  //       'is_user': message.is_user,
+  //       'time_stamp': message.time_stamp.toUtc().toIso8601String(),
+  //     };
+  //   }).toList();
+  // }
+  //
+  // //Converts a List<Map<String, dynamic>> to a List<Message>
+  // static List<Message> json_to_message_list(List<Map<String, dynamic>> json_list) {
+  //   return json_list.map((json) {
+  //     return Message(
+  //       json['text'] ?? '',
+  //       json['is_user'] ?? false,
+  //     )..time_stamp = DateTime.parse(json['time_stamp']);
+  //   }).toList();
+  // }
+
+  // Serialization method
+  Map<String, dynamic> toJson() => {
+    'text': text,
+    'is_user': is_user,
+    'time_stamp': time_stamp.toUtc().toIso8601String(),
+  };
+
+  // Converts List<Message> to List<Map<String, dynamic>>
+  static List<Map<String, dynamic>> message_to_json_list(List<Message> messages) {
+    return messages.map((m) => m.toJson()).toList();
+  }
+
+  // Converts List<Map<String, dynamic>> to List<Message>
+  static List<Message> json_to_message_list(List<Map<String, dynamic>> jsonList) {
+    return jsonList.map((json) => Message.fromJson(json)).toList();
   }
 }
