@@ -150,6 +150,7 @@ class _log_in_pageState extends State<log_in_page> {
                                     fill_color: config_data.user_text_box_color,
                                     hint_color: config_data.suggest_input_color,
                                     enabled: !_is_processing,
+                                    obscure_text: true,
                                   ),
                                 ],
                               ),

@@ -16,6 +16,7 @@ class LabeledTextField extends StatelessWidget {
   final int? min_lines;
   final double? height;
   final double? width;
+  final bool obscure_text;
 
   const LabeledTextField({
     super.key,
@@ -33,6 +34,7 @@ class LabeledTextField extends StatelessWidget {
     this.min_lines,
     this.height,
     this.width,
+    this.obscure_text = false,
   });
 
   @override
@@ -59,8 +61,9 @@ class LabeledTextField extends StatelessWidget {
             readOnly: read_only,
             onTap: on_tap,
             maxLength: max_length,
-            maxLines: max_lines,
-            minLines: min_lines,
+            maxLines: obscure_text ? 1 : max_lines,
+            minLines: obscure_text ? 1 : min_lines,
+            obscureText: obscure_text,
             style: GoogleFonts.roboto(
               textStyle: const TextStyle(
                 fontSize: 18,

@@ -145,6 +145,7 @@ class _sign_up_pageState extends State<sign_up_page> {
                                     fill_color: config_data.user_text_box_color,
                                     hint_color: config_data.suggest_input_color,
                                     enabled: !_is_processing,
+                                    obscure_text: true,
                                   ),
                                   const SizedBox(height: 10),
                                   LabeledTextField(
@@ -155,6 +156,7 @@ class _sign_up_pageState extends State<sign_up_page> {
                                     fill_color: config_data.user_text_box_color,
                                     hint_color: config_data.suggest_input_color,
                                     enabled: !_is_processing,
+                                    obscure_text: true,
                                   ),
                                 ],
                               ),
