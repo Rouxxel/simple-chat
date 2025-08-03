@@ -900,23 +900,27 @@ class _settingsState extends State<settings> {
                     onTap: () async {
                       if (!config_data.easter_egg_found) {
                         await _handle_ten_taps_gesture(() async {
-                          setState(() {
-                            //Update easter egg found, locally and remotely
-                            _easter_egg_found_controller = true;
-                            update_easter_egg_found(_easter_egg_found_controller);
-                            save_easter_egg_status(context);
-                            //Reload config_data for runtime changes
-                            config_data = app_configuration.fromJson(raw_config_json);
+                          // Save easter egg flag first
+                          _easter_egg_found_controller = true;
+                          await update_easter_egg_found(_easter_egg_found_controller);
+                          await save_easter_egg_status(context);
 
-                            log_handler?.i("Easter egg found");
+                          // Reload config and trigger UI refresh
+                          setState(() {
+                            // Simulate a config update here. Ideally, reload it from storage or shared prefs
+                            raw_config_json["easter_egg_found"] = true;
+                            config_data = app_configuration.fromJson(raw_config_json);
                           });
+
+                          log_handler?.i("Easter egg found");
+
                           await build_informative_alert_dialog(
                             context,
                             "Ok",
                             "You discovered the easter egg!!!",
-                            "Congratulations!, either by chance, luck or consciously, you have"
-                                "discovered the easter egg in this app, enjoy it in the sound "
-                                "effects section after restarting the app",
+                            "Congratulations!, either by chance, luck or consciously, you have "
+                                "discovered the easter egg in this app. Enjoy it in the sound "
+                                "effects section in the settings.",
                           );
                         });
                       } else {
