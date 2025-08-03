@@ -91,9 +91,8 @@ class _settingsState extends State<settings> {
           ),
         ],
         title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize:
-              MainAxisSize.min, // Prevents the AppBar from expanding too much
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min, // Prevents the AppBar from expanding too much
           children: [
             Text(
               "- ${config_data.main_title} -",
