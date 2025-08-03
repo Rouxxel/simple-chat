@@ -25,6 +25,7 @@
     "check_user_exists_suffix": "/user_profile/user_exists",
     "user_preferences_suffix": "/user_profile/user_preferences",
     "retrieve_user_preferences_suffix": "/user_profile/user_retrieve_profile",
+    "user_delete_profile": "/user_profile/user_delete_profile",
 
     "user_chat_save_suffix": "/chat/user_chat_save",
 

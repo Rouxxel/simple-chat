@@ -34,6 +34,7 @@ class app_configuration {
   final String check_user_exists_suffix;
   final String user_preferences_suffix;
   final String retrieve_user_preferences_suffix;
+  final String user_delete_profile;
 
   final String user_chat_save_suffix;
 
@@ -94,6 +95,7 @@ class app_configuration {
     required this.log_out_suffix,
     required this.refresh_token_suffix,
     required this.reset_password_suffix,
+    required this.user_delete_profile,
 
     required this.complete_profile_suffix,
     required this.check_user_exists_suffix,
@@ -173,6 +175,7 @@ class app_configuration {
       check_user_exists_suffix: backend["check_user_exists_suffix"]?? '/invalid/suffix',
       user_preferences_suffix: backend["user_preferences_suffix"]?? '/invalid/suffix',
       retrieve_user_preferences_suffix: backend["retrieve_user_preferences_suffix"]?? '/invalid/suffix',
+      user_delete_profile: backend["user_delete_profile"]?? '/invalid/suffix',
       user_chat_save_suffix: backend["user_chat_save_suffix"]?? '/invalid/suffix',
       easter_egg_status_suffix:backend["easter_egg_status_suffix"]?? '/invalid/suffix',
 

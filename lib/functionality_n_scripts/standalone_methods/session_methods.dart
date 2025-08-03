@@ -6,6 +6,7 @@ import "dart:async";
 import "dart:convert";
 import 'package:http/http.dart' as http;
 import "package:simple_chat/functionality_n_scripts/session_related/app_storage_class.dart";
+import "package:simple_chat/functionality_n_scripts/standalone_methods/general_methods.dart";
 
 //Import alert dialogs and others
 import "package:simple_chat/widgets_and_ui_elements/alert_dialog_builders.dart";
@@ -720,6 +721,172 @@ Future<Map<String, dynamic>> retrieve_user_preferences(
   } catch (er){
     log_handler?.e("Error: $er");
     return {"Unhandled error":"$er"};
+  }
+}
+
+Future<void> delete_user(
+    BuildContext context,
+    String email,
+    String password,
+    ) async {
+  log_handler?.d("[------delete_user function executing------]");
+
+  //Get access_token and user id
+  final String? access_token = await AppStorage.get_access_token();
+  final String? user_id = await AppStorage.get_user_id();
+  if (access_token!.trim().isEmpty || user_id!.trim().isEmpty) {
+    await build_informative_alert_dialog(
+      context,
+      "Ok",
+      "Invalid values",
+      "Please try again later",
+    );
+    return;
+  }
+
+  //Validate password and email structure
+  if(!is_valid_email(context, email) || !is_valid_password(context, password)) {
+    log_handler?.w("Invalid email or password: $email, $password");
+    await build_informative_alert_dialog(
+      context,
+      "Ok",
+      "Email or password not valid",
+      "Please return a valid email and password",
+    );
+    return;
+  }
+
+  //Ensure inputed email matches session email
+  final String? session_email = await AppStorage.get_user_email();
+  if(session_email != email){
+    log_handler?.w("Iputed email does not match with session email: $email vs $session_email");
+    await build_informative_alert_dialog(
+      context,
+      "Ok",
+      "Email does not match session email",
+      "The email you entered does not match the email you logged in with, please"
+          "ensure the email is the one you started this session.",
+    );
+    return;
+  }
+
+  final body = jsonEncode({
+    "user_id": user_id,
+    "email": email,
+    "password": password,
+    "access_token": access_token
+  });
+
+  http.Response response;
+  try {
+    response = await http
+        .post(
+      Uri.parse(config_data.backend_url + config_data.user_delete_profile),
+      headers: {"Content-Type": "application/json"},
+      body: body,
+    )
+        .timeout(
+      Duration(seconds: config_data.max_api_response_time_limit + 5),
+      onTimeout: () async {
+        await build_informative_alert_dialog(
+          context,
+          "Ok",
+          "Error 227", //AI response took too long
+          "There was an error with the processing time, please try again later",
+        );
+        throw TimeoutException('Server took too long');
+      },
+    );
+  } on SocketException catch (e) {
+    log_handler?.e("Network error: $e");
+    await build_informative_alert_dialog(
+      context,
+      "Ok",
+      "Error 234", //Network error
+      "There has been an error with the network, please try again later",
+    );
+    return;
+  } on TimeoutException {
+    // dialog already shown in onTimeout
+    return;
+  } catch (e) {
+    log_handler?.e("Unexpected error: $e");
+    await build_informative_alert_dialog(
+      context,
+      "Ok",
+      "Error 231", //Unexpected unknown server error
+      "There has been an unexpected backend error, please try again later.",
+    );
+    return;
+  }
+
+  try {
+    //---------- Status‑code handling ----------
+    switch (response.statusCode) {
+      case 200:
+        log_handler?.i("Backend response successful ${response.statusCode}");
+        //Remove all global variables
+        await AppStorage.clear_tokens();
+        return;
+      case 400:
+        log_handler?.e("Parameters error: ${response.statusCode} - ${response.body}");
+        await build_informative_alert_dialog(
+          context,
+          "Ok",
+          "Invalid entered values",
+          "You have entered invalid values, please enter valid values.",
+        );
+        return;
+      case 401:
+        log_handler?.w("Unauthorized access: ${response.statusCode} - ${response.body}");
+        await build_informative_alert_dialog(
+          context,
+          "Ok",
+          "Invalid user",
+          "We were not able to find your user, please ensure you have signed up and"
+              "confirmed your email before trying again",
+        );
+        return;
+      case 422:
+        log_handler?.e("Validation error: ${response.statusCode} - ${response.body}");
+        await build_informative_alert_dialog(
+          context,
+          "Ok",
+          "Error 245", //Unprocessable Entity
+          "There was an issue with the data provided. Please try again later",
+        );
+        return;
+      case 429:
+        log_handler?.e("Backend error: ${response.statusCode} - ${response.body}");
+        await build_informative_alert_dialog(
+          context,
+          "Ok",
+          "Error 231", //Unexpected unknown server error
+          "There has been an unexpected backend error, please try again later.",
+        );
+        return;
+      case 500:
+        log_handler?.e("Server error: ${response.statusCode} - ${response.body}");
+        await build_informative_alert_dialog(
+          context,
+          "Ok",
+          "Error 230", //Server error
+          "There has been an error with the server, please try again later",
+        );
+        return;
+      default:
+        log_handler?.w("Unhandled status code: ${response.statusCode}");
+        await build_informative_alert_dialog(
+          context,
+          "Ok",
+          "Error 231", //Unexpected unknown server error
+          "There has been an unexpected backend error, please try again later.",
+        );
+        return;
+    }
+  } catch (er){
+    log_handler?.e("Error: $er");
+    return;
   }
 }
 
