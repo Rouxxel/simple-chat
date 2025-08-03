@@ -132,12 +132,41 @@ class _landing_pageState extends State<landing_page> {
                     log_handler?.d("Selected choice: $selected");
                     setState(() => _is_processing = true); // Start processing
 
-                    //Save current chat
-                    await save_current_chat(
+                    //Ensure chat has been initiated
+                    if(_message_list.length <= 1){
+                      log_handler?.w("Chat list 'empty', only main directory present ${_message_list.length}");
+                      await build_informative_alert_dialog(
+                          context,
+                          "Ok",
+                          "Empty chat",
+                          "Please initiate a conversation or banter before saving, try with 'Hello'"
+                      );
+                      setState(() => _is_processing = false); // End processing early
+                      return;
+                    }
+
+                    final user_inputs = await build_dynamic_input_dialog(
                       context,
-                      chat_title: "chat_4",
-                      chat_list: _message_list,
+                      title: "Save chat",
+                      description: "Please provide a title for the current chat to save.",
+                      yes_button_text: "Confirm",
+                      no_button_text: "Cancel",
+                      labels: ["Chat title",],
+                      input_types: [TextInputType.text],
+                      obscure_text: [false,],
                     );
+
+                    if (user_inputs != null) {
+                      //Save current chat
+                      await save_current_chat(
+                        context,
+                        chat_title: user_inputs["Chat title"]!,
+                        chat_list: _message_list,
+                      );
+                    } else {
+                      // User cancelled
+                      log_handler?.i("Chat saving was cancelled by the user.");
+                    }
 
                     setState(() => _is_processing = false); // End processing
                   }
