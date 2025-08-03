@@ -25,6 +25,7 @@ Future<bool> sign_up(
     String password
     ) async{
   log_handler?.d("[------sign_up function executing------]");
+  //Local validation
   if (email.isEmpty || password.isEmpty) {
     //No input to process
     log_handler?.e("Controllers are empty");
@@ -62,7 +63,7 @@ Future<bool> sign_up(
       "password": password,
     });
 
-    //POST request to your backend URL
+    //POST request to backend URL
     final response = await http
         .post(
       Uri.parse(config_data.backend_url + config_data.sign_up_suffix),
@@ -83,75 +84,97 @@ Future<bool> sign_up(
     );
 
     //---------- Status‑code handling ----------
+    final data = jsonDecode(response.body);
+    final success = data["success"] ?? false;
+    log_handler?.w(data);
+
     switch(response.statusCode){
       case 200:
-        //Sign and proceed
-        log_handler?.i("Backend response successful ${response.statusCode}");
+        if (data["user_already_exists"] == true) {
+          log_handler?.i("Attempted to register an existing user.");
+
+          //Show alert and then navigate to login page
+          await build_informative_alert_dialog(
+            context,
+            "Ok",
+            "Account Exists",
+            data["message"] ?? "An account with this email already exists, please"
+                "try to log in or complete sign up process in your email",
+          );
+
+          // Navigate to login page automatically after alert dismissed
+          Navigator.of(context).pushReplacementNamed('/login');
+
+          return false;
+        }
+
+        if (success) {
+          final user = data["user"];
+          log_handler?.i("User successfully registered: ${user["email"]}");
+
+          await build_informative_alert_dialog(
+            context,
+            "Ok",
+            "Sign-up Successful!",
+            "You have been successfully registered. Please check your email to confirm your account.",
+          );
+          return true;
+        }
+
+        log_handler?.w("Success false in 200 response.");
         await build_informative_alert_dialog(
           context,
           "Ok",
-          "Successful Sign up!!!",
-          "You have been successfully signed into our app, please check the email you "
-              "provided to confirm your onboarding and enjoy the app. Returning to log in "
-              "now.",
-        );
-        break;
-      case 500:
-        log_handler?.e("Server error: ${response.statusCode} - ${response.body}");
-        await build_informative_alert_dialog(
-          context,
-          "Ok",
-          "Error 230", //Server error
-          "There has been an error with the server, please try again later",
+          "Unexpected Response",
+          data["message"] ?? "An unknown issue occurred during sign-up.",
         );
         return false;
       case 400:
-        log_handler?.e("Parameters error: ${response.statusCode} - ${response.body}");
+        log_handler?.e("Client error: ${response.body}");
         await build_informative_alert_dialog(
           context,
           "Ok",
-          "Invalid entered values",
-          "You have entered invalid values, please enter valid values.",
+          "Email already signed in",
+          data["detail"] ?? "Invalid email or password.",
         );
         return false;
       case 422:
-        log_handler?.e("Validation error: ${response.statusCode} - ${response.body}");
+        log_handler?.e("Validation error: ${response.body}");
         await build_informative_alert_dialog(
           context,
           "Ok",
-          "Error 245", //Unprocessable Entity
-          "There was an issue with the data provided. Please try again later",
+          "Invalid Input",
+          "There was an issue with the data provided. Please review and try again.",
         );
         return false;
       case 429:
-        log_handler?.e("Backend error: ${response.statusCode} - ${response.body}");
+        log_handler?.e("Rate limit hit: ${response.body}");
         await build_informative_alert_dialog(
           context,
           "Ok",
-          "Error 231", //Unexpected unknown server error
-          "There has been an unexpected backend error, please try again later.",
+          "Too Many Requests",
+          "You’ve sent too many requests in a short time. Please wait and try again.",
         );
         return false;
+      case 500:
       default:
-        log_handler?.w("Unexpected status code: ${response.statusCode}");
+        log_handler?.e("Server error (${response.statusCode}): ${response.body}");
         await build_informative_alert_dialog(
           context,
           "Ok",
-          "Error 231", //Unexpected unknown server error
-          "There has been an unexpected backend error, please try again later.",
+          "Server Error",
+          "An unexpected error occurred on our server. Please try again later.",
         );
         return false;
     }
-
-    //Parse Backend response text
-    final data = jsonDecode(response.body);
-    //Get messages individually
-    final user = data['user'];
-
-    log_handler?.d("User confirmed (${user['confirmed']}) signed in with email ${user['email']} at ${user['created_at']}");
-    return true;
-  } catch (er){
-    log_handler?.e("Error: $er");
+  } catch (e) {
+    log_handler?.e("Exception in sign-up: $e");
+    await build_informative_alert_dialog(
+      context,
+      "Ok",
+      "Unexpected Error",
+      "Something went wrong while processing your request. Please try again.",
+    );
     return false;
   }
 }
