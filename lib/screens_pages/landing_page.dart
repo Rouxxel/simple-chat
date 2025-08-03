@@ -37,6 +37,9 @@ class _landing_pageState extends State<landing_page> {
   bool _is_processing = false;
   bool _first_query_done = false;
 
+  //Flag for updating or saving current chat
+  String? current_saved_chat_title;  //null by default
+
   //Add the personality of the AI
   @override
   void initState() {
@@ -130,7 +133,7 @@ class _landing_pageState extends State<landing_page> {
 
                   if (selected == 'save_new_chat') {
                     log_handler?.d("Selected choice: $selected");
-                    setState(() => _is_processing = true); // Start processing
+                    setState(() => _is_processing = true); //Start processing
 
                     //Ensure chat has been initiated
                     if(_message_list.length <= 1){
@@ -141,40 +144,68 @@ class _landing_pageState extends State<landing_page> {
                           "Empty chat",
                           "Please initiate a conversation or banter before saving, try with 'Hello'"
                       );
-                      setState(() => _is_processing = false); // End processing early
+                      setState(() => _is_processing = false); //End processing early
                       return;
                     }
 
+                    //Handle already saved chat, Update existing chat
+                    if (current_saved_chat_title?.isNotEmpty == true) {
+                      final bool? user_decision = await build_yes_no_alert_dialog(
+                          context,
+                          "Confirm",
+                          "Cancel",
+                          "Update current saved chat",
+                          "Do you wish to save your current progress in the chat '${current_saved_chat_title}'"
+                      );
+
+                      if (user_decision == true) {
+                        await save_current_chat(
+                          context,
+                          chat_title: current_saved_chat_title!,
+                          chat_list: _message_list,
+                        );
+                      } else {
+                        log_handler?.i("Chat saving was cancelled by the user.");
+                      }
+
+                      setState(() => _is_processing = false);
+                      return;
+                    }
+
+                    //Handle new chat since it is not a pre-saved chat
                     final user_inputs = await build_dynamic_input_dialog(
                       context,
                       title: "Save chat",
                       description: "Please provide a title for the current chat to save.",
                       yes_button_text: "Confirm",
                       no_button_text: "Cancel",
-                      labels: ["Chat title",],
+                      labels: ["Chat title"],
                       input_types: [TextInputType.text],
-                      obscure_text: [false,],
+                      obscure_text: [false],
                     );
 
                     if (user_inputs != null) {
-                      //Save current chat
+                      //Save new chat
+                      final chat_title = user_inputs["Chat title"]!;
                       await save_current_chat(
                         context,
-                        chat_title: user_inputs["Chat title"]!,
+                        chat_title: chat_title,
                         chat_list: _message_list,
                       );
+                      //Update flag
+                      current_saved_chat_title = chat_title;
                     } else {
-                      // User cancelled
+                      //User cancelled
                       log_handler?.i("Chat saving was cancelled by the user.");
                     }
 
-                    setState(() => _is_processing = false); // End processing
+                    setState(() => _is_processing = false);
+                    return;
                   }
+
                   if (selected == 'saved_old_chats') {
                     log_handler?.d("Selected choice: $selected");
-
-                    //TODO: navigate to new screen
-
+                    // TODO: navigate to new screen
                   }
                 },
 
