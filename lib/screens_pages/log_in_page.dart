@@ -5,15 +5,17 @@ import 'package:google_fonts/google_fonts.dart';   //Fonts
 
 import 'package:simple_chat/functionality_n_scripts/standalone_methods/general_methods.dart';
 import 'package:simple_chat/functionality_n_scripts/configuration_scripts/config_invoke.dart';
-import 'package:simple_chat/screens_pages/landing_page.dart';
-import 'package:simple_chat/screens_pages/complete_profile_page.dart';
 import 'package:simple_chat/functionality_n_scripts/utils/logger_config.dart';
-import 'package:simple_chat/screens_pages/sign_up_page.dart';
 
 import 'package:simple_chat/functionality_n_scripts/session_related/refresh_tk_watch_dog.dart';
 import 'package:simple_chat/functionality_n_scripts/standalone_methods/user_entrypoint_methods.dart';
 import 'package:simple_chat/widgets_and_ui_elements/labeled_text_field.dart';
 import 'package:simple_chat/functionality_n_scripts/standalone_methods/session_methods.dart';
+
+//Other screens
+import 'package:simple_chat/screens_pages/sign_up_page.dart';
+import 'package:simple_chat/screens_pages/landing_page.dart';
+import 'package:simple_chat/screens_pages/complete_profile_page.dart';
 
 //imports
 /////////////////////////////////////////////////////////////////////////////

@@ -11,6 +11,8 @@ import 'package:simple_chat/widgets_and_ui_elements/alert_dialog_builders.dart';
 import 'package:simple_chat/widgets_and_ui_elements/labeled_text_field.dart';
 import 'package:simple_chat/functionality_n_scripts/utils/logger_config.dart';
 import 'package:simple_chat/functionality_n_scripts/utils/easter_egg_player.dart';
+
+//Other screens
 import 'package:simple_chat/screens_pages/log_in_page.dart';
 
 class settings extends StatefulWidget {
