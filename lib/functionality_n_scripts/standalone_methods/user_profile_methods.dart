@@ -165,16 +165,8 @@ Future<bool> save_user_preferences(
         );
         return false;
       case 500:
-        log_handler?.e("Server error: ${response.statusCode} - ${response.body}");
-        await build_informative_alert_dialog(
-          context,
-          "Ok",
-          "Error 230", //Server error
-          "There has been an error with the server, please try again later",
-        );
-        return false;
       default:
-        log_handler?.w("Unhandled status code: ${response.statusCode}");
+        log_handler?.w("Unhandled status code: ${response.statusCode} - ${response.body}");
         await build_informative_alert_dialog(
           context,
           "Ok",

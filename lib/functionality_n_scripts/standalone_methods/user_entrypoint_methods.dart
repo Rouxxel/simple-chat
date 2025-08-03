@@ -330,21 +330,13 @@ Future<bool> log_in(
         );
         return false;
       case 500:
-        log_handler?.e("Server error: ${response.statusCode} - ${response.body}");
-        await build_informative_alert_dialog(
-          context,
-          "Ok",
-          "Error 230", //Server error
-          "There has been an error with the server, please try again later",
-        );
-        return false;
       default:
-        log_handler?.w("Unhandled status code: ${response.statusCode}");
+        log_handler?.w("Unhandled status code: ${response.statusCode} - ${response.body}");
         await build_informative_alert_dialog(
           context,
           "Ok",
           "Error 231", //Unexpected unknown server error
-          "There has been an unexpected backend error, please try again later.",
+          "There has been an unexpected error, please try again later.",
         );
         return false;
     }
@@ -502,21 +494,13 @@ Future<bool> complete_user_profile(
         await build_informative_alert_dialog(
           context,
           "Ok",
-          "Error 231", //Unexpected unknown server error
+          "Error 231", //Unexpected unknown server error due to limite rate reached
           "There has been an unexpected backend error, please try again later.",
         );
         return false;
       case 500:
-        log_handler?.e("Server error: ${response.statusCode} - ${response.body}");
-        await build_informative_alert_dialog(
-          context,
-          "Ok",
-          "Error 230", //Server error
-          "There has been an error with the server, please try again later",
-        );
-        return false;
       default:
-        log_handler?.w("Unhandled status code: ${response.statusCode}");
+        log_handler?.w("Unhandled status code: ${response.statusCode} - ${response.body}");
         await build_informative_alert_dialog(
           context,
           "Ok",
@@ -592,9 +576,8 @@ Future<bool> reset_password(
           "Please check your email to proceed with the resetting of your password",
         );
         return true;
-
       case 400:
-        log_handler?.e("Invalid email format: ${response.body}");
+        log_handler?.e("Invalid email format: ${response.statusCode} - ${response.body}");
         build_informative_alert_dialog(
           context,
           "Ok",
@@ -602,9 +585,8 @@ Future<bool> reset_password(
           "The email you provided is invalid, please enter a valid email",
         );
         return false;
-
       case 404:
-        log_handler?.w("Email not registered: ${response.body}");
+        log_handler?.w("Email not registered: ${response.statusCode} - ${response.body}");
         build_informative_alert_dialog(
           context,
           "Ok",
@@ -623,7 +605,7 @@ Future<bool> reset_password(
         );
         return false;
       case 429:
-        log_handler?.e("Rate limit hit: ${response.body}");
+        log_handler?.e("Rate limit hit: ${response.statusCode} - ${response.body}");
         build_informative_alert_dialog(
           context,
           "Ok",
@@ -631,19 +613,9 @@ Future<bool> reset_password(
           "There has been an unexpected backend error, please try again later.",
         );
         return false;
-
       case 500:
-        log_handler?.e("Server error: ${response.body}");
-        build_informative_alert_dialog(
-          context,
-          "Ok",
-          "Error 230", //Server error
-          "There has been an error with the server, please try again later",
-        );
-        return false;
-
       default:
-        log_handler?.w("Unexpected status code: ${response.statusCode}");
+        log_handler?.w("Unexpected status code: ${response.statusCode} - ${response.body}");
         build_informative_alert_dialog(
           context,
           "Ok",

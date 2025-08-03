@@ -147,16 +147,8 @@ Future<bool> check_user_exists(
         );
         return false;
       case 500:
-        log_handler?.e("Server error: ${response.statusCode} - ${response.body}");
-        await build_informative_alert_dialog(
-          context,
-          "Ok",
-          "Error 230", //Server error
-          "There has been an error with the server, please try again later",
-        );
-        return false;
       default:
-        log_handler?.w("Unhandled status code: ${response.statusCode}");
+        log_handler?.w("Unhandled status code: ${response.statusCode} - ${response.body}");
         await build_informative_alert_dialog(
           context,
           "Ok",
@@ -292,16 +284,8 @@ Future<void> refresh_access(
         );
         return;
       case 500:
-        log_handler?.e("Server error: ${response.statusCode} - ${response.body}");
-        await build_informative_alert_dialog(
-          context,
-          "Ok",
-          "Error 230", //Server error
-          "There has been an error with the server, please try again later",
-        );
-        return;
       default:
-        log_handler?.w("Unhandled status code: ${response.statusCode}");
+        log_handler?.w("Unhandled status code: ${response.statusCode} - ${response.body}");
         await build_informative_alert_dialog(
           context,
           "Ok",
@@ -429,16 +413,8 @@ Future<void> log_out(
         );
         return;
       case 500:
-        log_handler?.e("Server error: ${response.statusCode} - ${response.body}");
-        await build_informative_alert_dialog(
-          context,
-          "Ok",
-          "Error 230", //Server error
-          "There has been an error with the server, please try again later",
-        );
-        return;
       default:
-        log_handler?.w("Unhandled status code: ${response.statusCode}");
+        log_handler?.w("Unhandled status code: ${response.statusCode} - ${response.body}");
         await build_informative_alert_dialog(
           context,
           "Ok",
@@ -564,16 +540,8 @@ Future<void> save_easter_egg_status(
         );
         return;
       case 500:
-        log_handler?.e("Server error: ${response.statusCode} - ${response.body}");
-        await build_informative_alert_dialog(
-          context,
-          "Ok",
-          "Error 230", //Server error
-          "There has been an error with the server, please try again later",
-        );
-        return;
       default:
-        log_handler?.w("Unhandled status code: ${response.statusCode}");
+        log_handler?.w("Unhandled status code: ${response.statusCode} - ${response.body}");
         await build_informative_alert_dialog(
           context,
           "Ok",
@@ -700,16 +668,8 @@ Future<Map<String, dynamic>> retrieve_user_preferences(
         );
         return {"Error 429":"Unexpected unknown server error"};
       case 500:
-        log_handler?.e("Server error: ${response.statusCode} - ${response.body}");
-        await build_informative_alert_dialog(
-          context,
-          "Ok",
-          "Error 230", //Server error
-          "There has been an error with the server, please try again later",
-        );
-        return {"Error 500":"Server error"};
       default:
-        log_handler?.w("Unhandled status code: ${response.statusCode}");
+        log_handler?.w("Unhandled status code: ${response.statusCode} - ${response.body}");
         await build_informative_alert_dialog(
           context,
           "Ok",
@@ -873,16 +833,8 @@ Future<void> delete_user(
         );
         return;
       case 500:
-        log_handler?.e("Server error: ${response.statusCode} - ${response.body}");
-        await build_informative_alert_dialog(
-          context,
-          "Ok",
-          "Error 230", //Server error
-          "There has been an error with the server, please try again later",
-        );
-        return;
       default:
-        log_handler?.w("Unhandled status code: ${response.statusCode}");
+        log_handler?.w("Unhandled status code: ${response.statusCode} - ${response.body}");
         await build_informative_alert_dialog(
           context,
           "Ok",
@@ -1024,16 +976,8 @@ Future<void> save_current_chat(
         );
         return;
       case 500:
-        log_handler?.e("Server error: ${response.statusCode} - ${response.body}");
-        await build_informative_alert_dialog(
-          context,
-          "Ok",
-          "Error 230", //Server error
-          "There has been an error with the server, please try again later",
-        );
-        return;
       default:
-        log_handler?.w("Unhandled status code: ${response.statusCode}");
+        log_handler?.w("Unhandled status code: ${response.statusCode} - ${response.body}");
         await build_informative_alert_dialog(
           context,
           "Ok",
