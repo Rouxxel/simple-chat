@@ -68,10 +68,9 @@ class _landing_pageState extends State<landing_page> {
     int last_index = _message_list.length - 1;
     log_handler?.i("Loaded/saved directory: ${_message_list[last_index].text}");
     log_handler?.i(
-        "Loaded messages (Bottom up):\n\n" +
-            _message_list.map((m) =>
+        "Loaded messages (Bottom up):\n\n${_message_list.map((m) =>
             "${m.is_user}: ${m.text.replaceAll('\n', ' ')} | ${m.time_stamp}"
-            ).join('\n')
+            ).join('\n')}"
     );
   }
 
@@ -319,7 +318,7 @@ class _landing_pageState extends State<landing_page> {
         body: Stack(
           children: [
             //Background image
-            //TODO: add a method to save and load conversations somewhere
+            //TODO: add a method to load conversations somewhere
             MediaQuery.removeViewInsets(
               removeBottom: true,
               context: context,

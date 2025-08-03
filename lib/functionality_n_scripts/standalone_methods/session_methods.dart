@@ -827,6 +827,13 @@ Future<void> delete_user(
         log_handler?.i("Backend response successful ${response.statusCode}");
         //Remove all global variables
         await AppStorage.clear_tokens();
+        await build_informative_alert_dialog(
+            context,
+            "Accept",
+            "Your user was deleted",
+            "You will now be returned to the log in page, your data is now inaccessible"
+                "with the user you just deleted",
+        );
         return;
       case 400:
         log_handler?.e("Parameters error: ${response.statusCode} - ${response.body}");

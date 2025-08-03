@@ -213,7 +213,7 @@ Future<Map<String, String>?> build_dynamic_input_dialog(
         ),
         actions: [
           TextButton(
-            onPressed: () => Navigator.pop(context), // Cancel
+            onPressed: () => Navigator.pop(context),
             child: Text(
               no_button_text,
               style: GoogleFonts.handjet(
@@ -224,7 +224,21 @@ Future<Map<String, String>?> build_dynamic_input_dialog(
             ),
           ),
           TextButton(
-            onPressed: () {
+            onPressed: () async {
+              // Validation check: ensure no field is empty
+              final hasEmptyField = controllers.any((c) => c.text.trim().isEmpty);
+
+              if (hasEmptyField) {
+                await build_informative_alert_dialog(
+                  context,
+                  "Ok",
+                  "Empty field",
+                  "Please ensure all fields are filled.",
+                );
+                return; // Do not close the dialog
+              }
+
+              // All fields are valid — build result map
               final values = <String, String>{};
               for (int i = 0; i < labels.length; i++) {
                 final value = controllers[i].text.trim();
