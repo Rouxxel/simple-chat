@@ -111,15 +111,6 @@ class Message {
             "There was an error with AI response or when trying to communicate with AI",
           );
           return;
-        case 500:
-          log_handler?.e("Server error: ${response.statusCode} - ${response.body}");
-          await build_informative_alert_dialog(
-            context,
-            "Ok",
-            "Error 230", //Server error
-            "There has been an error with the server, please try again later",
-          );
-          return;
         case 422:
           log_handler?.e("Validation error: ${response.statusCode} - ${response.body}");
           await build_informative_alert_dialog(
@@ -138,8 +129,9 @@ class Message {
             "There has been an error with the server, please try again later",
           );
           return;
+        case 500:
         default:
-          log_handler?.w("Unexpected status code: ${response.statusCode}");
+          log_handler?.w("Unexpected status code: ${response.statusCode} - ${response.body}");
           await build_informative_alert_dialog(
             context,
             "Ok",
