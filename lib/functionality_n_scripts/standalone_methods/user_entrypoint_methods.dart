@@ -306,9 +306,8 @@ Future<bool> log_in(
         await build_informative_alert_dialog(
           context,
           "Ok",
-          "Invalid user",
-          "We were not able to find your user, please ensure you have signed up and"
-              "confirmed your email before trying again",
+          "Invalid user or password",
+          "Please ensure you enter a valid user with its associated password correctly",
         );
         return false;
       case 422:
