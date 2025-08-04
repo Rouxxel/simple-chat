@@ -8,6 +8,7 @@ import 'package:simple_chat/functionality_n_scripts/standalone_methods/general_m
 import 'package:simple_chat/functionality_n_scripts/configuration_scripts/config_invoke.dart';
 import 'package:simple_chat/functionality_n_scripts/standalone_methods/session_methods.dart';
 import 'package:simple_chat/functionality_n_scripts/standalone_methods/user_profile_methods.dart';
+import 'package:simple_chat/screens_pages/landing_page.dart';
 import 'package:simple_chat/widgets_and_ui_elements/alert_dialog_builders.dart';
 import 'package:simple_chat/widgets_and_ui_elements/labeled_text_field.dart';
 import 'package:simple_chat/functionality_n_scripts/utils/logger_config.dart';
@@ -240,7 +241,35 @@ class _chats_listState extends State<chats_list> {
                                                       ? null  //disables the button when true
                                                       : () async {
                                                     log_handler?.i("Refresh icon pressed for chat: $title");
+
                                                     await play_effect_sound(config_data.button_pressed_effect);
+
+                                                    final bool? user_decision = await build_yes_no_alert_dialog(
+                                                      context,
+                                                      "Accept",
+                                                      "Cancel",
+                                                      "Load saved chat",
+                                                      "Are your certain you wish to load $title?, this action "
+                                                          "will override whatever conversation you had so far and "
+                                                          "if not saved, it will be lost permanently",
+                                                    );
+
+                                                    if (user_decision == true) {
+                                                      setState(() {
+                                                        _is_processing = true;
+                                                      });
+
+                                                      log_handler?.d("User proceed with chat retrieval");
+
+                                                      //Call retrieve endpoint
+                                                      await retrieve_specific_chat(context, title);
+
+                                                      setState(() {
+                                                        _is_processing = false;
+                                                      });
+                                                    } else {
+                                                      log_handler?.d("User cancelled chat retrieval");
+                                                    }
                                                   },
                                                 ),
                                                 IconButton(

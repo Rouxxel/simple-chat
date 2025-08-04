@@ -14,7 +14,7 @@ import "package:simple_chat/widgets_and_ui_elements/alert_dialog_builders.dart";
 import 'package:simple_chat/functionality_n_scripts/configuration_scripts/config_invoke.dart';
 import 'package:simple_chat/functionality_n_scripts/utils/logger_config.dart';
 import "package:simple_chat/functionality_n_scripts/message_related/message_class.dart";
-import 'package:simple_chat/functionality_n_scripts/message_related/message_class.dart';
+import "package:simple_chat/cache/current_chat_cache.dart";
 
 //imports
 /////////////////////////////////////////////////////////////////////////////
@@ -817,8 +817,6 @@ Future<Map<String, dynamic>> retrieve_all_user_chats(
 Future<void> retrieve_specific_chat(
     BuildContext context,
     String chat_title,
-    List<Message> message_list,
-    Function set_state_callback,
     ) async {
   log_handler?.d("[------delete_user function executing------]");
 
@@ -890,25 +888,23 @@ Future<void> retrieve_specific_chat(
       case 200:
         //Log and proceed
         log_handler?.i("Backend response successful ${response.statusCode}");
-        //Extract the chat list as List<Map<String, dynamic>>
+
         final Map<String, dynamic> decoded = jsonDecode(response.body);
         final List<dynamic> raw_chat_list = decoded['chat'] ?? [];
-        // Safely cast dynamic list to List<Map<String, dynamic>>
+
         final List<Map<String, dynamic>> chat_list_map = raw_chat_list
             .map((e) => e as Map<String, dynamic>)
             .toList();
 
-        //Convert JSON list to List<Message>
         final List<Message> new_messages = Message.json_to_message_list(chat_list_map);
 
-        //Update the message list and refresh UI
-        set_state_callback(() {
-          message_list.clear();
-          message_list.addAll(new_messages);
-        });
+        //Update cached conversation
+        CurrentChatCache.clear();
+        CurrentChatCache.message_list = new_messages;
+        CurrentChatCache.current_saved_chat_title = chat_title;
 
         log_handler?.i("Chat retrieved and message list updated.");
-        
+
         return;
       case 400:
         log_handler?.e("Parameters error: ${response.statusCode} - ${response.body}");
