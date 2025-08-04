@@ -9,12 +9,15 @@ import 'package:simple_chat/functionality_n_scripts/standalone_methods/general_m
 import 'package:simple_chat/functionality_n_scripts/message_related/message_class.dart';
 import 'package:simple_chat/functionality_n_scripts/configuration_scripts/config_invoke.dart';
 import 'package:simple_chat/functionality_n_scripts/standalone_methods/session_methods.dart';
-import 'package:simple_chat/screens_pages/log_in_page.dart';
 import 'package:simple_chat/functionality_n_scripts/utils/logger_config.dart';
 
 //Other screens
 import 'package:simple_chat/screens_pages/settings_page.dart';
+import 'package:simple_chat/screens_pages/chats_page.dart';
+import 'package:simple_chat/screens_pages/chats_page.dart';
 import 'package:simple_chat/widgets_and_ui_elements/alert_dialog_builders.dart';
+import 'package:simple_chat/screens_pages/log_in_page.dart';
+import 'package:simple_chat/cache/chat_cache.dart';
 
 //imports
 /////////////////////////////////////////////////////////////////////////////
@@ -163,6 +166,16 @@ class _landing_pageState extends State<landing_page> {
                           chat_title: current_saved_chat_title!,
                           chat_list: _message_list,
                         );
+
+                        //Reload the cached saved chat
+                        final result = await retrieve_all_user_chats(context);
+
+                        if(result.containsKey("chat_titles")){
+                          final titles = List<String>.from(result["chat_titles"]);
+
+                          ChatCache.chat_titles_cache = titles;
+                          log_handler?.d("Chat cache updated");
+                        }
                       } else {
                         log_handler?.i("Chat saving was cancelled by the user.");
                       }
@@ -204,7 +217,19 @@ class _landing_pageState extends State<landing_page> {
 
                   if (selected == 'saved_old_chats') {
                     log_handler?.d("Selected choice: $selected");
-                    // TODO: navigate to new screen
+                    //Navigate to settings page with fade transition
+                    await Navigator.push(
+                      context,
+                      PageRouteBuilder(
+                        pageBuilder: (context, animation, secondaryAnimation) => const chats_list(),
+                        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                          return FadeTransition(
+                            opacity: animation,
+                            child: child,
+                          );
+                        },
+                      ),
+                    );
                   }
                 },
 
@@ -284,10 +309,16 @@ class _landing_pageState extends State<landing_page> {
                             "conversations will be lost",
                       );
                       if (user_decision == true){
+                        setState(() {_is_processing = true;});
+
                         await log_out(context);
                         //Stop watch dog for token refresh
                         TokenWatchdog().stop();
                         log_handler?.i("User logged out. Returning to log in page");
+
+                        ChatCache.clear(); //Nullify chat cache
+
+                        setState(() {_is_processing = false;});
 
                         //Navigate to login page with fade transition
                         await Navigator.push(
@@ -318,7 +349,6 @@ class _landing_pageState extends State<landing_page> {
         body: Stack(
           children: [
             //Background image
-            //TODO: add a method to load conversations somewhere
             MediaQuery.removeViewInsets(
               removeBottom: true,
               context: context,

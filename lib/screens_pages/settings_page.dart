@@ -14,6 +14,7 @@ import 'package:simple_chat/functionality_n_scripts/utils/easter_egg_player.dart
 
 //Other screens
 import 'package:simple_chat/screens_pages/log_in_page.dart';
+import 'package:simple_chat/cache/chat_cache.dart';
 
 class settings extends StatefulWidget {
   const settings({super.key});
@@ -1257,6 +1258,8 @@ class _settingsState extends State<settings> {
                                             "Reset language: ${config_data.user_language}\n"
                                             "Reset sound status: ${config_data.sound_effects_status}\n"
                                         );
+
+                                        ChatCache.clear(); //Nullify chat cache
 
                                         setState(() => _is_processing = false);
 

@@ -28,6 +28,7 @@
     "user_delete_profile": "/user_profile/user_delete_profile",
 
     "user_chat_save_suffix": "/chat/user_chat_save",
+    "user_chat_titles_retrieve": "/chat/user_chat_titles_retrieve",
 
     "easter_egg_status_suffix": "/miscellaneous/easter_egg_found"
   },
