@@ -1539,6 +1539,19 @@ class _settingsState extends State<settings> {
                         sound_effects_on: config_data.sound_effects_status,
                       );
 
+                      //Update cache with latest preferences
+                      UserPreferencesCache.user_preferences_cache = {
+                        "ai_personality": config_data.directive,
+                        "verbose_level": config_data.verbose,
+                        "background_color": color_to_hex(config_data.background_color),
+                        "bar_colors": color_to_hex(config_data.app_bar_color),
+                        "user_text_box_color": color_to_hex(config_data.user_text_box_color),
+                        "ai_text_box_color": color_to_hex(config_data.ai_text_box_color),
+                        "ai_language": config_data.user_language,
+                        "sound_effects_on": config_data.sound_effects_status,
+                        "easter_egg_status": config_data.easter_egg_found,
+                      };
+
                       //play sound effect//
                       await play_effect_sound(config_data.miscellanous_effect);
                       await build_informative_alert_dialog(
