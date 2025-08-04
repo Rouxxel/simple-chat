@@ -14,6 +14,7 @@ import 'package:simple_chat/functionality_n_scripts/utils/easter_egg_player.dart
 
 //Other screens
 import 'package:simple_chat/screens_pages/log_in_page.dart';
+import 'package:simple_chat/cache/user_preferences_cache.dart';
 import 'package:simple_chat/cache/chat_cache.dart';
 
 class settings extends StatefulWidget {
@@ -1105,8 +1106,17 @@ class _settingsState extends State<settings> {
 
                                       //Start load from cloud profile preferences request
                                       setState(() => _is_processing = true);
-                                      //Load preferences from cloud
-                                      final retrieved_data = await retrieve_user_preferences(context);
+
+                                      //Choose between backend call and cache
+                                      Map<String, dynamic> retrieved_data;
+                                      if (UserPreferencesCache.user_preferences_cache == null) {
+                                        log_handler?.d("User preferences cache null, calling backend");
+                                        retrieved_data = await retrieve_user_preferences(context);
+                                        UserPreferencesCache.user_preferences_cache = retrieved_data;
+                                      } else {
+                                        log_handler?.d("User preferences cache non-null, not calling backend");
+                                        retrieved_data = UserPreferencesCache.user_preferences_cache!;
+                                      }
 
                                       //Update to saved data of user
                                       //Load saved in cloud directive
