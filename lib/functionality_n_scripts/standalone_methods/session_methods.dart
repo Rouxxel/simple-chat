@@ -5,6 +5,7 @@ import "package:flutter/material.dart";
 import "dart:async";
 import "dart:convert";
 import 'package:http/http.dart' as http;
+import "package:simple_chat/cache/chat_cache.dart";
 import "package:simple_chat/functionality_n_scripts/session_related/app_storage_class.dart";
 import "package:simple_chat/functionality_n_scripts/standalone_methods/general_methods.dart";
 
@@ -13,6 +14,7 @@ import "package:simple_chat/widgets_and_ui_elements/alert_dialog_builders.dart";
 import 'package:simple_chat/functionality_n_scripts/configuration_scripts/config_invoke.dart';
 import 'package:simple_chat/functionality_n_scripts/utils/logger_config.dart';
 import "package:simple_chat/functionality_n_scripts/message_related/message_class.dart";
+import 'package:simple_chat/functionality_n_scripts/message_related/message_class.dart';
 
 //imports
 /////////////////////////////////////////////////////////////////////////////
@@ -809,6 +811,287 @@ Future<Map<String, dynamic>> retrieve_all_user_chats(
   } catch (er){
     log_handler?.e("Error: $er");
     return {"Unhandled error":"$er"};
+  }
+}
+
+Future<void> retrieve_specific_chat(
+    BuildContext context,
+    String chat_title,
+    List<Message> message_list,
+    Function set_state_callback,
+    ) async {
+  log_handler?.d("[------delete_user function executing------]");
+
+  //Get access_token and user id
+  final String? access_token = await AppStorage.get_access_token();
+  final String? user_id = await AppStorage.get_user_id();
+  if (access_token!.trim().isEmpty || user_id!.trim().isEmpty) {
+    await build_informative_alert_dialog(
+      context,
+      "Ok",
+      "Invalid values",
+      "Please try again later",
+    );
+    return;
+  }
+
+  final body = jsonEncode({
+    "chat_title":chat_title,
+    "user_id": user_id,
+    "access_token": access_token
+  });
+
+  http.Response response;
+  try {
+    response = await http
+        .post(
+      Uri.parse(config_data.backend_url + config_data.user_chat_retrieve),
+      headers: {"Content-Type": "application/json"},
+      body: body,
+    )
+        .timeout(
+      Duration(seconds: config_data.max_api_response_time_limit + 5),
+      onTimeout: () async {
+        await build_informative_alert_dialog(
+          context,
+          "Ok",
+          "Error 227", //Response took too long
+          "There was an error with the processing time, please try again later",
+        );
+        throw TimeoutException('Server took too long');
+      },
+    );
+  } on SocketException catch (e) {
+    log_handler?.e("Network error: $e");
+    await build_informative_alert_dialog(
+      context,
+      "Ok",
+      "Error 234", //Network error
+      "There has been an error with the network, please try again later",
+    );
+    return;
+  } on TimeoutException {
+    // dialog already shown in onTimeout
+    return;
+  } catch (e) {
+    log_handler?.e("Unexpected error: $e");
+    await build_informative_alert_dialog(
+      context,
+      "Ok",
+      "Error 231", //Unexpected unknown server error
+      "There has been an unexpected backend error, please try again later.",
+    );
+    return;
+  }
+
+  try {
+    //---------- Status‑code handling ----------
+    switch (response.statusCode) {
+      case 200:
+        //Log and proceed
+        log_handler?.i("Backend response successful ${response.statusCode}");
+        //Extract the chat list as List<Map<String, dynamic>>
+        final Map<String, dynamic> decoded = jsonDecode(response.body);
+        final List<dynamic> raw_chat_list = decoded['chat'] ?? [];
+        // Safely cast dynamic list to List<Map<String, dynamic>>
+        final List<Map<String, dynamic>> chat_list_map = raw_chat_list
+            .map((e) => e as Map<String, dynamic>)
+            .toList();
+
+        //Convert JSON list to List<Message>
+        final List<Message> new_messages = Message.json_to_message_list(chat_list_map);
+
+        //Update the message list and refresh UI
+        set_state_callback(() {
+          message_list.clear();
+          message_list.addAll(new_messages);
+        });
+
+        log_handler?.i("Chat retrieved and message list updated.");
+        
+        return;
+      case 400:
+        log_handler?.e("Parameters error: ${response.statusCode} - ${response.body}");
+        await build_informative_alert_dialog(
+          context,
+          "Ok",
+          "Invalid entered values",
+          "You have entered invalid values, please enter valid values.",
+        );
+        return;
+      case 401:
+        log_handler?.w("Unauthorized access: ${response.statusCode} - ${response.body}");
+        await build_informative_alert_dialog(
+          context,
+          "Ok",
+          "Invalid user",
+          "We were not able to find your user, please ensure you have signed up and"
+              "confirmed your email before trying again",
+        );
+        return;
+      case 422:
+        log_handler?.e("Validation error: ${response.statusCode} - ${response.body}");
+        await build_informative_alert_dialog(
+          context,
+          "Ok",
+          "Error 245", //Unprocessable Entity
+          "There was an issue with the data provided. Please try again later",
+        );
+        return;
+      case 429:
+        log_handler?.e("Backend error: ${response.statusCode} - ${response.body}");
+        await build_informative_alert_dialog(
+          context,
+          "Ok",
+          "Error 231", //Unexpected unknown server error
+          "There has been an unexpected backend error, please try again later.",
+        );
+        return;
+      case 500:
+      default:
+        log_handler?.w("Unhandled status code: ${response.statusCode} - ${response.body}");
+        await build_informative_alert_dialog(
+          context,
+          "Ok",
+          "Error 231", //Unexpected unknown server error
+          "There has been an unexpected backend error, please try again later.",
+        );
+        return;
+    }
+  } catch (er){
+    log_handler?.e("Error: $er");
+    return;
+  }
+}
+
+Future<void> delete_specific_chat(
+    BuildContext context,
+    String chat_title
+    ) async {
+  log_handler?.d("[------delete_user function executing------]");
+
+  //Get access_token and user id
+  final String? access_token = await AppStorage.get_access_token();
+  final String? user_id = await AppStorage.get_user_id();
+  if (access_token!.trim().isEmpty || user_id!.trim().isEmpty) {
+    await build_informative_alert_dialog(
+      context,
+      "Ok",
+      "Invalid values",
+      "Please try again later",
+    );
+    return;
+  }
+
+  final body = jsonEncode({
+    "chat_title": chat_title,
+    "user_id": user_id,
+    "access_token": access_token
+  });
+
+  http.Response response;
+  try {
+    response = await http
+        .post(
+      Uri.parse(config_data.backend_url + config_data.user_chat_delete),
+      headers: {"Content-Type": "application/json"},
+      body: body,
+    )
+        .timeout(
+      Duration(seconds: config_data.max_api_response_time_limit + 5),
+      onTimeout: () async {
+        await build_informative_alert_dialog(
+          context,
+          "Ok",
+          "Error 227", //AI response took too long
+          "There was an error with the processing time, please try again later",
+        );
+        throw TimeoutException('Server took too long');
+      },
+    );
+  } on SocketException catch (e) {
+    log_handler?.e("Network error: $e");
+    await build_informative_alert_dialog(
+      context,
+      "Ok",
+      "Error 234", //Network error
+      "There has been an error with the network, please try again later",
+    );
+    return;
+  } on TimeoutException {
+    // dialog already shown in onTimeout
+    return;
+  } catch (e) {
+    log_handler?.e("Unexpected error: $e");
+    await build_informative_alert_dialog(
+      context,
+      "Ok",
+      "Error 231", //Unexpected unknown server error
+      "There has been an unexpected backend error, please try again later.",
+    );
+    return;
+  }
+
+  try {
+    //---------- Status‑code handling ----------
+    switch (response.statusCode) {
+      case 200:
+        log_handler?.i("Backend response successful ${response.statusCode}");
+
+        //Remove recently deleted chat from cache list
+        ChatCache.chat_titles_cache?.remove(chat_title);
+        return;
+      case 400:
+        log_handler?.e("Parameters error: ${response.statusCode} - ${response.body}");
+        await build_informative_alert_dialog(
+          context,
+          "Ok",
+          "Invalid entered values",
+          "You have entered invalid values, please enter valid values.",
+        );
+        return;
+      case 401:
+        log_handler?.w("Unauthorized access: ${response.statusCode} - ${response.body}");
+        await build_informative_alert_dialog(
+          context,
+          "Ok",
+          "Invalid user",
+          "We were not able to find your user, please ensure you have signed up and"
+              "confirmed your email before trying again",
+        );
+        return;
+      case 422:
+        log_handler?.e("Validation error: ${response.statusCode} - ${response.body}");
+        await build_informative_alert_dialog(
+          context,
+          "Ok",
+          "Error 245", //Unprocessable Entity
+          "There was an issue with the data provided. Please try again later",
+        );
+        return;
+      case 429:
+        log_handler?.e("Backend error: ${response.statusCode} - ${response.body}");
+        await build_informative_alert_dialog(
+          context,
+          "Ok",
+          "Error 231", //Unexpected unknown server error
+          "There has been an unexpected backend error, please try again later.",
+        );
+        return;
+      case 500:
+      default:
+        log_handler?.w("Unhandled status code: ${response.statusCode} - ${response.body}");
+        await build_informative_alert_dialog(
+          context,
+          "Ok",
+          "Error 231", //Unexpected unknown server error
+          "There has been an unexpected backend error, please try again later.",
+        );
+        return;
+    }
+  } catch (er){
+    log_handler?.e("Error: $er");
+    return;
   }
 }
 

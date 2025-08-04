@@ -25,7 +25,6 @@ class chats_list extends StatefulWidget {
 
 class _chats_listState extends State<chats_list> {
   //Control UI behavior
-  bool _sound_effect_controller = config_data.sound_effects_status;
   bool _button_locked = false;
 
   //Boolean controller for send button and input controller hint text hiding
@@ -175,87 +174,111 @@ class _chats_listState extends State<chats_list> {
 
                           const SizedBox(height: 10),
 
-                          // Content depending on processing status
+                          //Content depending on processing status
                           _is_processing
                               ? const Center(
-                            child: Padding(
-                              padding: EdgeInsets.all(20),
-                              child: CircularProgressIndicator(),
-                            ),
-                          )
-                              : (ChatCache.chat_titles_cache == null ||
-                              ChatCache.chat_titles_cache!.isEmpty)
-                              ? Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 20),
-                            child: Center(
-                              child: Text(
-                                "No saved chats available.",
-                                style: TextStyle(
-                                  color: config_data.text_color,
-                                  fontSize: 16,
-                                ),
-                              ),
-                            ),
-                          )
-                              : ListView.builder(
-                            shrinkWrap: true,
-                            physics:
-                            const NeverScrollableScrollPhysics(), // prevent scroll conflict
-                            itemCount: ChatCache.chat_titles_cache!.length,
-                            itemBuilder: (context, index) {
-                              final title =
-                              ChatCache.chat_titles_cache![index];
-
-                              return Padding(
-                                padding:
-                                const EdgeInsets.symmetric(vertical: 6.0),
-                                child: Container(
-                                  decoration: BoxDecoration(
-                                    color: config_data.background_color,
-                                    borderRadius: BorderRadius.circular(10),
-                                    border:
-                                    Border.all(color: Colors.grey.shade700),
+                                  child: Padding(
+                                    padding: EdgeInsets.all(20),
+                                    child: CircularProgressIndicator(),
                                   ),
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 12, vertical: 10),
-                                  child: Row(
-                                    children: [
-                                      // Chat title (left-aligned)
-                                      Expanded(
+                                )
+                              : (ChatCache.chat_titles_cache == null ||
+                                      ChatCache.chat_titles_cache!.isEmpty)
+                                  ? Padding(
+                                      padding: const EdgeInsets.symmetric(vertical: 20),
+                                      child: Center(
                                         child: Text(
-                                          title,
+                                          "No saved chats available.",
                                           style: TextStyle(
                                             color: config_data.text_color,
-                                            fontSize: 18,
+                                            fontSize: 16,
                                           ),
-                                          maxLines: null,
-                                          softWrap: true,
-                                          overflow: TextOverflow.visible,
                                         ),
                                       ),
+                                    )
+                                  : ListView.builder(
+                                      shrinkWrap: true,
+                                      physics: const NeverScrollableScrollPhysics(), //prevent scroll conflict
+                                      itemCount: ChatCache.chat_titles_cache!.length,
+                                      itemBuilder: (context, index) {
+                                        final title = ChatCache.chat_titles_cache![index];
 
-                                      //Icon buttons
-                                      IconButton(
-                                        icon: const Icon(Icons.refresh),
-                                        color: config_data.user_text_box_color,
-                                        onPressed: () {
-                                          log_handler?.i(
-                                              "Refresh icon pressed for chat: $title");
-                                        },
-                                      ),
-                                      IconButton(
-                                        icon: const Icon(Icons.delete),
-                                        color: config_data.app_bar_color,
-                                        onPressed: () {
-                                          log_handler?.i(
-                                              "Delete icon pressed for chat: $title");
-                                        },
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              );
-                            },
+                                        return Padding(
+                                          padding: const EdgeInsets.symmetric(
+                                              vertical: 6.0
+                                          ),
+                                          child: Container(
+                                            decoration: BoxDecoration(
+                                              color: config_data.background_color,
+                                              borderRadius: BorderRadius.circular(10),
+                                              border: Border.all(color: Colors.grey.shade700
+                                              ),
+                                            ),
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 12, vertical: 10),
+                                            child: Row(
+                                              children: [
+                                                // Chat title (left-aligned)
+                                                Expanded(
+                                                  child: Text(
+                                                    title,
+                                                    style: TextStyle(
+                                                      color: config_data.text_color,
+                                                      fontSize: 18,
+                                                    ),
+                                                    maxLines: null,
+                                                    softWrap: true,
+                                                    overflow: TextOverflow.visible,
+                                                  ),
+                                                ),
+
+                                                //Icon buttons
+                                                IconButton(
+                                                  icon: const Icon(Icons.refresh),
+                                                  color: config_data.user_text_box_color,
+                                                  onPressed: _is_processing
+                                                      ? null  //disables the button when true
+                                                      : () async {
+                                                    log_handler?.i("Refresh icon pressed for chat: $title");
+                                                    await play_effect_sound(config_data.button_pressed_effect);
+                                                  },
+                                                ),
+                                                IconButton(
+                                                  icon: const Icon(Icons.delete),
+                                                  color: config_data.app_bar_color,
+                                                  onPressed: _is_processing
+                                                      ? null // disables the button when processing
+                                                      : () async {
+                                                    log_handler?.i("Delete icon pressed for chat: $title");
+                                                    setState(() {
+                                                      _is_processing = true;
+                                                    });
+
+                                                    await play_effect_sound(config_data.button_pressed_effect);
+
+                                                    //Store original length
+                                                    final int original_length = ChatCache.chat_titles_cache?.length ?? 0;
+
+                                                    //Call delete endpoint
+                                                    await delete_specific_chat(context, title);
+
+                                                    //Only refresh if deletion actually happened
+                                                    if ((ChatCache.chat_titles_cache?.length ?? 0) < original_length) {
+                                                      setState(() {
+                                                        //Triggers UI update
+                                                      });
+                                                    }
+
+                                                    setState(() {
+                                                      _is_processing = false;
+                                                    });
+                                                  },
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        );
+                                      },
                           ),
                         ],
                       ),
