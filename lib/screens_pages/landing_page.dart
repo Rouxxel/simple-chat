@@ -19,6 +19,8 @@ import 'package:simple_chat/widgets_and_ui_elements/alert_dialog_builders.dart';
 import 'package:simple_chat/screens_pages/log_in_page.dart';
 import 'package:simple_chat/cache/chat_cache.dart';
 
+import '../cache/current_chat_cache.dart';
+
 //imports
 /////////////////////////////////////////////////////////////////////////////
 //screen itself
@@ -33,15 +35,9 @@ class _landing_pageState extends State<landing_page> {
   //Create a TextEditingController for the input box and get user input
   final TextEditingController _input_controller = TextEditingController();
 
-  //List to store chat messages, both user and AI that will be displayed in UI
-  List<Message> _message_list = [];
-
   //Boolean controller for send button and input controller hint text hiding
   bool _is_processing = false;
   bool _first_query_done = false;
-
-  //Flag for updating or saving current chat
-  String? current_saved_chat_title;  //null by default
 
   //Add the personality of the AI
   @override
@@ -61,17 +57,17 @@ class _landing_pageState extends State<landing_page> {
           "Default language: ${config_data.user_language} but match prompt language.";
 
       //Add AI personality as first message
-      if (_message_list.isEmpty) {
-        _message_list.add(Message(system_prompt, false));
+      if (CurrentChatCache.message_list.isEmpty) {
+        CurrentChatCache.message_list.add(Message(system_prompt, false));
       } else {
-        _message_list[_message_list.length - 1] = Message(system_prompt, false);
+        CurrentChatCache.message_list[CurrentChatCache.message_list.length - 1] = Message(system_prompt, false);
       }
     });
 
-    int last_index = _message_list.length - 1;
-    log_handler?.i("Loaded/saved directory: ${_message_list[last_index].text}");
+    int last_index = CurrentChatCache.message_list.length - 1;
+    log_handler?.i("Loaded/saved directory: ${CurrentChatCache.message_list[last_index].text}");
     log_handler?.i(
-        "Loaded messages (Bottom up):\n\n${_message_list.map((m) =>
+        "Loaded messages (Bottom up):\n\n${CurrentChatCache.message_list.map((m) =>
             "${m.is_user}: ${m.text.replaceAll('\n', ' ')} | ${m.time_stamp}"
             ).join('\n')}"
     );
@@ -138,8 +134,9 @@ class _landing_pageState extends State<landing_page> {
                     setState(() => _is_processing = true); //Start processing
 
                     //Ensure chat has been initiated
-                    if(_message_list.length <= 1){
-                      log_handler?.w("Chat list 'empty', only main directory present ${_message_list.length}");
+                    if(CurrentChatCache.message_list.length <= 1){
+                      log_handler?.w("Chat list 'empty', only main directory present "
+                          "${CurrentChatCache.message_list.length}");
                       await build_informative_alert_dialog(
                           context,
                           "Ok",
@@ -151,20 +148,21 @@ class _landing_pageState extends State<landing_page> {
                     }
 
                     //Handle already saved chat, Update existing chat
-                    if (current_saved_chat_title?.isNotEmpty == true) {
+                    if (CurrentChatCache.current_saved_chat_title?.isNotEmpty == true) {
                       final bool? user_decision = await build_yes_no_alert_dialog(
                           context,
                           "Confirm",
                           "Cancel",
                           "Update current saved chat",
-                          "Do you wish to save your current progress in the chat '${current_saved_chat_title}'"
+                          "Do you wish to save your current progress in the chat '"
+                              "${CurrentChatCache.current_saved_chat_title}'"
                       );
 
                       if (user_decision == true) {
                         await save_current_chat(
                           context,
-                          chat_title: current_saved_chat_title!,
-                          chat_list: _message_list,
+                          chat_title: CurrentChatCache.current_saved_chat_title!,
+                          chat_list: CurrentChatCache.message_list,
                         );
 
                         //Reload the cached saved chat
@@ -202,10 +200,10 @@ class _landing_pageState extends State<landing_page> {
                       await save_current_chat(
                         context,
                         chat_title: chat_title,
-                        chat_list: _message_list,
+                        chat_list: CurrentChatCache.message_list,
                       );
                       //Update flag
-                      current_saved_chat_title = chat_title;
+                      CurrentChatCache.current_saved_chat_title = chat_title;
                     } else {
                       //User cancelled
                       log_handler?.i("Chat saving was cancelled by the user.");
@@ -381,11 +379,11 @@ class _landing_pageState extends State<landing_page> {
                     //"Message" generator with a builder
                     child: ListView.builder(
                       reverse: true, //Start at the bottom
-                      itemCount: _message_list.length -1,
+                      itemCount: CurrentChatCache.message_list.length -1,
                       //Message blueprint
                       itemBuilder: (context, index) {
                         //Declare message with list that has class
-                        final message = _message_list[index];
+                        final message = CurrentChatCache.message_list[index];
 
                         //Declare dynamic color
                         Color dyna_color= message.is_user?
@@ -581,12 +579,13 @@ class _landing_pageState extends State<landing_page> {
 
                                 //Instantiate new message and add it to message_list
                                 Message message = Message(userInput, true);
-                                message.send_messages(_input_controller, _message_list, setState);
+                                message.send_messages(_input_controller,
+                                    CurrentChatCache.message_list, setState);
 
                                 await message.ai_query_and_response(
                                   context,
                                   _input_controller,
-                                  _message_list,
+                                  CurrentChatCache.message_list,
                                   setState,
                                 );
 
