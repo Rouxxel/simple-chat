@@ -250,28 +250,45 @@ class _chats_listState extends State<chats_list> {
                                                       ? null // disables the button when processing
                                                       : () async {
                                                     log_handler?.i("Delete icon pressed for chat: $title");
-                                                    setState(() {
-                                                      _is_processing = true;
-                                                    });
 
                                                     await play_effect_sound(config_data.button_pressed_effect);
 
-                                                    //Store original length
-                                                    final int original_length = ChatCache.chat_titles_cache?.length ?? 0;
+                                                    final bool? user_decision = await build_yes_no_alert_dialog(
+                                                        context,
+                                                        "Accept",
+                                                        "Cancel",
+                                                        "Delete selected chat",
+                                                        "Are your certain you wish to delete $title?, this action "
+                                                            "will permanently delete the chat and it won't be recoverable "
+                                                            "in any way",
+                                                    );
 
-                                                    //Call delete endpoint
-                                                    await delete_specific_chat(context, title);
-
-                                                    //Only refresh if deletion actually happened
-                                                    if ((ChatCache.chat_titles_cache?.length ?? 0) < original_length) {
+                                                    if (user_decision == true) {
                                                       setState(() {
-                                                        //Triggers UI update
+                                                        _is_processing = true;
                                                       });
-                                                    }
 
-                                                    setState(() {
-                                                      _is_processing = false;
-                                                    });
+                                                      log_handler?.d("User proceed with chat deletion");
+
+                                                      //Store original length
+                                                      final int original_length = ChatCache.chat_titles_cache?.length ?? 0;
+
+                                                      //Call delete endpoint
+                                                      await delete_specific_chat(context, title);
+
+                                                      //Only refresh if deletion actually happened
+                                                      if ((ChatCache.chat_titles_cache?.length ?? 0) < original_length) {
+                                                        setState(() {
+                                                          //Triggers UI update
+                                                        });
+                                                      }
+
+                                                      setState(() {
+                                                        _is_processing = false;
+                                                      });
+                                                    } else {
+                                                      log_handler?.d("User cancelled chat deletion");
+                                                    }
                                                   },
                                                 ),
                                               ],
