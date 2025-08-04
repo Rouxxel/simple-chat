@@ -38,6 +38,8 @@ class app_configuration {
 
   final String user_chat_save_suffix;
   final String user_chat_titles_retrieve;
+  final String user_chat_retrieve;
+  final String user_chat_delete;
 
   final String easter_egg_status_suffix;
 
@@ -105,6 +107,8 @@ class app_configuration {
 
     required this.user_chat_save_suffix,
     required this.user_chat_titles_retrieve,
+    required this.user_chat_retrieve,
+    required this.user_chat_delete,
 
     required this.easter_egg_status_suffix,
 
@@ -180,6 +184,8 @@ class app_configuration {
       user_delete_profile: backend["user_delete_profile"]?? '/invalid/suffix',
       user_chat_save_suffix: backend["user_chat_save_suffix"]?? '/invalid/suffix',
       user_chat_titles_retrieve: backend["user_chat_titles_retrieve"]?? '/invalid/suffix',
+      user_chat_retrieve: backend["user_chat_retrieve"]?? '/invalid/suffix',
+      user_chat_delete: backend["user_chat_delete"]?? '/invalid/suffix',
       easter_egg_status_suffix:backend["easter_egg_status_suffix"]?? '/invalid/suffix',
 
       allowed_email_providers: db["allowed_email_providers"]?? [''],
