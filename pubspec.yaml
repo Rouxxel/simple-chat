@@ -52,6 +52,8 @@ dependencies:
   archive: ^4.0.7              #For zip file generation
   http: ^1.4.0                 #To consume https resources
   flutter_secure_storage: ^9.2.4 #To secure safely critical data
+  pointycastle: ^4.0.0
+  asn1lib: ^1.6.5
 
 dev_dependencies:
   flutter_test:
