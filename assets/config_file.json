@@ -11,7 +11,7 @@
     "character_render_speed.ms": 1
   },
   "backend": {
-    "backend_url": "https://example_endpoint_deployment.com",
+    "backend_url": "https://simple-chat-backend-testing.onrender.com",
 
     "generate_ai_response_suffix": "/ai/generate_ai_response",
 
@@ -20,6 +20,8 @@
     "log_out_suffix": "/auth/log_out",
     "refresh_token_suffix": "/auth/refresh_token",
     "reset_password_suffix": "/auth/reset_password",
+
+    "retrieve_public_e_key": "/security/retrieve_public_e_key",
 
     "complete_profile_suffix": "/user_profile/complete_profile",
     "check_user_exists_suffix": "/user_profile/user_exists",

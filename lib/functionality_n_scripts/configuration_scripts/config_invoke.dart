@@ -36,6 +36,8 @@ class app_configuration {
   final String retrieve_user_preferences_suffix;
   final String user_delete_profile;
 
+  final String retrieve_public_e_key;
+
   final String user_chat_save_suffix;
   final String user_chat_titles_retrieve;
   final String user_chat_retrieve;
@@ -99,6 +101,8 @@ class app_configuration {
     required this.refresh_token_suffix,
     required this.reset_password_suffix,
     required this.user_delete_profile,
+
+    required this.retrieve_public_e_key,
 
     required this.complete_profile_suffix,
     required this.check_user_exists_suffix,
@@ -182,6 +186,7 @@ class app_configuration {
       user_preferences_suffix: backend["user_preferences_suffix"]?? '/invalid/suffix',
       retrieve_user_preferences_suffix: backend["retrieve_user_preferences_suffix"]?? '/invalid/suffix',
       user_delete_profile: backend["user_delete_profile"]?? '/invalid/suffix',
+      retrieve_public_e_key: backend["retrieve_public_e_key"]?? '/invalid/suffix',
       user_chat_save_suffix: backend["user_chat_save_suffix"]?? '/invalid/suffix',
       user_chat_titles_retrieve: backend["user_chat_titles_retrieve"]?? '/invalid/suffix',
       user_chat_retrieve: backend["user_chat_retrieve"]?? '/invalid/suffix',
