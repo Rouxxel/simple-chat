@@ -9,10 +9,10 @@ import 'package:pointycastle/api.dart';
 import 'package:pointycastle/asymmetric/api.dart';
 import 'package:pointycastle/asymmetric/rsa.dart';
 import 'package:pointycastle/asymmetric/oaep.dart';
+import 'package:pointycastle/export.dart';
 import 'package:asn1lib/asn1lib.dart';
 
 //Your own project imports
-import 'package:simple_chat/functionality_n_scripts/session_related/app_storage_class.dart';
 import 'package:simple_chat/widgets_and_ui_elements/alert_dialog_builders.dart';
 import 'package:simple_chat/functionality_n_scripts/configuration_scripts/config_invoke.dart';
 import 'package:simple_chat/functionality_n_scripts/utils/logger_config.dart';
@@ -72,7 +72,7 @@ Future<String?> retrieve_e_public_key(
     switch (response.statusCode) {
       case 200:
         final data = jsonDecode(response.body);
-        log_handler?.i("E public key successfuly retrieved: ${data['public_key']}");
+        log_handler?.i("E public key successfully retrieved");
         return data['public_key'];
       case 400:
         log_handler?.e("Invalid parameters: ${response.statusCode} - ${response.body}");
@@ -150,7 +150,7 @@ Future<String> encrypt_in(
   final public_key = parse_public_key_from_pem(public_key_pem!);
 
   //Encrypt using RSA-OAEP with SHA-256
-  final cipher = OAEPEncoding(RSAEngine())
+  final cipher = OAEPEncoding.withSHA256(RSAEngine())
     ..init(true, PublicKeyParameter<RSAPublicKey>(public_key));
 
   final input_bytes = Uint8List.fromList(utf8.encode(plain_text));
