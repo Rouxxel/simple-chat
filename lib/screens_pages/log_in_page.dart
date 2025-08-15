@@ -5,16 +5,17 @@ import 'package:google_fonts/google_fonts.dart';   //Fonts
 
 import 'package:simple_chat/functionality_n_scripts/standalone_methods/general_methods.dart';
 import 'package:simple_chat/functionality_n_scripts/configuration_scripts/config_invoke.dart';
-import 'package:simple_chat/screens_pages/landing_page.dart';
-import 'package:simple_chat/screens_pages/complete_profile_page.dart';
-import 'package:simple_chat/functionality_n_scripts/session_related/app_storage_class.dart';
 import 'package:simple_chat/functionality_n_scripts/utils/logger_config.dart';
-import 'package:simple_chat/screens_pages/sign_up_page.dart';
 
 import 'package:simple_chat/functionality_n_scripts/session_related/refresh_tk_watch_dog.dart';
 import 'package:simple_chat/functionality_n_scripts/standalone_methods/user_entrypoint_methods.dart';
 import 'package:simple_chat/widgets_and_ui_elements/labeled_text_field.dart';
 import 'package:simple_chat/functionality_n_scripts/standalone_methods/session_methods.dart';
+
+//Other screens
+import 'package:simple_chat/screens_pages/sign_up_page.dart';
+import 'package:simple_chat/screens_pages/landing_page.dart';
+import 'package:simple_chat/screens_pages/complete_profile_page.dart';
 
 //imports
 /////////////////////////////////////////////////////////////////////////////
@@ -151,6 +152,7 @@ class _log_in_pageState extends State<log_in_page> {
                                     fill_color: config_data.user_text_box_color,
                                     hint_color: config_data.suggest_input_color,
                                     enabled: !_is_processing,
+                                    obscure_text: true,
                                   ),
                                 ],
                               ),
@@ -190,13 +192,8 @@ class _log_in_pageState extends State<log_in_page> {
                                       //Start timer for token refresh watch dog
                                       TokenWatchdog().start(context);
 
-                                      //Get access and user id
-                                      final String? user_id = await AppStorage.get_user_id();
-                                      final String? access_token = await AppStorage.get_access_token();
-                                      final bool user_exists = await check_user_exists(context,
-                                          access_token: access_token.toString(),
-                                          user_id: user_id.toString()
-                                      );
+                                      //Check user exists
+                                      final bool user_exists = await check_user_exists(context);
 
                                       if (user_exists){
                                         log_handler?.i("User profile complete, move to landing page");

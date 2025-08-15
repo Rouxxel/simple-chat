@@ -6,8 +6,10 @@ import 'package:simple_chat/functionality_n_scripts/standalone_methods/user_entr
 import 'package:simple_chat/functionality_n_scripts/configuration_scripts/config_invoke.dart';
 import 'package:simple_chat/widgets_and_ui_elements/alert_dialog_builders.dart';
 import 'package:simple_chat/functionality_n_scripts/utils/logger_config.dart';
-import 'package:simple_chat/screens_pages/log_in_page.dart';
 import 'package:simple_chat/widgets_and_ui_elements/labeled_text_field.dart';
+
+//Other screens
+import 'package:simple_chat/screens_pages/log_in_page.dart';
 
 //imports
 /////////////////////////////////////////////////////////////////////////////
@@ -145,6 +147,7 @@ class _sign_up_pageState extends State<sign_up_page> {
                                     fill_color: config_data.user_text_box_color,
                                     hint_color: config_data.suggest_input_color,
                                     enabled: !_is_processing,
+                                    obscure_text: true,
                                   ),
                                   const SizedBox(height: 10),
                                   LabeledTextField(
@@ -155,6 +158,7 @@ class _sign_up_pageState extends State<sign_up_page> {
                                     fill_color: config_data.user_text_box_color,
                                     hint_color: config_data.suggest_input_color,
                                     enabled: !_is_processing,
+                                    obscure_text: true,
                                   ),
                                 ],
                               ),
@@ -187,7 +191,7 @@ class _sign_up_pageState extends State<sign_up_page> {
                                     //Ensure passwords match
                                     if(password != confirm_password){
                                       log_handler?.w("Password and password confirm are not the same");
-                                      build_informative_alert_dialog(
+                                      await build_informative_alert_dialog(
                                         context,
                                         "Ok",
                                         "Passwords don't match",
@@ -209,6 +213,21 @@ class _sign_up_pageState extends State<sign_up_page> {
                                       _sign_in_controller.clear();
                                       _password_controller.clear();
                                       _confirm_password_controller.clear();
+
+                                      //Navigate to log in page
+                                      await Navigator.push(
+                                        context,
+                                        PageRouteBuilder(
+                                          pageBuilder: (context, animation, secondaryAnimation) =>
+                                          const log_in_page(),
+                                          transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                                            return FadeTransition(
+                                              opacity: animation,
+                                              child: child,
+                                            );
+                                          },
+                                        ),
+                                      );
                                     }
                                     setState(() {_is_processing = false;});
                                   },
@@ -245,7 +264,7 @@ class _sign_up_pageState extends State<sign_up_page> {
                                   onTap: _is_processing
                                       ? null                           // Disable while processing
                                       : () async {
-                                    log_handler?.d("Navigate to sign‑up page");
+                                    log_handler?.d("Navigate to log-in page");
 
                                     await Navigator.push(
                                       context,

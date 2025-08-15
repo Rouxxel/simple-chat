@@ -9,12 +9,17 @@ import 'package:simple_chat/functionality_n_scripts/standalone_methods/general_m
 import 'package:simple_chat/functionality_n_scripts/message_related/message_class.dart';
 import 'package:simple_chat/functionality_n_scripts/configuration_scripts/config_invoke.dart';
 import 'package:simple_chat/functionality_n_scripts/standalone_methods/session_methods.dart';
-import 'package:simple_chat/screens_pages/log_in_page.dart';
 import 'package:simple_chat/functionality_n_scripts/utils/logger_config.dart';
 
 //Other screens
 import 'package:simple_chat/screens_pages/settings_page.dart';
+import 'package:simple_chat/screens_pages/chats_page.dart';
+import 'package:simple_chat/screens_pages/chats_page.dart';
 import 'package:simple_chat/widgets_and_ui_elements/alert_dialog_builders.dart';
+import 'package:simple_chat/screens_pages/log_in_page.dart';
+import 'package:simple_chat/cache/chat_cache.dart';
+
+import '../cache/current_chat_cache.dart';
 
 //imports
 /////////////////////////////////////////////////////////////////////////////
@@ -29,9 +34,6 @@ class landing_page extends StatefulWidget {
 class _landing_pageState extends State<landing_page> {
   //Create a TextEditingController for the input box and get user input
   final TextEditingController _input_controller = TextEditingController();
-
-  //List to store chat messages, both user and AI that will be displayed in UI
-  List<Message> _message_list = [];
 
   //Boolean controller for send button and input controller hint text hiding
   bool _is_processing = false;
@@ -55,14 +57,20 @@ class _landing_pageState extends State<landing_page> {
           "Default language: ${config_data.user_language} but match prompt language.";
 
       //Add AI personality as first message
-      if (_message_list.isEmpty) {
-        _message_list.add(Message(system_prompt, false));
+      if (CurrentChatCache.message_list.isEmpty) {
+        CurrentChatCache.message_list.add(Message(system_prompt, false));
       } else {
-        _message_list[_message_list.length - 1] = Message(system_prompt, false);
+        CurrentChatCache.message_list[CurrentChatCache.message_list.length - 1] = Message(system_prompt, false);
       }
     });
 
-    log_handler?.i("Loaded/saved directory: ${_message_list[0].text}");
+    int last_index = CurrentChatCache.message_list.length - 1;
+    log_handler?.i("Loaded/saved directory: ${CurrentChatCache.message_list[last_index].text}");
+    log_handler?.i(
+        "Loaded messages (Bottom up):\n\n${CurrentChatCache.message_list.map((m) =>
+            "${m.is_user}: ${m.text.replaceAll('\n', ' ')} | ${m.time_stamp}"
+            ).join('\n')}"
+    );
   }
 
   @override
@@ -79,29 +87,174 @@ class _landing_pageState extends State<landing_page> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               //Title column
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min, // Prevents the AppBar from expanding too much
-                children: [
-                  Text(
-                    "- ${config_data.main_title} -",
-                    style: GoogleFonts.bebasNeue(
-                      textStyle: TextStyle(
-                        fontSize: 35,
-                        fontWeight: FontWeight.normal,
-                        fontStyle: FontStyle.normal,
+              GestureDetector(
+                onTap: _is_processing
+                ? null  //disables the button when true
+                : () async {
+                  final RenderBox overlay = Overlay.of(context).context.findRenderObject() as RenderBox;
+                  final RenderBox button = context.findRenderObject() as RenderBox;
+                  final Offset position = button.localToGlobal(Offset.zero, ancestor: overlay);
+
+                  final selected = await showMenu<String>(
+                    context: context,
+                    position: RelativeRect.fromLTRB(
+                      position.dx+30,
+                      position.dy+75,
+                      overlay.size.width - (position.dx + 30),
+                      overlay.size.height - (position.dy + 75),
+                    ),
+                    items: [
+                      PopupMenuItem<String>(
+                        value: 'save_new_chat',
+                        child: Text(
+                          'Save current chat',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.normal,
+                            color: config_data.text_color,
+                          ),
+                        ),
+                      ),
+                      PopupMenuItem<String>(
+                        value: 'saved_old_chats',
+                        child: Text(
+                          'See past chats',
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.normal,
+                            color: config_data.text_color,
+                          ),
+                        ),
+                      ),
+                    ],
+                  );
+
+                  if (selected == 'save_new_chat') {
+                    log_handler?.d("Selected choice: $selected");
+                    setState(() => _is_processing = true); //Start processing
+
+                    //Ensure chat has been initiated
+                    if(CurrentChatCache.message_list.length <= 1){
+                      log_handler?.w("Chat list 'empty', only main directory present "
+                          "${CurrentChatCache.message_list.length}");
+                      await build_informative_alert_dialog(
+                          context,
+                          "Ok",
+                          "Empty chat",
+                          "Please initiate a conversation or banter before saving, try with 'Hello'"
+                      );
+                      setState(() => _is_processing = false); //End processing early
+                      return;
+                    }
+
+                    //Handle already saved chat, Update existing chat
+                    if (CurrentChatCache.current_saved_chat_title?.isNotEmpty == true) {
+                      final bool? user_decision = await build_yes_no_alert_dialog(
+                          context,
+                          "Confirm",
+                          "Cancel",
+                          "Update current saved chat",
+                          "Do you wish to save your current progress in the chat '"
+                              "${CurrentChatCache.current_saved_chat_title}'"
+                      );
+
+                      if (user_decision == true) {
+                        await save_current_chat(
+                          context,
+                          chat_title: CurrentChatCache.current_saved_chat_title!,
+                          chat_list: CurrentChatCache.message_list,
+                        );
+
+                        //Reload the cached saved chat
+                        final result = await retrieve_all_user_chats(context);
+
+                        if(result.containsKey("chat_titles")){
+                          final titles = List<String>.from(result["chat_titles"]);
+
+                          ChatCache.chat_titles_cache = titles;
+                          log_handler?.d("Chat cache updated");
+                        }
+                      } else {
+                        log_handler?.i("Chat saving was cancelled by the user.");
+                      }
+
+                      setState(() => _is_processing = false);
+                      return;
+                    }
+
+                    //Handle new chat since it is not a pre-saved chat
+                    final user_inputs = await build_dynamic_input_dialog(
+                      context,
+                      title: "Save chat",
+                      description: "Please provide a title for the current chat to save.",
+                      yes_button_text: "Confirm",
+                      no_button_text: "Cancel",
+                      labels: ["Chat title"],
+                      input_types: [TextInputType.text],
+                      obscure_text: [false],
+                    );
+
+                    if (user_inputs != null) {
+                      //Save new chat
+                      final chat_title = user_inputs["Chat title"]!;
+                      await save_current_chat(
+                        context,
+                        chat_title: chat_title,
+                        chat_list: CurrentChatCache.message_list,
+                      );
+                      //Update flag
+                      CurrentChatCache.current_saved_chat_title = chat_title;
+                    } else {
+                      //User cancelled
+                      log_handler?.i("Chat saving was cancelled by the user.");
+                    }
+
+                    setState(() => _is_processing = false);
+                    return;
+                  }
+
+                  if (selected == 'saved_old_chats') {
+                    log_handler?.d("Selected choice: $selected");
+                    //Navigate to settings page with fade transition
+                    await Navigator.push(
+                      context,
+                      PageRouteBuilder(
+                        pageBuilder: (context, animation, secondaryAnimation) => const chats_list(),
+                        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                          return FadeTransition(
+                            opacity: animation,
+                            child: child,
+                          );
+                        },
+                      ),
+                    );
+                  }
+                },
+
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min, // Prevents the AppBar from expanding too much
+                  children: [
+                    Text(
+                      "- ${config_data.main_title} -",
+                      style: GoogleFonts.bebasNeue(
+                        textStyle: TextStyle(
+                          fontSize: 35,
+                          fontWeight: FontWeight.normal,
+                          fontStyle: FontStyle.normal,
+                          color: config_data.text_color,
+                        ),
+                      ),
+                    ),
+                    Text(
+                      "Google Gemini 2.0 Flash API powered",
+                      style: TextStyle(
+                        fontSize: 9,
                         color: config_data.text_color,
                       ),
                     ),
-                  ),
-                  Text(
-                    "Google Gemini 2.0 Flash API powered",
-                    style: TextStyle(
-                      fontSize: 9,
-                      color: config_data.text_color,
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
               Row(
 
@@ -154,10 +307,16 @@ class _landing_pageState extends State<landing_page> {
                             "conversations will be lost",
                       );
                       if (user_decision == true){
+                        setState(() {_is_processing = true;});
+
                         await log_out(context);
                         //Stop watch dog for token refresh
                         TokenWatchdog().stop();
                         log_handler?.i("User logged out. Returning to log in page");
+
+                        ChatCache.clear(); //Nullify chat cache
+
+                        setState(() {_is_processing = false;});
 
                         //Navigate to login page with fade transition
                         await Navigator.push(
@@ -188,7 +347,6 @@ class _landing_pageState extends State<landing_page> {
         body: Stack(
           children: [
             //Background image
-            //TODO: add a method to save and load conversations somewhere
             MediaQuery.removeViewInsets(
               removeBottom: true,
               context: context,
@@ -221,11 +379,11 @@ class _landing_pageState extends State<landing_page> {
                     //"Message" generator with a builder
                     child: ListView.builder(
                       reverse: true, //Start at the bottom
-                      itemCount: _message_list.length -1,
+                      itemCount: CurrentChatCache.message_list.length -1,
                       //Message blueprint
                       itemBuilder: (context, index) {
                         //Declare message with list that has class
-                        final message = _message_list[index];
+                        final message = CurrentChatCache.message_list[index];
 
                         //Declare dynamic color
                         Color dyna_color= message.is_user?
@@ -421,12 +579,13 @@ class _landing_pageState extends State<landing_page> {
 
                                 //Instantiate new message and add it to message_list
                                 Message message = Message(userInput, true);
-                                message.send_messages(_input_controller, _message_list, setState);
+                                message.send_messages(_input_controller,
+                                    CurrentChatCache.message_list, setState);
 
                                 await message.ai_query_and_response(
                                   context,
                                   _input_controller,
-                                  _message_list,
+                                  CurrentChatCache.message_list,
                                   setState,
                                 );
 

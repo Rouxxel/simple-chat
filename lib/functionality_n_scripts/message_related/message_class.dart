@@ -18,9 +18,16 @@ import "package:simple_chat/widgets_and_ui_elements/alert_dialog_builders.dart";
 class Message {
   String text;
   final bool is_user;
-  final DateTime time_stamp;
+  late final DateTime time_stamp;
 
+  //Normal constructor
   Message(this.text, this.is_user) : time_stamp = DateTime.now();
+
+  //Named constructor for deserialization
+  Message.fromJson(Map<String, dynamic> json)
+      : text = json['text'] ?? '',
+        is_user = json['is_user'] ?? false,
+        time_stamp = DateTime.parse(json['time_stamp']);
 
   //Function for user to send message
   void send_messages(TextEditingController input_controller,
@@ -72,14 +79,14 @@ class Message {
       //POST request to your backend URL
       final response = await http
           .post(
-        Uri.parse(config_data.backend_url_generate_ai_response),
+        Uri.parse(config_data.backend_url + config_data.generate_ai_response_suffix),
         headers: {"Content-Type": "application/json"},
         body: body_for_backend,
       )
           .timeout(
         Duration(seconds: config_data.max_api_response_time_limit + 5),
-        onTimeout: () {
-          build_informative_alert_dialog(
+        onTimeout: () async {
+          await build_informative_alert_dialog(
             context,
             "Ok",
             "Error 227", //AI response took too long
@@ -97,34 +104,35 @@ class Message {
           break;
         case 504:
           log_handler?.e("AI timeout: ${response.statusCode} - ${response.body}");
-          build_informative_alert_dialog(
+          await build_informative_alert_dialog(
             context,
             "OK",
             "Error 224", //API error
             "There was an error with AI response or when trying to communicate with AI",
           );
           return;
-        case 500:
-          log_handler?.e("Server error: ${response.statusCode} - ${response.body}");
-          build_informative_alert_dialog(
+        case 422:
+          log_handler?.e("Validation error: ${response.statusCode} - ${response.body}");
+          await build_informative_alert_dialog(
             context,
             "Ok",
-            "Error 230", //Server error
-            "There has been an error with the server, please try again later",
+            "Error 245", //Unprocessable Entity
+            "There was an issue with the data provided. Please try again later",
           );
           return;
         case 429:
           log_handler?.e("Backend error: ${response.statusCode} - ${response.body}");
-          build_informative_alert_dialog(
+          await build_informative_alert_dialog(
             context,
             "Ok",
             "Error 230", //Server error
             "There has been an error with the server, please try again later",
           );
           return;
+        case 500:
         default:
-          log_handler?.w("Unexpected status code: ${response.statusCode}");
-          build_informative_alert_dialog(
+          log_handler?.w("Unexpected status code: ${response.statusCode} - ${response.body}");
+          await build_informative_alert_dialog(
             context,
             "Ok",
             "Error 231", //Unexpected unknown server error
@@ -154,12 +162,51 @@ class Message {
       log_handler?.d("---AI successfully responded back---");
     } catch (er) {
       log_handler?.e("Error: $er");
-      build_informative_alert_dialog(
+      await build_informative_alert_dialog(
         context,
         "OK",
         "Error 224", //API error
         "There was an error with AI response or when trying to communicate with AI",
       );
     }
+  }
+
+  //Old versions
+  // //Converts a List<Message> to a List<Map<String, dynamic>>
+  // static List<Map<String, dynamic>> message_to_json_list(List<Message> message_list) {
+  //   return message_list.map((message) {
+  //     return {
+  //       'text': message.text,
+  //       'is_user': message.is_user,
+  //       'time_stamp': message.time_stamp.toUtc().toIso8601String(),
+  //     };
+  //   }).toList();
+  // }
+  //
+  // //Converts a List<Map<String, dynamic>> to a List<Message>
+  // static List<Message> json_to_message_list(List<Map<String, dynamic>> json_list) {
+  //   return json_list.map((json) {
+  //     return Message(
+  //       json['text'] ?? '',
+  //       json['is_user'] ?? false,
+  //     )..time_stamp = DateTime.parse(json['time_stamp']);
+  //   }).toList();
+  // }
+
+  // Serialization method
+  Map<String, dynamic> toJson() => {
+    'text': text,
+    'is_user': is_user,
+    'time_stamp': time_stamp.toUtc().toIso8601String(),
+  };
+
+  // Converts List<Message> to List<Map<String, dynamic>>
+  static List<Map<String, dynamic>> message_to_json_list(List<Message> messages) {
+    return messages.map((m) => m.toJson()).toList();
+  }
+
+  // Converts List<Map<String, dynamic>> to List<Message>
+  static List<Message> json_to_message_list(List<Map<String, dynamic>> jsonList) {
+    return jsonList.map((json) => Message.fromJson(json)).toList();
   }
 }

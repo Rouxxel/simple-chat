@@ -5,11 +5,13 @@ import 'package:simple_chat/functionality_n_scripts/configuration_scripts/countr
 import 'package:simple_chat/functionality_n_scripts/standalone_methods/general_methods.dart';
 import 'package:simple_chat/functionality_n_scripts/standalone_methods/user_entrypoint_methods.dart';
 import 'package:simple_chat/functionality_n_scripts/configuration_scripts/config_invoke.dart';
-import 'package:simple_chat/screens_pages/landing_page.dart';
 import 'package:simple_chat/widgets_and_ui_elements/alert_dialog_builders.dart';
 import 'package:simple_chat/functionality_n_scripts/utils/logger_config.dart';
 import 'package:simple_chat/functionality_n_scripts/session_related/app_storage_class.dart';
 import 'package:simple_chat/widgets_and_ui_elements/labeled_text_field.dart';
+
+//Other screens
+import 'package:simple_chat/screens_pages/landing_page.dart';
 
 //imports
 /////////////////////////////////////////////////////////////////////////////
@@ -270,7 +272,7 @@ class _complete_profileState extends State<complete_profile> {
 
                                 //Validate phone number
                                 if (!is_valid_phone_number(context, phone_num)) {
-                                  build_informative_alert_dialog(
+                                  await build_informative_alert_dialog(
                                     context,
                                     "Ok",
                                     "Invalid phone number",

@@ -25,6 +25,7 @@ Future<bool> sign_up(
     String password
     ) async{
   log_handler?.d("[------sign_up function executing------]");
+  //Local validation
   if (email.isEmpty || password.isEmpty) {
     //No input to process
     log_handler?.e("Controllers are empty");
@@ -33,7 +34,7 @@ Future<bool> sign_up(
 
   //Validate email and password
   if(!is_valid_email(context, email)){
-    build_informative_alert_dialog(
+    await build_informative_alert_dialog(
       context,
       "Ok",
       "Invalid email",
@@ -43,7 +44,7 @@ Future<bool> sign_up(
     return false;
   }
   if(!is_valid_password(context, password)){
-    build_informative_alert_dialog(
+    await build_informative_alert_dialog(
       context,
       "Ok",
       "Invalid password",
@@ -62,17 +63,17 @@ Future<bool> sign_up(
       "password": password,
     });
 
-    //POST request to your backend URL
+    //POST request to backend URL
     final response = await http
         .post(
-      Uri.parse(config_data.backend_url_sign_up),
+      Uri.parse(config_data.backend_url + config_data.sign_up_suffix),
       headers: {"Content-Type": "application/json"},
       body: body_for_backend,
     )
         .timeout(
       Duration(seconds: config_data.max_api_response_time_limit + 5),
-      onTimeout: () {
-        build_informative_alert_dialog(
+      onTimeout: () async {
+        await build_informative_alert_dialog(
           context,
           "Ok",
           "Error 227", //AI response took too long
@@ -83,66 +84,97 @@ Future<bool> sign_up(
     );
 
     //---------- Status‑code handling ----------
+    final data = jsonDecode(response.body);
+    final success = data["success"] ?? false;
+    log_handler?.w(data);
+
     switch(response.statusCode){
       case 200:
-      //Log and proceed
-        log_handler?.i("Backend response successful ${response.statusCode}");
-        break;
-      case 500:
-        log_handler?.e("Server error: ${response.statusCode} - ${response.body}");
-        build_informative_alert_dialog(
+        if (data["user_already_exists"] == true) {
+          log_handler?.i("Attempted to register an existing user.");
+
+          //Show alert and then navigate to login page
+          await build_informative_alert_dialog(
+            context,
+            "Ok",
+            "Account Exists",
+            data["message"] ?? "An account with this email already exists, please"
+                "try to log in or complete sign up process in your email",
+          );
+
+          // Navigate to login page automatically after alert dismissed
+          Navigator.of(context).pushReplacementNamed('/login');
+
+          return false;
+        }
+
+        if (success) {
+          final user = data["user"];
+          log_handler?.i("User successfully registered: ${user["email"]}");
+
+          await build_informative_alert_dialog(
+            context,
+            "Ok",
+            "Sign-up Successful!",
+            "You have been successfully registered. Please check your email to confirm your account.",
+          );
+          return true;
+        }
+
+        log_handler?.w("Success false in 200 response.");
+        await build_informative_alert_dialog(
           context,
           "Ok",
-          "Error 230", //Server error
-          "There has been an error with the server, please try again later",
+          "Unexpected Response",
+          data["message"] ?? "An unknown issue occurred during sign-up.",
         );
         return false;
       case 400:
-        log_handler?.e("Parameters error: ${response.statusCode} - ${response.body}");
-        build_informative_alert_dialog(
+        log_handler?.e("Client error: ${response.body}");
+        await build_informative_alert_dialog(
           context,
           "Ok",
-          "Invalid entered values",
-          "You have entered invalid values, please enter valid values.",
+          "Email already signed in",
+          data["detail"] ?? "Invalid email or password.",
+        );
+        return false;
+      case 422:
+        log_handler?.e("Validation error: ${response.body}");
+        await build_informative_alert_dialog(
+          context,
+          "Ok",
+          "Invalid Input",
+          "There was an issue with the data provided. Please review and try again.",
         );
         return false;
       case 429:
-        log_handler?.e("Backend error: ${response.statusCode} - ${response.body}");
-        build_informative_alert_dialog(
+        log_handler?.e("Rate limit hit: ${response.body}");
+        await build_informative_alert_dialog(
           context,
           "Ok",
-          "Error 231", //Unexpected unknown server error
-          "There has been an unexpected backend error, please try again later.",
+          "Too Many Requests",
+          "You’ve sent too many requests in a short time. Please wait and try again.",
         );
         return false;
+      case 500:
       default:
-        log_handler?.w("Unexpected status code: ${response.statusCode}");
-        build_informative_alert_dialog(
+        log_handler?.e("Server error (${response.statusCode}): ${response.body}");
+        await build_informative_alert_dialog(
           context,
           "Ok",
-          "Error 231", //Unexpected unknown server error
-          "There has been an unexpected backend error, please try again later.",
+          "Server Error",
+          "An unexpected error occurred on our server. Please try again later.",
         );
         return false;
     }
-
-    //Parse Backend response text
-    final data = jsonDecode(response.body);
-    //Get messages individually
-    final user = data['user'];
-
-    log_handler?.d("User confirmed (${user['confirmed']}) signed in with email ${user['email']} at ${user['created_at']}");
-    build_informative_alert_dialog(
+  } catch (e) {
+    log_handler?.e("Exception in sign-up: $e");
+    await build_informative_alert_dialog(
       context,
       "Ok",
-      "Successful Sign up!!!",
-      "You have been successfully signed into our app, please check the email you "
-          "provided to confirm your onboarding and enjoy the app. Returning to log in "
-          "now.",
+      "Unexpected Error",
+      "Something went wrong while processing your request. Please try again.",
     );
-    return true;
-  } catch (er){
-    log_handler?.e("Error: $er");
     return false;
   }
 }
@@ -155,7 +187,7 @@ Future<bool> log_in(
   log_handler?.d("[------log_in function executing------]");
   //Basic empty check (client‑side)
   if (email.trim().isEmpty || password.isEmpty) {
-    build_informative_alert_dialog(
+    await build_informative_alert_dialog(
       context,
       "Ok",
       "Invalid entered values",
@@ -166,7 +198,7 @@ Future<bool> log_in(
 
   //Validate email and password
   if(!is_valid_email(context, email)){
-    build_informative_alert_dialog(
+    await build_informative_alert_dialog(
       context,
       "Ok",
       "Invalid email",
@@ -176,7 +208,7 @@ Future<bool> log_in(
     return false;
   }
   if(!is_valid_password(context, password)){
-    build_informative_alert_dialog(
+    await build_informative_alert_dialog(
       context,
       "Ok",
       "Invalid password",
@@ -197,14 +229,14 @@ Future<bool> log_in(
   try {
     response = await http
         .post(
-      Uri.parse(config_data.backend_url_log_in),
+      Uri.parse(config_data.backend_url + config_data.log_in_suffix),
       headers: {"Content-Type": "application/json"},
       body: body,
     )
         .timeout(
       Duration(seconds: config_data.max_api_response_time_limit + 5),
-      onTimeout: () {
-        build_informative_alert_dialog(
+      onTimeout: () async {
+        await build_informative_alert_dialog(
           context,
           "Ok",
           "Error 227", //AI response took too long
@@ -215,7 +247,7 @@ Future<bool> log_in(
     );
   } on SocketException catch (e) {
     log_handler?.e("Network error: $e");
-    build_informative_alert_dialog(
+    await build_informative_alert_dialog(
       context,
       "Ok",
       "Error 234", //Network error
@@ -227,7 +259,7 @@ Future<bool> log_in(
     return false;
   } catch (e) {
     log_handler?.e("Unexpected error: $e");
-    build_informative_alert_dialog(
+    await build_informative_alert_dialog(
       context,
       "Ok",
       "Error 231", //Unexpected unknown server error
@@ -262,7 +294,7 @@ Future<bool> log_in(
         return true;
       case 400:
         log_handler?.e("Parameters error: ${response.statusCode} - ${response.body}");
-        build_informative_alert_dialog(
+        await build_informative_alert_dialog(
           context,
           "Ok",
           "Invalid entered values",
@@ -271,17 +303,25 @@ Future<bool> log_in(
         return false;
       case 401:
         log_handler?.w("Unauthorized access: ${response.statusCode} - ${response.body}");
-        build_informative_alert_dialog(
+        await build_informative_alert_dialog(
           context,
           "Ok",
-          "Invalid user",
-          "We were not able to find your user, please ensure you have signed up and"
-              "confirmed your email before trying again",
+          "Invalid user or password",
+          "Please ensure you enter a valid user with its associated password correctly",
+        );
+        return false;
+      case 422:
+        log_handler?.e("Validation error: ${response.statusCode} - ${response.body}");
+        await build_informative_alert_dialog(
+          context,
+          "Ok",
+          "Error 245", //Unprocessable Entity
+          "There was an issue with the data provided. Please try again later",
         );
         return false;
       case 429:
         log_handler?.e("Backend error: ${response.statusCode} - ${response.body}");
-        build_informative_alert_dialog(
+        await build_informative_alert_dialog(
           context,
           "Ok",
           "Error 231", //Unexpected unknown server error
@@ -289,21 +329,13 @@ Future<bool> log_in(
         );
         return false;
       case 500:
-        log_handler?.e("Server error: ${response.statusCode} - ${response.body}");
-        build_informative_alert_dialog(
-          context,
-          "Ok",
-          "Error 230", //Server error
-          "There has been an error with the server, please try again later",
-        );
-        return false;
       default:
-        log_handler?.w("Unhandled status code: ${response.statusCode}");
-        build_informative_alert_dialog(
+        log_handler?.w("Unhandled status code: ${response.statusCode} - ${response.body}");
+        await build_informative_alert_dialog(
           context,
           "Ok",
           "Error 231", //Unexpected unknown server error
-          "There has been an unexpected backend error, please try again later.",
+          "There has been an unexpected error, please try again later.",
         );
         return false;
     }
@@ -337,7 +369,7 @@ Future<bool> complete_user_profile(
       date_birth.trim().isEmpty ||
       country.trim().isEmpty ||
       country_code.trim().isEmpty) {
-    build_informative_alert_dialog(
+    await build_informative_alert_dialog(
       context,
       "Ok",
       "Invalid entered values",
@@ -347,7 +379,7 @@ Future<bool> complete_user_profile(
   }
 
   if (!is_valid_email(context, email)) {
-    build_informative_alert_dialog(
+    await build_informative_alert_dialog(
       context,
       "Ok",
       "Invalid email",
@@ -374,14 +406,14 @@ Future<bool> complete_user_profile(
   try {
     response = await http
         .post(
-      Uri.parse(config_data.backend_url_complete_profile),
+      Uri.parse(config_data.backend_url + config_data.complete_profile_suffix),
       headers: {"Content-Type": "application/json"},
       body: body,
     )
         .timeout(
       Duration(seconds: config_data.max_api_response_time_limit + 5),
-      onTimeout: () {
-        build_informative_alert_dialog(
+      onTimeout: () async {
+        await build_informative_alert_dialog(
           context,
           "Ok",
           "Error 227", //AI response took too long
@@ -392,7 +424,7 @@ Future<bool> complete_user_profile(
     );
   } on SocketException catch (e) {
     log_handler?.e("Network error: $e");
-    build_informative_alert_dialog(
+    await build_informative_alert_dialog(
       context,
       "Ok",
       "Error 234", //Network error
@@ -404,7 +436,7 @@ Future<bool> complete_user_profile(
     return false;
   } catch (e) {
     log_handler?.e("Unexpected error: $e");
-    build_informative_alert_dialog(
+    await build_informative_alert_dialog(
       context,
       "Ok",
       "Error 231", //Unexpected unknown server error
@@ -421,7 +453,7 @@ Future<bool> complete_user_profile(
         return true;
       case 400:
         log_handler?.e("Invalid parameters: ${response.statusCode} - ${response.body}");
-        build_informative_alert_dialog(
+        await build_informative_alert_dialog(
           context,
           "Ok",
           "Invalid entered values",
@@ -430,7 +462,7 @@ Future<bool> complete_user_profile(
         return false;
       case 401:
         log_handler?.w("Unauthorized: ${response.statusCode} - ${response.body}");
-        build_informative_alert_dialog(
+        await build_informative_alert_dialog(
           context,
           "Ok",
           "Invalid user",
@@ -440,34 +472,35 @@ Future<bool> complete_user_profile(
         return false;
       case 409:
         log_handler?.w("Profile already exists: ${response.statusCode} - ${response.body}");
-        build_informative_alert_dialog(
+        await build_informative_alert_dialog(
           context,
           "Ok",
           "User already exists",
           "The user you are trying to enter already exists, please try loggin in",
         );
         return false;
-      case 429:
-        log_handler?.e("Rate limited: ${response.statusCode} - ${response.body}");
-        build_informative_alert_dialog(
+      case 422:
+        log_handler?.e("Validation error: ${response.statusCode} - ${response.body}");
+        await build_informative_alert_dialog(
           context,
           "Ok",
-          "Error 231", //Unexpected unknown server error
+          "Error 245", //Unprocessable Entity
+          "There was an issue with the data provided. Please try again later",
+        );
+        return false;
+      case 429:
+        log_handler?.e("Rate limited: ${response.statusCode} - ${response.body}");
+        await build_informative_alert_dialog(
+          context,
+          "Ok",
+          "Error 231", //Unexpected unknown server error due to limite rate reached
           "There has been an unexpected backend error, please try again later.",
         );
         return false;
       case 500:
-        log_handler?.e("Server error: ${response.statusCode} - ${response.body}");
-        build_informative_alert_dialog(
-          context,
-          "Ok",
-          "Error 230", //Server error
-          "There has been an error with the server, please try again later",
-        );
-        return false;
       default:
-        log_handler?.w("Unhandled status code: ${response.statusCode}");
-        build_informative_alert_dialog(
+        log_handler?.w("Unhandled status code: ${response.statusCode} - ${response.body}");
+        await build_informative_alert_dialog(
           context,
           "Ok",
           "Error 231", //Unexpected unknown server error
@@ -489,7 +522,7 @@ Future<bool> reset_password(
 
   //Check for empty
   if (email.trim().isEmpty) {
-    build_informative_alert_dialog(
+    await build_informative_alert_dialog(
       context,
       "Ok",
       "Invalid entered values",
@@ -499,7 +532,7 @@ Future<bool> reset_password(
   }
   //Check for invalid email
   if (!is_valid_email(context, email)) {
-    build_informative_alert_dialog(
+    await build_informative_alert_dialog(
       context,
       "Ok",
       "Invalid email",
@@ -515,14 +548,14 @@ Future<bool> reset_password(
   try {
     final response = await http
         .post(
-      Uri.parse(config_data.backend_url_reset_password),
+      Uri.parse(config_data.backend_url + config_data.reset_password_suffix),
       headers: {"Content-Type": "application/json"},
       body: body,
     )
         .timeout(
       Duration(seconds: config_data.max_api_response_time_limit + 5),
-      onTimeout: () {
-        build_informative_alert_dialog(
+      onTimeout: () async {
+        await build_informative_alert_dialog(
           context,
           "Ok",
           "Error 227", //AI response took too long
@@ -535,16 +568,15 @@ Future<bool> reset_password(
     switch (response.statusCode) {
       case 200:
         log_handler?.i("Password reset email sent successfully.");
-        build_informative_alert_dialog(
+        await build_informative_alert_dialog(
           context,
           "Ok",
           "Password reset successful!!!",
           "Please check your email to proceed with the resetting of your password",
         );
         return true;
-
       case 400:
-        log_handler?.e("Invalid email format: ${response.body}");
+        log_handler?.e("Invalid email format: ${response.statusCode} - ${response.body}");
         build_informative_alert_dialog(
           context,
           "Ok",
@@ -552,9 +584,8 @@ Future<bool> reset_password(
           "The email you provided is invalid, please enter a valid email",
         );
         return false;
-
       case 404:
-        log_handler?.w("Email not registered: ${response.body}");
+        log_handler?.w("Email not registered: ${response.statusCode} - ${response.body}");
         build_informative_alert_dialog(
           context,
           "Ok",
@@ -563,9 +594,17 @@ Future<bool> reset_password(
               "before trying again",
         );
         return false;
-
+      case 422:
+        log_handler?.e("Validation error: ${response.statusCode} - ${response.body}");
+        build_informative_alert_dialog(
+          context,
+          "Ok",
+          "Error 245", //Unprocessable Entity
+          "There was an issue with the data provided. Please try again later",
+        );
+        return false;
       case 429:
-        log_handler?.e("Rate limit hit: ${response.body}");
+        log_handler?.e("Rate limit hit: ${response.statusCode} - ${response.body}");
         build_informative_alert_dialog(
           context,
           "Ok",
@@ -573,19 +612,9 @@ Future<bool> reset_password(
           "There has been an unexpected backend error, please try again later.",
         );
         return false;
-
       case 500:
-        log_handler?.e("Server error: ${response.body}");
-        build_informative_alert_dialog(
-          context,
-          "Ok",
-          "Error 230", //Server error
-          "There has been an error with the server, please try again later",
-        );
-        return false;
-
       default:
-        log_handler?.w("Unexpected status code: ${response.statusCode}");
+        log_handler?.w("Unexpected status code: ${response.statusCode} - ${response.body}");
         build_informative_alert_dialog(
           context,
           "Ok",
