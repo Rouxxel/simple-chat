@@ -33,7 +33,7 @@ Future<String?> retrieve_e_public_key(
     log_handler?.i("Using cached E public key");
     return EKeyCache.e_key_cache;
   } else {
-    log_handler?.i("Retrieving key for encryption");
+    log_handler?.i("Retrieving key for encryption, not yet cached");
   }
 
   http.Response response;
@@ -81,7 +81,11 @@ Future<String?> retrieve_e_public_key(
     switch (response.statusCode) {
       case 200:
         final data = jsonDecode(response.body);
-        log_handler?.i("E public key successfully retrieved");
+        log_handler?.i("E public key successfully retrieved, 200");
+
+        //Cache the key
+        EKeyCache.e_key_cache = data['public_key'] as String?;
+        log_handler?.i("E public key cached for the rest of the session");
         return data['public_key'];
       case 400:
         log_handler?.e("Invalid parameters: ${response.statusCode} - ${response.body}");
