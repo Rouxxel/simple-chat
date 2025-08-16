@@ -48,7 +48,7 @@ class _chats_listState extends State<chats_list> {
 
     log_handler?.d("Fetching chat titles from backend...");
 
-    final result = await retrieve_all_user_chats(context);
+    final result = await retrieve_all_user_title_chats(context);
 
     if (result.containsKey("chat_titles")) {
       final titles = List<String>.from(result["chat_titles"]);

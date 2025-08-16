@@ -3,6 +3,8 @@ import 'package:google_fonts/google_fonts.dart';   //Fonts
 import 'package:icons_flutter/icons_flutter.dart'; //Extra icons
 import 'package:intl/intl.dart'; //For date and time formatting
 import 'package:flutter_markdown/flutter_markdown.dart'; //For markdown
+import 'package:simple_chat/cache/e_key_cache.dart';
+import 'package:simple_chat/cache/user_preferences_cache.dart';
 import 'package:simple_chat/functionality_n_scripts/session_related/refresh_tk_watch_dog.dart';
 
 import 'package:simple_chat/functionality_n_scripts/standalone_methods/general_methods.dart';
@@ -66,11 +68,11 @@ class _landing_pageState extends State<landing_page> {
 
     int last_index = CurrentChatCache.message_list.length - 1;
     log_handler?.i("Loaded/saved directory: ${CurrentChatCache.message_list[last_index].text}");
-    log_handler?.i(
-        "Loaded messages (Bottom up):\n\n${CurrentChatCache.message_list.map((m) =>
-            "${m.is_user}: ${m.text.replaceAll('\n', ' ')} | ${m.time_stamp}"
-            ).join('\n')}"
-    );
+    // log_handler?.i(
+    //     "Loaded messages (Bottom up):\n\n${CurrentChatCache.message_list.map((m) =>
+    //         "${m.is_user}: ${m.text.replaceAll('\n', ' ')} | ${m.time_stamp}"
+    //         ).join('\n')}"
+    // );
   }
 
   @override
@@ -166,7 +168,7 @@ class _landing_pageState extends State<landing_page> {
                         );
 
                         //Reload the cached saved chat
-                        final result = await retrieve_all_user_chats(context);
+                        final result = await retrieve_all_user_title_chats(context);
 
                         if(result.containsKey("chat_titles")){
                           final titles = List<String>.from(result["chat_titles"]);
@@ -315,6 +317,9 @@ class _landing_pageState extends State<landing_page> {
                         log_handler?.i("User logged out. Returning to log in page");
 
                         ChatCache.clear(); //Nullify chat cache
+                        CurrentChatCache.clear(); //Nullify current chat cache
+                        EKeyCache.clear(); //Nullify e key cache
+                        UserPreferencesCache.clear(); //Nullify user preferences cache
 
                         setState(() {_is_processing = false;});
 

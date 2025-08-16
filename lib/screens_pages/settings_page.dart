@@ -16,6 +16,8 @@ import 'package:simple_chat/functionality_n_scripts/utils/easter_egg_player.dart
 import 'package:simple_chat/screens_pages/log_in_page.dart';
 import 'package:simple_chat/cache/user_preferences_cache.dart';
 import 'package:simple_chat/cache/chat_cache.dart';
+import 'package:simple_chat/cache/current_chat_cache.dart';
+import 'package:simple_chat/cache/e_key_cache.dart';
 
 class settings extends StatefulWidget {
   const settings({super.key});
@@ -40,6 +42,7 @@ class _settingsState extends State<settings> {
 
   bool _sound_effect_controller = config_data.sound_effects_status;
   bool _easter_egg_found_controller = config_data.easter_egg_found;
+  //TODO: solve the issue with easter found or not found when changing accounts
   bool _button_locked = false;
 
   //Easter egg
@@ -908,9 +911,8 @@ class _settingsState extends State<settings> {
                           await update_easter_egg_found(_easter_egg_found_controller);
                           await save_easter_egg_status(context);
 
-                          // Reload config and trigger UI refresh
+                          //Reload config and trigger UI refresh
                           setState(() {
-                            // Simulate a config update here. Ideally, reload it from storage or shared prefs
                             raw_config_json["easter_egg_found"] = true;
                             config_data = app_configuration.fromJson(raw_config_json);
                           });
@@ -1231,64 +1233,75 @@ class _settingsState extends State<settings> {
                                         //Start load from cloud profile preferences request
                                         setState(() => _is_processing = true);
                                         //Delete user
-                                        await delete_user(context, provided_email!, provided_password!);
+                                        bool deletion_succeded =await delete_user(context,
+                                                                                  provided_email!,
+                                                                                  provided_password!);
 
-                                        //Reset everything to factory settings
-                                        //Reset directive
-                                        await update_directive(context, config_data.default_directive);
+                                        if(deletion_succeded){
+                                          //Reset everything to factory settings
+                                          log_handler?.w("User profile deletion successful");
+                                          //Reset directive
+                                          await update_directive(context, config_data.default_directive);
 
-                                        //Reset verbose level
-                                        await update_verbose_level(config_data.default_verbose);
+                                          //Reset verbose level
+                                          await update_verbose_level(config_data.default_verbose);
 
-                                        //Reset colorimetry
-                                        String backgr_colr = color_to_hex(config_data.default_background_color);
-                                        String appbr_colr = color_to_hex(config_data.default_app_bar_color);
-                                        String usr_textbx_clr = color_to_hex(config_data.default_user_text_boxes_color);
-                                        String ai_textbx_clr = color_to_hex(config_data.default_ai_text_boxes_color);
-                                        await update_color_value("background.color", backgr_colr);
-                                        await update_color_value("app_bar.color", appbr_colr);
-                                        await update_color_value("user_text_boxes.color", usr_textbx_clr);
-                                        await update_color_value("ai_text_boxes.color", ai_textbx_clr);
+                                          //Reset colorimetry
+                                          String backgr_colr = color_to_hex(config_data.default_background_color);
+                                          String appbr_colr = color_to_hex(config_data.default_app_bar_color);
+                                          String usr_textbx_clr = color_to_hex(config_data.default_user_text_boxes_color);
+                                          String ai_textbx_clr = color_to_hex(config_data.default_ai_text_boxes_color);
+                                          await update_color_value("background.color", backgr_colr);
+                                          await update_color_value("app_bar.color", appbr_colr);
+                                          await update_color_value("user_text_boxes.color", usr_textbx_clr);
+                                          await update_color_value("ai_text_boxes.color", ai_textbx_clr);
 
-                                        //Reset Language
-                                        await update_user_language(context, config_data.default_language);
+                                          //Reset Language
+                                          await update_user_language(context, config_data.default_language);
 
-                                        //Reset sound effect status
-                                        await update_sound_effect_status(config_data.default_sound_effects_status);
+                                          //Reset sound effect status
+                                          await update_sound_effect_status(config_data.default_sound_effects_status);
 
-                                        //Reload config_data for runtime reset changes
-                                        config_data = app_configuration.fromJson(raw_config_json);
-                                        log_handler?.i("Reset button pressed\n"
-                                            "Reset directory: ${config_data.directive}\n"
-                                            "Reset verbose: ${config_data.verbose}\n"
-                                            "Reset Background color: ${config_data.background_color}\n"
-                                            "Reset Bar colors: ${config_data.app_bar_color}\n"
-                                            "Reset User textbox color: ${config_data.user_text_box_color}\n"
-                                            "Reset AI textbox color: ${config_data.ai_text_box_color}\n"
-                                            "Reset language: ${config_data.user_language}\n"
-                                            "Reset sound status: ${config_data.sound_effects_status}\n"
-                                        );
+                                          //Reload config_data for runtime reset changes
+                                          config_data = app_configuration.fromJson(raw_config_json);
+                                          log_handler?.i("Reset button pressed\n"
+                                              "Reset directory: ${config_data.directive}\n"
+                                              "Reset verbose: ${config_data.verbose}\n"
+                                              "Reset Background color: ${config_data.background_color}\n"
+                                              "Reset Bar colors: ${config_data.app_bar_color}\n"
+                                              "Reset User textbox color: ${config_data.user_text_box_color}\n"
+                                              "Reset AI textbox color: ${config_data.ai_text_box_color}\n"
+                                              "Reset language: ${config_data.user_language}\n"
+                                              "Reset sound status: ${config_data.sound_effects_status}\n"
+                                          );
 
-                                        ChatCache.clear(); //Nullify chat cache
+                                          ChatCache.clear(); //Nullify chat cache
+                                          CurrentChatCache.clear(); //Nullify current chat cache
+                                          EKeyCache.clear(); //Nullify e key cache
+                                          UserPreferencesCache.clear(); //Nullify user preferences cache
 
-                                        setState(() => _is_processing = false);
+                                          setState(() => _is_processing = false);
 
-                                        //Navigate to log in page
-                                        await Navigator.push(
-                                          context,
-                                          PageRouteBuilder(
-                                            pageBuilder: (context, animation, secondaryAnimation) =>
-                                            const log_in_page(),
-                                            transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                                              return FadeTransition(
-                                                opacity: animation,
-                                                child: child,
-                                              );
-                                            },
-                                          ),
-                                        );
+                                          //Navigate to log in page
+                                          await Navigator.push(
+                                            context,
+                                            PageRouteBuilder(
+                                              pageBuilder: (context, animation, secondaryAnimation) =>
+                                              const log_in_page(),
+                                              transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                                                return FadeTransition(
+                                                  opacity: animation,
+                                                  child: child,
+                                                );
+                                              },
+                                            ),
+                                          );
+
+                                        } else {
+                                          setState(() =>
+                                          _is_processing = false);
+                                        }
                                       }
-
                                       setState(() => _is_processing = false); //Just in case
                                     },
                                     child: Container(
