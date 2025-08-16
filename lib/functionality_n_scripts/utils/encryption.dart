@@ -12,10 +12,11 @@ import 'package:pointycastle/asymmetric/oaep.dart';
 import 'package:pointycastle/export.dart';
 import 'package:asn1lib/asn1lib.dart';
 
-//Your own project imports
+//Own project imports
 import 'package:simple_chat/widgets_and_ui_elements/alert_dialog_builders.dart';
 import 'package:simple_chat/functionality_n_scripts/configuration_scripts/config_invoke.dart';
 import 'package:simple_chat/functionality_n_scripts/utils/logger_config.dart';
+import 'package:simple_chat/cache/e_key_cache.dart';
 
 //imports
 /////////////////////////////////////////////////////////////////////////////
@@ -26,6 +27,14 @@ Future<String?> retrieve_e_public_key(
     BuildContext context,
     ) async {
   log_handler?.d("[------retrieve_e_public_key function executing------]");
+
+  //Check cache first
+  if (EKeyCache.e_key_cache != null && EKeyCache.e_key_cache is String) {
+    log_handler?.i("Using cached E public key");
+    return EKeyCache.e_key_cache;
+  } else {
+    log_handler?.i("Retrieving key for encryption");
+  }
 
   http.Response response;
   try {
