@@ -1,5 +1,4 @@
 import "dart:io";
-
 import "package:flutter/cupertino.dart";
 import "package:flutter/material.dart";
 import "dart:async";
@@ -10,6 +9,7 @@ import "package:simple_chat/functionality_n_scripts/standalone_methods/general_m
 
 //Import alert dialogs and others
 import "package:simple_chat/widgets_and_ui_elements/alert_dialog_builders.dart";
+import "package:simple_chat/functionality_n_scripts/utils/encryption.dart";
 import 'package:simple_chat/functionality_n_scripts/configuration_scripts/config_invoke.dart';
 import 'package:simple_chat/functionality_n_scripts/utils/logger_config.dart';
 
@@ -56,19 +56,22 @@ Future<bool> sign_up(
     return false;
   }
 
-  try {
-    //Prepare request payload
-    final body_for_backend = jsonEncode({
-      "email": email,
-      "password": password,
-    });
+  //Encrypt given data
+  String encrypted_email = await encrypt_in(context, email);
+  String encrypted_password = await encrypt_in(context, password);
 
+  final body = jsonEncode({
+    "email": encrypted_email,
+    "password": encrypted_password,
+  });
+
+  try {
     //POST request to backend URL
     final response = await http
         .post(
       Uri.parse(config_data.backend_url + config_data.sign_up_suffix),
       headers: {"Content-Type": "application/json"},
-      body: body_for_backend,
+      body: body,
     )
         .timeout(
       Duration(seconds: config_data.max_api_response_time_limit + 5),
@@ -220,9 +223,13 @@ Future<bool> log_in(
     return false;
   }
 
+  //Encrypt given data
+  String encrypted_email = await encrypt_in(context, email);
+  String encrypted_password = await encrypt_in(context, password);
+
   final body = jsonEncode({
-    "email": email,
-    "password": password,
+    "email": encrypted_email,
+    "password": encrypted_password,
   });
 
   http.Response response;
@@ -389,17 +396,26 @@ Future<bool> complete_user_profile(
     return false;
   }
 
+  //Encrypt given data
+  String encrypted_email = await encrypt_in(context, email);
+  String encrypted_first_name = await encrypt_in(context, first_name);
+  String encrypted_last_name = await encrypt_in(context, last_name);
+  String encrypted_phone_number = await encrypt_in(context, phone_number);
+  String encrypted_date_birth = await encrypt_in(context, date_birth);
+  String encrypted_country = await encrypt_in(context, country);
+  String encrypted_country_code = await encrypt_in(context, country_code);
+
   // Construct request body
   final body = jsonEncode({
     "access_token": access_token,
-    "email": email,
+    "email": encrypted_email,
     "user_name": user_name,
-    "first_name": first_name,
-    "last_name": last_name,
-    "phone_number": phone_number,
-    "date_birth": date_birth,
-    "country": country,
-    "country_code": country_code,
+    "first_name": encrypted_first_name,
+    "last_name": encrypted_last_name,
+    "phone_number": encrypted_phone_number,
+    "date_birth": encrypted_date_birth,
+    "country": encrypted_country,
+    "country_code": encrypted_country_code,
   });
 
   http.Response response;
@@ -542,8 +558,11 @@ Future<bool> reset_password(
     return false;
   }
 
+  //Encrypt given data
+  String encrypted_email = await encrypt_in(context, email);
+
   //Prepare body
-  final body = jsonEncode({"email": email});
+  final body = jsonEncode({"email": encrypted_email});
 
   try {
     final response = await http
