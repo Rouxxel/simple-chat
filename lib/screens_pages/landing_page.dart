@@ -140,6 +140,17 @@ class _landing_pageState extends State<landing_page> {
                       ),
                       items: [
                         PopupMenuItem<String>(
+                          value: 'start_new_chat',
+                          child: Text(
+                            'Start a new chat',
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.normal,
+                              color: config_data.text_color,
+                            ),
+                          ),
+                        ),
+                        PopupMenuItem<String>(
                           value: 'save_new_chat',
                           child: Text(
                             'Save current chat',
@@ -164,8 +175,35 @@ class _landing_pageState extends State<landing_page> {
                       ],
                     );
 
+                    //Handle 3 options
+                    log_handler?.d("Selected choice: $selected");
+                    if (selected == "start_new_chat") {
+                      //Notify the user
+                      bool? user_decision = await build_yes_no_alert_dialog(
+                          context,
+                          "Confirm",
+                          "Cancel",
+                          "Start new chat",
+                          "Would you like to start a new chat?, any unsaved conversations "
+                              "will be lost if not saved first!!!"
+                      );
+
+                      if (user_decision == true){
+                        setState(() {
+                          _is_processing = true;
+                          //Clear current cached conversation
+                          CurrentChatCache.clear(); //Nullify current chat
+
+                          //Reload a new chat with same saved AI personality
+                          _load_system_prompt();
+                        });
+
+                        setState(() => _is_processing = false); //End processing early
+                        return;
+                      }
+                    }
+
                     if (selected == 'save_new_chat') {
-                      log_handler?.d("Selected choice: $selected");
                       setState(() => _is_processing = true); //Start processing
 
                       //Ensure chat has been initiated
@@ -249,7 +287,6 @@ class _landing_pageState extends State<landing_page> {
                     }
 
                     if (selected == 'saved_old_chats') {
-                      log_handler?.d("Selected choice: $selected");
                       //Navigate to settings page with fade transition
                       await Navigator.push(
                         context,
