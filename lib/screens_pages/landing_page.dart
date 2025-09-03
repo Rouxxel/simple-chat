@@ -16,7 +16,6 @@ import 'package:simple_chat/functionality_n_scripts/utils/logger_config.dart';
 //Other screens
 import 'package:simple_chat/screens_pages/settings_page.dart';
 import 'package:simple_chat/screens_pages/chats_page.dart';
-import 'package:simple_chat/screens_pages/chats_page.dart';
 import 'package:simple_chat/widgets_and_ui_elements/alert_dialog_builders.dart';
 import 'package:simple_chat/screens_pages/log_in_page.dart';
 import 'package:simple_chat/cache/chat_cache.dart';
@@ -94,7 +93,7 @@ class _landing_pageState extends State<landing_page> {
           if (user_decision == true) {
             await log_out(context);
             TokenWatchdog().stop();
-            ChatCache.clear();
+            ChatTitlesListCache.clear();
             CurrentChatCache.clear();
             EKeyCache.clear();
             UserPreferencesCache.clear();
@@ -244,7 +243,7 @@ class _landing_pageState extends State<landing_page> {
                           if(result.containsKey("chat_titles")){
                             final titles = List<String>.from(result["chat_titles"]);
 
-                            ChatCache.chat_titles_cache = titles;
+                            ChatTitlesListCache.chat_titles_list_cache = titles;
                             log_handler?.d("Chat cache updated");
                           }
                         } else {
@@ -387,7 +386,7 @@ class _landing_pageState extends State<landing_page> {
                           log_handler?.i("User logged out. Returning to log in page");
 
                           log_handler?.w(CurrentChatCache.message_list);
-                          ChatCache.clear(); //Nullify chat cache
+                          ChatTitlesListCache.clear(); //Nullify chat cache
                           CurrentChatCache.clear(); //Nullify current chat cache
                           log_handler?.w(CurrentChatCache.message_list);
                           EKeyCache.clear(); //Nullify e key cache

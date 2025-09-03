@@ -26,7 +26,7 @@ class chats_list extends StatefulWidget {
 
 class _chats_listState extends State<chats_list> {
   //Control UI behavior
-  bool _button_locked = false;
+  //bool _button_locked = false;
 
   //Boolean controller for send button and input controller hint text hiding
   bool _is_processing = false;
@@ -38,7 +38,7 @@ class _chats_listState extends State<chats_list> {
     });
 
     //If already cached, no backend call needed
-    if (ChatCache.chat_titles_cache != null) {
+    if (ChatTitlesListCache.chat_titles_list_cache != null) {
       log_handler?.i("Chat titles already cached. Skipping backend call.");
       setState(() {
         _is_processing = false;
@@ -52,9 +52,9 @@ class _chats_listState extends State<chats_list> {
 
     if (result.containsKey("chat_titles")) {
       final titles = List<String>.from(result["chat_titles"]);
-      ChatCache.chat_titles_cache = titles;
+      ChatTitlesListCache.chat_titles_list_cache = titles;
     } else {
-      ChatCache.chat_titles_cache = []; //Fallback to empty if error
+      ChatTitlesListCache.chat_titles_list_cache = []; //Fallback to empty if error
     }
 
     setState(() {
@@ -215,8 +215,8 @@ class _chats_listState extends State<chats_list> {
                                       child: CircularProgressIndicator(),
                                     ),
                                   )
-                                : (ChatCache.chat_titles_cache == null ||
-                                        ChatCache.chat_titles_cache!.isEmpty)
+                                : (ChatTitlesListCache.chat_titles_list_cache == null ||
+                                        ChatTitlesListCache.chat_titles_list_cache!.isEmpty)
                                     ? Padding(
                                         padding: const EdgeInsets.symmetric(vertical: 20),
                                         child: Center(
@@ -232,9 +232,9 @@ class _chats_listState extends State<chats_list> {
                                     : ListView.builder(
                                         shrinkWrap: true,
                                         physics: const NeverScrollableScrollPhysics(), //prevent scroll conflict
-                                        itemCount: ChatCache.chat_titles_cache!.length,
+                                        itemCount: ChatTitlesListCache.chat_titles_list_cache!.length,
                                         itemBuilder: (context, index) {
-                                          final title = ChatCache.chat_titles_cache![index];
+                                          final title = ChatTitlesListCache.chat_titles_list_cache![index];
 
                                           return Padding(
                                             padding: const EdgeInsets.symmetric(
@@ -332,13 +332,13 @@ class _chats_listState extends State<chats_list> {
                                                         log_handler?.d("User proceed with chat deletion");
 
                                                         //Store original length
-                                                        final int original_length = ChatCache.chat_titles_cache?.length ?? 0;
+                                                        final int original_length = ChatTitlesListCache.chat_titles_list_cache?.length ?? 0;
 
                                                         //Call delete endpoint
                                                         await delete_specific_chat(context, title);
 
                                                         //Only refresh if deletion actually happened
-                                                        if ((ChatCache.chat_titles_cache?.length ?? 0) < original_length) {
+                                                        if ((ChatTitlesListCache.chat_titles_list_cache?.length ?? 0) < original_length) {
                                                           setState(() {
                                                             //Triggers UI update
                                                           });

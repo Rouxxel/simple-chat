@@ -1056,7 +1056,7 @@ Future<void> delete_specific_chat(
         log_handler?.i("Backend response successful ${response.statusCode}");
 
         //Remove recently deleted chat from cache list
-        ChatCache.chat_titles_cache?.remove(chat_title);
+        ChatTitlesListCache.chat_titles_list_cache?.remove(chat_title);
         return;
       case 400:
         log_handler?.e("Parameters error: ${response.statusCode} - ${response.body}");

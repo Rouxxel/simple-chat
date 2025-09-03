@@ -1,7 +1,7 @@
-class ChatCache {
-  static List<String>? chat_titles_cache;
+class ChatTitlesListCache {
+  static List<String>? chat_titles_list_cache;
 
   static void clear() {
-    chat_titles_cache = null;
+    chat_titles_list_cache = null;
   }
 }

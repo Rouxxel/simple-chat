@@ -1292,7 +1292,7 @@ class _settingsState extends State<settings> {
                                               "Reset sound status: ${config_data.sound_effects_status}\n"
                                           );
 
-                                          ChatCache.clear(); //Nullify chat cache
+                                          ChatTitlesListCache.clear(); //Nullify chat cache
                                           CurrentChatCache.clear(); //Nullify current chat cache
                                           EKeyCache.clear(); //Nullify e key cache
                                           UserPreferencesCache.clear(); //Nullify user preferences cache
