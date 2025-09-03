@@ -83,7 +83,7 @@ class _landing_pageState extends State<landing_page> {
         onPopInvokedWithResult: (did_pop, result) async {
           if (did_pop) return; //system already popped, nothing to do
 
-          bool? userDecision = await build_yes_no_alert_dialog(
+          bool? user_decision = await build_yes_no_alert_dialog(
             context,
             "Confirm",
             "Cancel",
@@ -91,7 +91,7 @@ class _landing_pageState extends State<landing_page> {
             "Do you wish to log out of the current session? Any unsaved conversations will be lost.",
           );
 
-          if (userDecision == true) {
+          if (user_decision == true) {
             await log_out(context);
             TokenWatchdog().stop();
             ChatCache.clear();
