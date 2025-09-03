@@ -69,7 +69,7 @@ class _chats_listState extends State<chats_list> {
       onPopInvokedWithResult: (did_pop, result) async {
         if (did_pop) return; //system already popped, nothing to do
 
-        //Navigate to settings page with fade transition
+        //Navigate to landing page with fade transition
         await Navigator.push(
           context,
           PageRouteBuilder(
@@ -105,7 +105,7 @@ class _chats_listState extends State<chats_list> {
                 //play sound effect
                 await play_effect_sound(config_data.button_pressed_effect);
 
-                //Navigate to settings page with fade transition
+                //Navigate to landing page with fade transition
                 await Navigator.push(
                   context,
                   PageRouteBuilder(

@@ -97,8 +97,8 @@ class _landing_pageState extends State<landing_page> {
           EKeyCache.clear();
           UserPreferencesCache.clear();
 
-          //Replace with login page
-          Navigator.pushReplacement(
+          //Replace with login page and delete whole session stack
+          Navigator.pushAndRemoveUntil(
             context,
             PageRouteBuilder(
               pageBuilder: (context, animation, secondaryAnimation) => const log_in_page(),
@@ -106,6 +106,7 @@ class _landing_pageState extends State<landing_page> {
                 return FadeTransition(opacity: animation, child: child);
               },
             ),
+                (route) => false, //remove all previous routes
           );
         }
       },
@@ -395,7 +396,7 @@ class _landing_pageState extends State<landing_page> {
 
                         setState(() {_is_processing = false;});
 
-                        //Navigate to login page with fade transition
+                        //Navigate to login page with fade transition and delete session stack
                         await Navigator.pushAndRemoveUntil(
                           context,
                           PageRouteBuilder(

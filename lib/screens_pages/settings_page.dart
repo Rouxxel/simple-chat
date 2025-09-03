@@ -1300,7 +1300,7 @@ class _settingsState extends State<settings> {
                                           setState(() => _is_processing = false);
 
                                           //Navigate to log in page
-                                          await Navigator.push(
+                                          await Navigator.pushAndRemoveUntil(
                                             context,
                                             PageRouteBuilder(
                                               pageBuilder: (context, animation, secondaryAnimation) =>
@@ -1312,6 +1312,7 @@ class _settingsState extends State<settings> {
                                                 );
                                               },
                                             ),
+                                                (route) => false, //remove all previous routes
                                           );
 
                                         } else {

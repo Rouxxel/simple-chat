@@ -198,6 +198,7 @@ class _log_in_pageState extends State<log_in_page> {
 
                                     if (user_exists){
                                       log_handler?.i("User profile complete, move to landing page");
+                                      //Navigate to landing page and remove entry point stack
                                       await Navigator.of(context).pushAndRemoveUntil(
                                         PageRouteBuilder(
                                           pageBuilder: (context, animation, secondaryAnimation) =>

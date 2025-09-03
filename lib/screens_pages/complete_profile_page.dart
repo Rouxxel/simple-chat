@@ -307,7 +307,7 @@ class _complete_profileState extends State<complete_profile> {
                                 _phone_number_controller.clear();
                                 _country_controller.clear();
 
-                                await Navigator.push(
+                                await Navigator.pushAndRemoveUntil(
                                   context,
                                   PageRouteBuilder(
                                     pageBuilder: (context, animation, secondaryAnimation) =>
@@ -319,6 +319,7 @@ class _complete_profileState extends State<complete_profile> {
                                       );
                                     },
                                   ),
+                                      (route) => false, //remove all previous routes
                                 );
                               }
 
