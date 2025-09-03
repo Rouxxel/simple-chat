@@ -275,9 +275,9 @@ class _chats_listState extends State<chats_list> {
                                                         "Accept",
                                                         "Cancel",
                                                         "Load saved chat",
-                                                        "Are your certain you wish to load $title?, this action "
+                                                        "Are your certain you wish to load '$title'?, this action "
                                                             "will override whatever conversation you had so far and "
-                                                            "if not saved, it will be lost permanently",
+                                                            "if not saved, it will be lost permanently!!!",
                                                       );
 
                                                       if (user_decision == true) {
@@ -313,9 +313,9 @@ class _chats_listState extends State<chats_list> {
                                                           "Accept",
                                                           "Cancel",
                                                           "Delete selected chat",
-                                                          "Are your certain you wish to delete $title?, this action "
+                                                          "Are your certain you wish to delete '$title'?, this action "
                                                               "will permanently delete the chat and it won't be recoverable "
-                                                              "in any way",
+                                                              "in any way!!!",
                                                       );
 
                                                       if (user_decision == true) {
