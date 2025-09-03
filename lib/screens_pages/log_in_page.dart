@@ -197,8 +197,7 @@ class _log_in_pageState extends State<log_in_page> {
 
                                       if (user_exists){
                                         log_handler?.i("User profile complete, move to landing page");
-                                        await Navigator.push(
-                                          context,
+                                        await Navigator.of(context).pushAndRemoveUntil(
                                           PageRouteBuilder(
                                             pageBuilder: (context, animation, secondaryAnimation) =>
                                             const landing_page(),
@@ -209,6 +208,7 @@ class _log_in_pageState extends State<log_in_page> {
                                               );
                                             },
                                           ),
+                                              (route) => false, //remove all previous routes
                                         );
                                       } else{
                                         log_handler?.i("User profile incomplete, move to complete profile page");
