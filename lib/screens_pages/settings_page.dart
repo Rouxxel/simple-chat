@@ -1120,6 +1120,23 @@ class _settingsState extends State<settings> {
                                         retrieved_data = UserPreferencesCache.user_preferences_cache!;
                                       }
 
+                                      //Check for null before proceeding
+                                      if (retrieved_data == null ||
+                                          retrieved_data.values.any((v) => v == null)) {
+                                        log_handler?.w("Retrieved data has at least a null value, showing alert dialog. \n"
+                                                      "${retrieved_data}");
+                                        await build_informative_alert_dialog(
+                                            context,
+                                            "Ok",
+                                            "Unable to find your profile preferences",
+                                            "There has been an error retrieving your profile preferences. "
+                                              "Please ensure you have saved your profile preferences before"
+                                              "hand or try again later.",
+                                        );
+                                        setState(() => _is_processing = false);
+                                        return; //exit early
+                                      }
+
                                       //Update to saved data of user
                                       //Load saved in cloud directive
                                       await update_directive(context, retrieved_data["ai_personality"]);
