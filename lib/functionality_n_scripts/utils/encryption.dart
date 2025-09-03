@@ -160,7 +160,7 @@ Future<String> encrypt_in(
   }
 
   //Parse the PEM public key
-  final public_key = parse_public_key_from_pem(public_key_pem!);
+  final public_key = parse_public_key_from_pem(public_key_pem);
 
   //Encrypt using RSA-OAEP with SHA-256
   final cipher = OAEPEncoding.withSHA256(RSAEngine())
@@ -193,7 +193,7 @@ RSAPublicKey parse_public_key_from_pem(String pem) {
   ASN1Integer exponent = public_key_seq.elements[1] as ASN1Integer;
 
   return RSAPublicKey(
-    modulus.valueAsBigInteger!,
-    exponent.valueAsBigInteger!,
+    modulus.valueAsBigInteger,
+    exponent.valueAsBigInteger,
   );
 }
