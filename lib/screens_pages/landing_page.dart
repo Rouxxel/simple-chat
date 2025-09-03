@@ -18,7 +18,7 @@ import 'package:simple_chat/screens_pages/settings_page.dart';
 import 'package:simple_chat/screens_pages/chats_page.dart';
 import 'package:simple_chat/widgets_and_ui_elements/alert_dialog_builders.dart';
 import 'package:simple_chat/screens_pages/log_in_page.dart';
-import 'package:simple_chat/cache/chat_cache.dart';
+import 'package:simple_chat/cache/chat_titles_list_cache.dart';
 
 import '../cache/current_chat_cache.dart';
 

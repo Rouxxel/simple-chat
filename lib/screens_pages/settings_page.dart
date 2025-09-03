@@ -15,7 +15,7 @@ import 'package:simple_chat/functionality_n_scripts/utils/easter_egg_player.dart
 //Other screens
 import 'package:simple_chat/screens_pages/log_in_page.dart';
 import 'package:simple_chat/cache/user_preferences_cache.dart';
-import 'package:simple_chat/cache/chat_cache.dart';
+import 'package:simple_chat/cache/chat_titles_list_cache.dart';
 import 'package:simple_chat/cache/current_chat_cache.dart';
 import 'package:simple_chat/cache/e_key_cache.dart';
 

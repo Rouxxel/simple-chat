@@ -15,7 +15,7 @@ import 'package:simple_chat/functionality_n_scripts/utils/logger_config.dart';
 import 'package:simple_chat/functionality_n_scripts/utils/easter_egg_player.dart';
 import 'package:simple_chat/screens_pages/log_in_page.dart';
 
-import 'package:simple_chat/cache/chat_cache.dart';
+import 'package:simple_chat/cache/chat_titles_list_cache.dart';
 
 class chats_list extends StatefulWidget {
   const chats_list({super.key});

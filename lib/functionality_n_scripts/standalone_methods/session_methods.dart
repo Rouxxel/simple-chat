@@ -5,7 +5,7 @@ import "package:flutter/material.dart";
 import "dart:async";
 import "dart:convert";
 import 'package:http/http.dart' as http;
-import "package:simple_chat/cache/chat_cache.dart";
+import "package:simple_chat/cache/chat_titles_list_cache.dart";
 import "package:simple_chat/functionality_n_scripts/session_related/app_storage_class.dart";
 import "package:simple_chat/functionality_n_scripts/standalone_methods/general_methods.dart";
 
