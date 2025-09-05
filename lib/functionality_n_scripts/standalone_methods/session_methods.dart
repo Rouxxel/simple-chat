@@ -5,7 +5,7 @@ import "package:flutter/material.dart";
 import "dart:async";
 import "dart:convert";
 import 'package:http/http.dart' as http;
-import "package:simple_chat/cache/chat_cache.dart";
+import "package:simple_chat/cache/chat_titles_list_cache.dart";
 import "package:simple_chat/functionality_n_scripts/session_related/app_storage_class.dart";
 import "package:simple_chat/functionality_n_scripts/standalone_methods/general_methods.dart";
 
@@ -15,6 +15,7 @@ import 'package:simple_chat/functionality_n_scripts/configuration_scripts/config
 import 'package:simple_chat/functionality_n_scripts/utils/logger_config.dart';
 import "package:simple_chat/functionality_n_scripts/message_related/message_class.dart";
 import "package:simple_chat/cache/current_chat_cache.dart";
+import "package:simple_chat/functionality_n_scripts//utils/encryption.dart";
 
 //imports
 /////////////////////////////////////////////////////////////////////////////
@@ -58,9 +59,12 @@ Future<bool> check_user_exists(
     return false;
   }
 
+  //Encrypt required user id
+  String encrypted_user_id = await encrypt_in(context, user_id);
+
   final body = jsonEncode({
     "access_token": access_token.toString(),
-    "user_id": user_id.toString(),
+    "user_id": encrypted_user_id.toString(),
   });
 
   http.Response response;
@@ -450,9 +454,12 @@ Future<void> save_easter_egg_status(
     return;
   }
 
+  //Encrypt required user id
+  String encrypted_email = await encrypt_in(context, email);
+
   final body = jsonEncode({
     "access_token": access_token.toString(),
-    "email":email.toString(),
+    "email":encrypted_email.toString(),
   });
 
   http.Response response;
@@ -577,9 +584,12 @@ Future<Map<String, dynamic>> retrieve_user_preferences(
     return {"Invalid values":"Try again with valid values"};
   }
 
+  //Encrypt required user id
+  String encrypted_user_id= await encrypt_in(context, user_id);
+
   final body = jsonEncode({
     "access_token": access_token.toString(),
-    "user_id":user_id.toString(),
+    "user_id":encrypted_user_id.toString(),
   });
 
   http.Response response;
@@ -686,7 +696,7 @@ Future<Map<String, dynamic>> retrieve_user_preferences(
   }
 }
 
-Future<Map<String, dynamic>> retrieve_all_user_chats(
+Future<Map<String, dynamic>> retrieve_all_user_title_chats(
     BuildContext context,
     ) async {
   log_handler?.d("[------retrieve_all_user_chats function executing------]");
@@ -705,9 +715,12 @@ Future<Map<String, dynamic>> retrieve_all_user_chats(
     return {"Invalid values":"Try again with valid values"};
   }
 
+  //Encrypt required user id
+  String encrypted_user_id= await encrypt_in(context, user_id);
+
   final body = jsonEncode({
     "access_token": access_token.toString(),
-    "user_id":user_id.toString(),
+    "user_id":encrypted_user_id.toString(),
   });
 
   http.Response response;
@@ -833,9 +846,13 @@ Future<void> retrieve_specific_chat(
     return;
   }
 
+  //Encrypt required user id and title
+  String encrypted_user_id= await encrypt_in(context, user_id);
+  String encrypted_chat_title= await encrypt_in(context, chat_title);
+
   final body = jsonEncode({
-    "chat_title":chat_title,
-    "user_id": user_id,
+    "chat_title":encrypted_chat_title,
+    "user_id": encrypted_user_id,
     "access_token": access_token
   });
 
@@ -979,9 +996,13 @@ Future<void> delete_specific_chat(
     return;
   }
 
+  //Encrypt required user id and title
+  String encrypted_user_id= await encrypt_in(context, user_id);
+  String encrypted_chat_title= await encrypt_in(context, chat_title);
+
   final body = jsonEncode({
-    "chat_title": chat_title,
-    "user_id": user_id,
+    "chat_title": encrypted_chat_title,
+    "user_id": encrypted_user_id,
     "access_token": access_token
   });
 
@@ -1035,7 +1056,7 @@ Future<void> delete_specific_chat(
         log_handler?.i("Backend response successful ${response.statusCode}");
 
         //Remove recently deleted chat from cache list
-        ChatCache.chat_titles_cache?.remove(chat_title);
+        ChatTitlesListCache.chat_titles_list_cache?.remove(chat_title);
         return;
       case 400:
         log_handler?.e("Parameters error: ${response.statusCode} - ${response.body}");
@@ -1091,7 +1112,7 @@ Future<void> delete_specific_chat(
   }
 }
 
-Future<void> delete_user(
+Future<bool> delete_user(
     BuildContext context,
     String email,
     String password,
@@ -1108,7 +1129,7 @@ Future<void> delete_user(
       "Invalid values",
       "Please try again later",
     );
-    return;
+    return false;
   }
 
   //Validate password and email structure
@@ -1120,7 +1141,7 @@ Future<void> delete_user(
       "Email or password not valid",
       "Please return a valid email and password",
     );
-    return;
+    return false;
   }
 
   //Ensure inputed email matches session email
@@ -1134,13 +1155,18 @@ Future<void> delete_user(
       "The email you entered does not match the email you logged in with, please"
           "ensure the email is the one you started this session.",
     );
-    return;
+    return false;
   }
 
+  //Encrypt required user id and title
+  String encrypted_user_id= await encrypt_in(context, user_id);
+  String encrypted_email= await encrypt_in(context, email);
+  String encrypted_password= await encrypt_in(context, password);
+
   final body = jsonEncode({
-    "user_id": user_id,
-    "email": email,
-    "password": password,
+    "user_id": encrypted_user_id,
+    "email": encrypted_email,
+    "password": encrypted_password,
     "access_token": access_token
   });
 
@@ -1172,10 +1198,10 @@ Future<void> delete_user(
       "Error 234", //Network error
       "There has been an error with the network, please try again later",
     );
-    return;
+    return false;
   } on TimeoutException {
     // dialog already shown in onTimeout
-    return;
+    return false;
   } catch (e) {
     log_handler?.e("Unexpected error: $e");
     await build_informative_alert_dialog(
@@ -1184,7 +1210,7 @@ Future<void> delete_user(
       "Error 231", //Unexpected unknown server error
       "There has been an unexpected backend error, please try again later.",
     );
-    return;
+    return false;
   }
 
   try {
@@ -1198,10 +1224,10 @@ Future<void> delete_user(
             context,
             "Accept",
             "Your user was deleted",
-            "You will now be returned to the log in page, your data is now inaccessible"
+            "You will now be returned to the log in page, your data is now inaccessible "
                 "with the user you just deleted",
         );
-        return;
+        return true;
       case 400:
         log_handler?.e("Parameters error: ${response.statusCode} - ${response.body}");
         await build_informative_alert_dialog(
@@ -1210,17 +1236,17 @@ Future<void> delete_user(
           "Invalid entered values",
           "You have entered invalid values, please enter valid values.",
         );
-        return;
+        return false;
       case 401:
         log_handler?.w("Unauthorized access: ${response.statusCode} - ${response.body}");
         await build_informative_alert_dialog(
           context,
           "Ok",
           "Invalid user",
-          "We were not able to find your user, please ensure you have signed up and"
+          "We were not able to find your user, please ensure you have signed up and "
               "confirmed your email before trying again",
         );
-        return;
+        return false;
       case 422:
         log_handler?.e("Validation error: ${response.statusCode} - ${response.body}");
         await build_informative_alert_dialog(
@@ -1229,7 +1255,7 @@ Future<void> delete_user(
           "Error 245", //Unprocessable Entity
           "There was an issue with the data provided. Please try again later",
         );
-        return;
+        return false;
       case 429:
         log_handler?.e("Backend error: ${response.statusCode} - ${response.body}");
         await build_informative_alert_dialog(
@@ -1238,7 +1264,7 @@ Future<void> delete_user(
           "Error 231", //Unexpected unknown server error
           "There has been an unexpected backend error, please try again later.",
         );
-        return;
+        return false;
       case 500:
       default:
         log_handler?.w("Unhandled status code: ${response.statusCode} - ${response.body}");
@@ -1248,11 +1274,11 @@ Future<void> delete_user(
           "Error 231", //Unexpected unknown server error
           "There has been an unexpected backend error, please try again later.",
         );
-        return;
+        return false;
     }
   } catch (er){
     log_handler?.e("Error: $er");
-    return;
+    return false;
   }
 }
 
@@ -1282,11 +1308,17 @@ Future<void> save_current_chat(
   //Convert list of Messages to Maps
   List<Map> converted_list = Message.message_to_json_list(chat_list);
 
+  //Encrypt required user id and title
+  String encrypted_user_id= await encrypt_in(context, user_id);
+  String encrypted_chat_title= await encrypt_in(context, chat_title);
+  //TODO: Somehow decrypt whole conversation
+  //String encrypted_converted_list= await encrypt_in(context, converted_list);
+
   final body = jsonEncode({
     "access_token": access_token.toString(),
-    "user_id":user_id.toString(),
+    "user_id":encrypted_user_id.toString(),
     "current_chat":converted_list,
-    "current_chat_title":chat_title
+    "current_chat_title":encrypted_chat_title
   });
 
   http.Response response;

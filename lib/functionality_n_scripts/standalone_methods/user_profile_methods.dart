@@ -10,6 +10,7 @@ import 'package:http/http.dart' as http;
 import "package:simple_chat/widgets_and_ui_elements/alert_dialog_builders.dart";
 import 'package:simple_chat/functionality_n_scripts/configuration_scripts/config_invoke.dart';
 import 'package:simple_chat/functionality_n_scripts/utils/logger_config.dart';
+import "package:simple_chat/functionality_n_scripts/utils/encryption.dart";
 
 //imports
 /////////////////////////////////////////////////////////////////////////////
@@ -42,14 +43,17 @@ Future<bool> save_user_preferences(
     return false;
   }
 
+  //Encrypt required user id
+  String encrypted_user_id = await encrypt_in(context, user_id);
+
   //Construct request body with required fields
   final Map<String, dynamic> body = {
     "access_token": access_token,
-    "user_id": user_id,
+    "user_id": encrypted_user_id,
   };
 
   //Conditionally include optional fields
-  if (ai_personality != null) body["ai_personality"] = ai_personality;
+  if (ai_personality != null) body["ai_personality"] = await encrypt_in(context, ai_personality);
   if (verbose_level != null) body["verbose_level"] = verbose_level;
   if (background_color != null) body["background_color"] = background_color;
   if (bar_colors != null) body["bar_colors"] = bar_colors;

@@ -15,7 +15,9 @@ import 'package:simple_chat/functionality_n_scripts/utils/easter_egg_player.dart
 //Other screens
 import 'package:simple_chat/screens_pages/log_in_page.dart';
 import 'package:simple_chat/cache/user_preferences_cache.dart';
-import 'package:simple_chat/cache/chat_cache.dart';
+import 'package:simple_chat/cache/chat_titles_list_cache.dart';
+import 'package:simple_chat/cache/current_chat_cache.dart';
+import 'package:simple_chat/cache/e_key_cache.dart';
 
 class settings extends StatefulWidget {
   const settings({super.key});
@@ -40,6 +42,7 @@ class _settingsState extends State<settings> {
 
   bool _sound_effect_controller = config_data.sound_effects_status;
   bool _easter_egg_found_controller = config_data.easter_egg_found;
+  //TODO: solve the issue with easter found or not found when changing accounts
   bool _button_locked = false;
 
   //Easter egg
@@ -908,9 +911,8 @@ class _settingsState extends State<settings> {
                           await update_easter_egg_found(_easter_egg_found_controller);
                           await save_easter_egg_status(context);
 
-                          // Reload config and trigger UI refresh
+                          //Reload config and trigger UI refresh
                           setState(() {
-                            // Simulate a config update here. Ideally, reload it from storage or shared prefs
                             raw_config_json["easter_egg_found"] = true;
                             config_data = app_configuration.fromJson(raw_config_json);
                           });
@@ -1118,6 +1120,23 @@ class _settingsState extends State<settings> {
                                         retrieved_data = UserPreferencesCache.user_preferences_cache!;
                                       }
 
+                                      //Check for null before proceeding
+                                      if (retrieved_data == null ||
+                                          retrieved_data.values.any((v) => v == null)) {
+                                        log_handler?.w("Retrieved data has at least a null value, showing alert dialog. \n"
+                                                      "${retrieved_data}");
+                                        await build_informative_alert_dialog(
+                                            context,
+                                            "Ok",
+                                            "Unable to find your profile preferences",
+                                            "There has been an error retrieving your profile preferences. "
+                                              "Please ensure you have saved your profile preferences before"
+                                              "hand or try again later.",
+                                        );
+                                        setState(() => _is_processing = false);
+                                        return; //exit early
+                                      }
+
                                       //Update to saved data of user
                                       //Load saved in cloud directive
                                       await update_directive(context, retrieved_data["ai_personality"]);
@@ -1231,64 +1250,76 @@ class _settingsState extends State<settings> {
                                         //Start load from cloud profile preferences request
                                         setState(() => _is_processing = true);
                                         //Delete user
-                                        await delete_user(context, provided_email!, provided_password!);
+                                        bool deletion_succeded =await delete_user(context,
+                                                                                  provided_email!,
+                                                                                  provided_password!);
 
-                                        //Reset everything to factory settings
-                                        //Reset directive
-                                        await update_directive(context, config_data.default_directive);
+                                        if(deletion_succeded){
+                                          //Reset everything to factory settings
+                                          log_handler?.w("User profile deletion successful");
+                                          //Reset directive
+                                          await update_directive(context, config_data.default_directive);
 
-                                        //Reset verbose level
-                                        await update_verbose_level(config_data.default_verbose);
+                                          //Reset verbose level
+                                          await update_verbose_level(config_data.default_verbose);
 
-                                        //Reset colorimetry
-                                        String backgr_colr = color_to_hex(config_data.default_background_color);
-                                        String appbr_colr = color_to_hex(config_data.default_app_bar_color);
-                                        String usr_textbx_clr = color_to_hex(config_data.default_user_text_boxes_color);
-                                        String ai_textbx_clr = color_to_hex(config_data.default_ai_text_boxes_color);
-                                        await update_color_value("background.color", backgr_colr);
-                                        await update_color_value("app_bar.color", appbr_colr);
-                                        await update_color_value("user_text_boxes.color", usr_textbx_clr);
-                                        await update_color_value("ai_text_boxes.color", ai_textbx_clr);
+                                          //Reset colorimetry
+                                          String backgr_colr = color_to_hex(config_data.default_background_color);
+                                          String appbr_colr = color_to_hex(config_data.default_app_bar_color);
+                                          String usr_textbx_clr = color_to_hex(config_data.default_user_text_boxes_color);
+                                          String ai_textbx_clr = color_to_hex(config_data.default_ai_text_boxes_color);
+                                          await update_color_value("background.color", backgr_colr);
+                                          await update_color_value("app_bar.color", appbr_colr);
+                                          await update_color_value("user_text_boxes.color", usr_textbx_clr);
+                                          await update_color_value("ai_text_boxes.color", ai_textbx_clr);
 
-                                        //Reset Language
-                                        await update_user_language(context, config_data.default_language);
+                                          //Reset Language
+                                          await update_user_language(context, config_data.default_language);
 
-                                        //Reset sound effect status
-                                        await update_sound_effect_status(config_data.default_sound_effects_status);
+                                          //Reset sound effect status
+                                          await update_sound_effect_status(config_data.default_sound_effects_status);
 
-                                        //Reload config_data for runtime reset changes
-                                        config_data = app_configuration.fromJson(raw_config_json);
-                                        log_handler?.i("Reset button pressed\n"
-                                            "Reset directory: ${config_data.directive}\n"
-                                            "Reset verbose: ${config_data.verbose}\n"
-                                            "Reset Background color: ${config_data.background_color}\n"
-                                            "Reset Bar colors: ${config_data.app_bar_color}\n"
-                                            "Reset User textbox color: ${config_data.user_text_box_color}\n"
-                                            "Reset AI textbox color: ${config_data.ai_text_box_color}\n"
-                                            "Reset language: ${config_data.user_language}\n"
-                                            "Reset sound status: ${config_data.sound_effects_status}\n"
-                                        );
+                                          //Reload config_data for runtime reset changes
+                                          config_data = app_configuration.fromJson(raw_config_json);
+                                          log_handler?.i("Reset button pressed\n"
+                                              "Reset directory: ${config_data.directive}\n"
+                                              "Reset verbose: ${config_data.verbose}\n"
+                                              "Reset Background color: ${config_data.background_color}\n"
+                                              "Reset Bar colors: ${config_data.app_bar_color}\n"
+                                              "Reset User textbox color: ${config_data.user_text_box_color}\n"
+                                              "Reset AI textbox color: ${config_data.ai_text_box_color}\n"
+                                              "Reset language: ${config_data.user_language}\n"
+                                              "Reset sound status: ${config_data.sound_effects_status}\n"
+                                          );
 
-                                        ChatCache.clear(); //Nullify chat cache
+                                          ChatTitlesListCache.clear(); //Nullify chat cache
+                                          CurrentChatCache.clear(); //Nullify current chat cache
+                                          EKeyCache.clear(); //Nullify e key cache
+                                          UserPreferencesCache.clear(); //Nullify user preferences cache
 
-                                        setState(() => _is_processing = false);
+                                          setState(() => _is_processing = false);
 
-                                        //Navigate to log in page
-                                        await Navigator.push(
-                                          context,
-                                          PageRouteBuilder(
-                                            pageBuilder: (context, animation, secondaryAnimation) =>
-                                            const log_in_page(),
-                                            transitionsBuilder: (context, animation, secondaryAnimation, child) {
-                                              return FadeTransition(
-                                                opacity: animation,
-                                                child: child,
-                                              );
-                                            },
-                                          ),
-                                        );
+                                          //Navigate to log in page
+                                          await Navigator.pushAndRemoveUntil(
+                                            context,
+                                            PageRouteBuilder(
+                                              pageBuilder: (context, animation, secondaryAnimation) =>
+                                              const log_in_page(),
+                                              transitionsBuilder: (context, animation, secondaryAnimation, child) {
+                                                return FadeTransition(
+                                                  opacity: animation,
+                                                  child: child,
+                                                );
+                                              },
+                                            ),
+                                                (route) => false, //remove all previous routes
+                                          );
+
+                                        } else {
+                                          setState(() =>
+                                          _is_processing = false);
+                                        }
                                       }
-
                                       setState(() => _is_processing = false); //Just in case
                                     },
                                     child: Container(
@@ -1474,95 +1505,92 @@ class _settingsState extends State<settings> {
                     return;
                   }
 
-                  setState(() async {
-                      //Only save AI directory if input is not empty
-                      if (_personality_controller.text.isNotEmpty &&
-                          _personality_controller.text.length >= 20) {
-                        await update_directive(
-                            context, _personality_controller.text);
-                      } else {
-                        log_handler?.w(
-                            "Skipped updating directive due to invalid input.");
-                      }
-                      //Save AI verbose level
-                      await update_verbose_level(_verbose_level_controller);
+                   //Only save AI directory if input is not empty
+                    if (_personality_controller.text.isNotEmpty &&
+                        _personality_controller.text.length >= 20) {
+                      await update_directive(
+                          context, _personality_controller.text);
+                    } else {
+                      log_handler?.w(
+                          "Skipped updating directive due to invalid input.");
+                    }
+                    //Save AI verbose level
+                    await update_verbose_level(_verbose_level_controller);
 
-                      //Save colorimetry
-                      await update_color_value("background.color", _background_color_controller.text);
-                      await update_color_value("app_bar.color", _bar_colors_controller.text);
-                      await update_color_value("user_text_boxes.color", _user_textbox_color_controller.text);
-                      await update_color_value("ai_text_boxes.color", _ai_textbox_color_controller.text);
+                    //Save colorimetry
+                    await update_color_value("background.color", _background_color_controller.text);
+                    await update_color_value("app_bar.color", _bar_colors_controller.text);
+                    await update_color_value("user_text_boxes.color", _user_textbox_color_controller.text);
+                    await update_color_value("ai_text_boxes.color", _ai_textbox_color_controller.text);
 
-                      //Only save Language if input is not empty
-                      if (_language_controller.text.isNotEmpty &&
-                          _language_controller.text.length >= 2) {
-                        await update_user_language(
-                            context, _language_controller.text);
-                      } else {
-                        log_handler?.w(
-                            "Skipped updating language due to invalid input.");
-                      }
+                    //Only save Language if input is not empty
+                    if (_language_controller.text.isNotEmpty &&
+                        _language_controller.text.length >= 2) {
+                      await update_user_language(
+                          context, _language_controller.text);
+                    } else {
+                      log_handler?.w(
+                          "Skipped updating language due to invalid input.");
+                    }
 
-                      //Save sound effect status
-                      await update_sound_effect_status(_sound_effect_controller);
+                    //Save sound effect status
+                    await update_sound_effect_status(_sound_effect_controller);
 
-                      //Reload config_data for runtime changes
-                      config_data = app_configuration.fromJson(raw_config_json);
-                      log_handler?.i("Save button pressed\n"
-                          "Saved directory: ${config_data.directive}\n"
-                          "Saved verbose: ${config_data.verbose}\n"
-                          "Saved Background color: ${color_to_hex(config_data.background_color)}\n"
-                          "Saved Bar colors: ${color_to_hex(config_data.app_bar_color)}\n"
-                          "Saved User textbox color: ${color_to_hex(config_data.user_text_box_color)}\n"
-                          "Saved AI textbox color: ${color_to_hex(config_data.ai_text_box_color)}\n"
-                          "Saved language: ${config_data.user_language}\n"
-                          "Saved sound status: ${config_data.sound_effects_status}\n"
-                          "Saved easter egg: ${config_data.easter_egg_found}\n"
-                      );
+                    //Reload config_data for runtime changes
+                    config_data = app_configuration.fromJson(raw_config_json);
+                    log_handler?.i("Save button pressed\n"
+                        "Saved directory: ${config_data.directive}\n"
+                        "Saved verbose: ${config_data.verbose}\n"
+                        "Saved Background color: ${color_to_hex(config_data.background_color)}\n"
+                        "Saved Bar colors: ${color_to_hex(config_data.app_bar_color)}\n"
+                        "Saved User textbox color: ${color_to_hex(config_data.user_text_box_color)}\n"
+                        "Saved AI textbox color: ${color_to_hex(config_data.ai_text_box_color)}\n"
+                        "Saved language: ${config_data.user_language}\n"
+                        "Saved sound status: ${config_data.sound_effects_status}\n"
+                        "Saved easter egg: ${config_data.easter_egg_found}\n"
+                    );
 
-                      //Start Save user preferences request
-                      setState(() => _is_processing = true);
+                    //Start Save user preferences request
+                    setState(() => _is_processing = true);
 
-                      //Save preferences to cloud with reloaded configuration
-                      final String? access_token = await AppStorage.get_access_token();
-                      final String? user_id = await AppStorage.get_user_id();
-                      await save_user_preferences(context,
-                        access_token: access_token.toString(),
-                        user_id: user_id.toString(),
-                        ai_personality: config_data.directive,
-                        verbose_level: config_data.verbose,
-                        background_color: color_to_hex(config_data.background_color),
-                        bar_colors: color_to_hex(config_data.app_bar_color),
-                        user_text_box_color: color_to_hex(config_data.user_text_box_color),
-                        ai_text_box_color: color_to_hex(config_data.ai_text_box_color),
-                        ai_language: config_data.user_language,
-                        sound_effects_on: config_data.sound_effects_status,
-                      );
+                    //Save preferences to cloud with reloaded configuration
+                    final String? access_token = await AppStorage.get_access_token();
+                    final String? user_id = await AppStorage.get_user_id();
+                    await save_user_preferences(context,
+                      access_token: access_token.toString(),
+                      user_id: user_id.toString(),
+                      ai_personality: config_data.directive,
+                      verbose_level: config_data.verbose,
+                      background_color: color_to_hex(config_data.background_color),
+                      bar_colors: color_to_hex(config_data.app_bar_color),
+                      user_text_box_color: color_to_hex(config_data.user_text_box_color),
+                      ai_text_box_color: color_to_hex(config_data.ai_text_box_color),
+                      ai_language: config_data.user_language,
+                      sound_effects_on: config_data.sound_effects_status,
+                    );
 
-                      //Update cache with latest preferences
-                      UserPreferencesCache.user_preferences_cache = {
-                        "ai_personality": config_data.directive,
-                        "verbose_level": config_data.verbose,
-                        "background_color": color_to_hex(config_data.background_color),
-                        "bar_colors": color_to_hex(config_data.app_bar_color),
-                        "user_text_box_color": color_to_hex(config_data.user_text_box_color),
-                        "ai_text_box_color": color_to_hex(config_data.ai_text_box_color),
-                        "ai_language": config_data.user_language,
-                        "sound_effects_on": config_data.sound_effects_status,
-                        "easter_egg_status": config_data.easter_egg_found,
-                      };
+                    //Update cache with latest preferences
+                    UserPreferencesCache.user_preferences_cache = {
+                      "ai_personality": config_data.directive,
+                      "verbose_level": config_data.verbose,
+                      "background_color": color_to_hex(config_data.background_color),
+                      "bar_colors": color_to_hex(config_data.app_bar_color),
+                      "user_text_box_color": color_to_hex(config_data.user_text_box_color),
+                      "ai_text_box_color": color_to_hex(config_data.ai_text_box_color),
+                      "ai_language": config_data.user_language,
+                      "sound_effects_on": config_data.sound_effects_status,
+                      "easter_egg_status": config_data.easter_egg_found,
+                    };
 
-                      //play sound effect//
-                      await play_effect_sound(config_data.miscellanous_effect);
-                      await build_informative_alert_dialog(
-                        context,
-                        "Ok",
-                        "Changes saved!!!",
-                        "All changes were successfully saved",
-                      );
-                      setState(() => _is_processing = false);
-                    },
-                  );
+                    //play sound effect//
+                    await play_effect_sound(config_data.miscellanous_effect);
+                    await build_informative_alert_dialog(
+                      context,
+                      "Ok",
+                      "Changes saved!!!",
+                      "All changes were successfully saved",
+                    );
+                    setState(() => _is_processing = false);
                 },
                 child: Container(
                   decoration: BoxDecoration(
