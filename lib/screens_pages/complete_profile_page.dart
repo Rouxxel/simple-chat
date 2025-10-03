@@ -307,6 +307,7 @@ class _complete_profileState extends State<complete_profile> {
                                 _phone_number_controller.clear();
                                 _country_controller.clear();
 
+                                //When finished profile, nav to landing and delete entry point stack
                                 await Navigator.pushAndRemoveUntil(
                                   context,
                                   PageRouteBuilder(

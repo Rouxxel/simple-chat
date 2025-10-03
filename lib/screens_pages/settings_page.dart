@@ -1299,7 +1299,7 @@ class _settingsState extends State<settings> {
 
                                           setState(() => _is_processing = false);
 
-                                          //Navigate to log in page
+                                          //On delete profile, nav to log in and delete session stack
                                           await Navigator.pushAndRemoveUntil(
                                             context,
                                             PageRouteBuilder(
