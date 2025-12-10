@@ -1,6 +1,6 @@
 # simple_chat
 
-This is a simple app that implements the **Gemini 2.0 Flash API** service, allowing users to interact with an AI chatbot. The user can input queries and receive answers, much like a conversation with a person.
+This is a simple app that implements the **Gemini 2.5 Flash API** service, allowing users to interact with an AI chatbot. The user can input queries and receive answers, much like a conversation with a person.
 
 ### Features:
 - **Single Stateful Screen**: The app consists of a single stateful screen with a chatbot interface where users can ask questions and get responses.

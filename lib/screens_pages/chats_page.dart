@@ -137,7 +137,7 @@ class _chats_listState extends State<chats_list> {
                 ),
               ),
               Text(
-                "Google Gemini 2.0 Flash API powered",
+                "Google Gemini 2.5 Flash API powered",
                 style: TextStyle(
                   fontSize: 9,
                   color: config_data.text_color,

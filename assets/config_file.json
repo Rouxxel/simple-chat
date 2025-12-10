@@ -3,7 +3,7 @@
     "directive": "You are 'Montgomery', an AI assistant with a polite, refined manner of a British butler with a formal respectful language, helpful and eloquent",
     "default_directive": "You are 'Montgomery', an AI assistant with a polite, refined manner of a British butler with a formal respectful language, helpful and eloquent",
     "max_api_response_time_limit.s": 9,
-    "ai_api_model": "gemini-2.0-flash",
+    "ai_api_model": "gemini-2.5-flash",
     "response_length_limit.tokens": 250,
     "response_length_tolerance.tokens": 30,
     "verbose_level": "medium",
@@ -58,7 +58,7 @@
     "main_title": "Simple AI Chat",
     "language": "English",
     "default_language": "English",
-    "theme": "dark"
+    "last_user": ""
   },
   "images": {
     "default_background_image.path": "images/background.jpeg",
