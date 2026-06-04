@@ -85,7 +85,7 @@ Future<bool> save_user_preferences(
       },
     );
   } on SocketException catch (e) {
-    log_handler?.e("Network error: $e");
+    log_handler?.e("[save_user_preferences] Network error: $e");
     await build_informative_alert_dialog(
       context,
       "Ok",
@@ -96,7 +96,7 @@ Future<bool> save_user_preferences(
   } on TimeoutException {
     return false;
   } catch (e) {
-    log_handler?.e("Unexpected error: $e");
+    log_handler?.e("[save_user_preferences] Unexpected error: $e");
     await build_informative_alert_dialog(
       context,
       "Ok",
@@ -110,10 +110,10 @@ Future<bool> save_user_preferences(
     switch (response.statusCode) {
       case 200:
       case 201:
-        log_handler?.i("User preferences saved: ${response.statusCode}");
+        log_handler?.i("[save_user_preferences] User preferences saved: ${response.statusCode}");
         return true;
       case 400:
-        log_handler?.e("Invalid parameters: ${response.statusCode} - ${response.body}");
+        log_handler?.e("[save_user_preferences] Invalid parameters: ${response.statusCode} - ${response.body}");
         await build_informative_alert_dialog(
           context,
           "Ok",
@@ -122,7 +122,7 @@ Future<bool> save_user_preferences(
         );
         return false;
       case 401:
-        log_handler?.w("Unauthorized: ${response.statusCode} - ${response.body}");
+        log_handler?.w("[save_user_preferences] Unauthorized: ${response.statusCode} - ${response.body}");
         await build_informative_alert_dialog(
           context,
           "Ok",
@@ -132,7 +132,7 @@ Future<bool> save_user_preferences(
         );
         return false;
       case 404:
-        log_handler?.w("User not found: ${response.statusCode} - ${response.body}");
+        log_handler?.w("[save_user_preferences] User not found: ${response.statusCode} - ${response.body}");
         await build_informative_alert_dialog(
           context,
           "Ok",
@@ -142,7 +142,7 @@ Future<bool> save_user_preferences(
         );
         return false;
       case 409:
-        log_handler?.w("Conflict: ${response.statusCode} - ${response.body}");
+        log_handler?.w("[save_user_preferences] Conflict: ${response.statusCode} - ${response.body}");
         await build_informative_alert_dialog(
           context,
           "Ok",
@@ -151,7 +151,7 @@ Future<bool> save_user_preferences(
         );
         return false;
       case 422:
-        log_handler?.e("Validation error: ${response.statusCode} - ${response.body}");
+        log_handler?.e("[save_user_preferences] Validation error: ${response.statusCode} - ${response.body}");
         await build_informative_alert_dialog(
           context,
           "Ok",
@@ -160,7 +160,7 @@ Future<bool> save_user_preferences(
         );
         return false;
       case 429:
-        log_handler?.e("Rate limit: ${response.statusCode} - ${response.body}");
+        log_handler?.e("[save_user_preferences] Rate limit: ${response.statusCode} - ${response.body}");
         await build_informative_alert_dialog(
           context,
           "Ok",
@@ -170,7 +170,7 @@ Future<bool> save_user_preferences(
         return false;
       case 500:
       default:
-        log_handler?.w("Unhandled status code: ${response.statusCode} - ${response.body}");
+        log_handler?.w("[save_user_preferences] Unhandled status code: ${response.statusCode} - ${response.body}");
         await build_informative_alert_dialog(
           context,
           "Ok",
@@ -180,7 +180,7 @@ Future<bool> save_user_preferences(
         return false;
     }
   } catch (e) {
-    log_handler?.e("Error processing response: $e");
+    log_handler?.e("[save_user_preferences] Error processing response: $e");
     return false;
   }
 }

@@ -56,7 +56,7 @@ bool validate_user_input(BuildContext context, String user_input) {
 
   //Normalize and sanitize user input
   final sanitized_input = _sanitize_input(user_input);
-  log_handler?.d("Sanitized input: $sanitized_input");
+  log_handler?.d("[validate_user_input] Sanitized input: $sanitized_input");
 
   //Check for suspicious content (excluding math blocks)
   if (_contains_suspicious_patterns(sanitized_input)) {
@@ -66,11 +66,11 @@ bool validate_user_input(BuildContext context, String user_input) {
       "Error 221", //Invalid characters
       "There was an error processing your query, try avoiding special characters",
     );
-    log_handler?.w("Possible attack detected in sanitized input");
+    log_handler?.w("[validate_user_input] Possible attack detected in sanitized input");
     return false;
   }
 
-  log_handler?.d("Valid user input");
+  log_handler?.d("[validate_user_input] Valid user input");
   return true;
 }
 
@@ -122,11 +122,11 @@ bool _contains_suspicious_patterns(String input) {
   for (final pattern in suspicious_patterns) {
     final regex = RegExp(pattern, caseSensitive: false, dotAll: true);
     if (regex.hasMatch(cleaned_input)) {
-      log_handler?.w("Suspicious pattern found: $pattern");
+      log_handler?.w("[contains_suspicious_patterns] Suspicious pattern found: $pattern");
       return true;
     }
   }
-  log_handler?.d("No suspicious pattern found");
+  log_handler?.d("[contains_suspicious_patterns] No suspicious pattern found");
   return false;
 }
 
@@ -134,7 +134,7 @@ bool _contains_suspicious_patterns(String input) {
 bool is_valid_email(BuildContext context, String email) {
   //Check for exactly one '@'
   if ('@'.allMatches(email).length != 1) {
-    log_handler?.w("Invalid email '$email': must contain exactly one '@'");
+    log_handler?.w("[is_valid_email] Invalid email '$email': must contain exactly one '@'");
     return false;
   }
 
@@ -145,13 +145,13 @@ bool is_valid_email(BuildContext context, String email) {
   //Validate local part
   final local_regex = RegExp(r'^[\w\.-]+$');
   if (local_part.isEmpty || !local_regex.hasMatch(local_part)) {
-    log_handler?.w("Invalid email '$email': local part is invalid");
+    log_handler?.w("[is_valid_email] Invalid email '$email': local part is invalid");
     return false;
   }
 
   //Check domain has exactly one '.'
   if ('.'.allMatches(domain_part).length != 1) {
-    log_handler?.w("Invalid email '$email': domain part must contain exactly one '.'");
+    log_handler?.w("[is_valid_email] Invalid email '$email': domain part must contain exactly one '.'");
     return false;
   }
 
@@ -161,15 +161,15 @@ bool is_valid_email(BuildContext context, String email) {
 
   //Check provider and TLD are allowed
   if (!config_data.allowed_email_providers.contains(provider)) {
-    log_handler?.w("Invalid email '$email': provider '$provider' not allowed");
+    log_handler?.w("[is_valid_email] Invalid email '$email': provider '$provider' not allowed");
     return false;
   }
   if (!config_data.allowed_email_tlds.contains(tld)) {
-    log_handler?.w("Invalid email '$email': TLD '$tld' not allowed");
+    log_handler?.w("[is_valid_email] Invalid email '$email': TLD '$tld' not allowed");
     return false;
   }
 
-  log_handler?.d("Email '$email' is valid, proceeding");
+  log_handler?.d("[is_valid_email] Email '$email' is valid, proceeding");
   return true;
 }
 
@@ -177,59 +177,59 @@ bool is_valid_email(BuildContext context, String email) {
 bool is_valid_password(BuildContext context, String password) {
   //Rule 1: minimum length
   if (password.length < 8) {
-    log_handler?.w('Password validation failed: fewer than 8 characters');
+    log_handler?.w('[is_valid_password] Password validation failed: fewer than 8 characters');
     return false;
   }
 
   //Rule 2: at least one lowercase letter
   if (!RegExp(r'[a-z]').hasMatch(password)) {
-    log_handler?.w('Password validation failed: no lowercase letter found');
+    log_handler?.w('[is_valid_password] Password validation failed: no lowercase letter found');
     return false;
   }
 
   //Rule 3: at least one uppercase letter
   if (!RegExp(r'[A-Z]').hasMatch(password)) {
-    log_handler?.w('Password validation failed: no uppercase letter found');
+    log_handler?.w('[is_valid_password] Password validation failed: no uppercase letter found');
     return false;
   }
 
   //Rule 4: at least one digit
   if (!RegExp(r'\d').hasMatch(password)) {
-    log_handler?.w('Password validation failed: no digit found');
+    log_handler?.w('[is_valid_password] Password validation failed: no digit found');
     return false;
   }
 
   // Rule 5: at least one special symbol (anything not letter, digit, or underscore/whitespace)
   if (!RegExp(r'[^\w\s]').hasMatch(password)) {
-    log_handler?.w('Password validation failed: no special symbol found');
+    log_handler?.w('[is_valid_password] Password validation failed: no special symbol found');
     return false;
   }
 
-  log_handler?.d('Password is valid, proceeding');
+  log_handler?.d('[is_valid_password] Password is valid, proceeding');
   return true;
 }
 
 //Function to check valid phone number
 bool is_valid_phone_number(BuildContext context, String phone_number) {
-  log_handler?.d('Validating phone number: $phone_number');
+  log_handler?.d('[is_valid_phone_number] Validating phone number: $phone_number');
 
   // Clean input: remove spaces, dashes, and parentheses
   String cleaned = phone_number.replaceAll(RegExp(r'[\s\-\(\)]'), '');
 
   // Rule 1: must be digits only (with optional leading +)
   if (!RegExp(r'^\+?\d+$').hasMatch(cleaned)) {
-    log_handler?.w('Phone number validation failed: contains invalid characters -> $phone_number');
+    log_handler?.w('[is_valid_phone_number] Phone number validation failed: contains invalid characters -> $phone_number');
     return false;
   }
 
   // Rule 2: length between 7 and 15 digits (standard international range)
   final digitCount = cleaned.startsWith('+') ? cleaned.length - 1 : cleaned.length;
   if (digitCount < 7 || digitCount > 15) {
-    log_handler?.w('Phone number validation failed: length not in valid range (7–15 digits)');
+    log_handler?.w('[is_valid_phone_number] Phone number validation failed: length not in valid range (7–15 digits)');
     return false;
   }
 
-  log_handler?.d('Phone number is valid, proceeding');
+  log_handler?.d('[is_valid_phone_number] Phone number is valid, proceeding');
   return true;
 }
 
@@ -255,12 +255,12 @@ Future<void> play_effect_sound(String asset_path) async {
   try {
     if (config_data.sound_effects_status){
       await _audio_instance.play(AssetSource(asset_path));
-      log_handler?.i('Sound $asset_path player');
+      log_handler?.i('[play_effect_sound] Sound $asset_path player');
     } else {
-      log_handler?.w('Sound $asset_path nor played, effects disabled');
+      log_handler?.w('[play_effect_sound] Sound $asset_path nor played, effects disabled');
     }
   } catch (er) {
-    log_handler?.e('Error playing sound "$asset_path": $er');
+    log_handler?.e('[play_effect_sound] Error playing sound "$asset_path": $er');
   }
 }
 
@@ -268,7 +268,7 @@ Future<void> play_effect_sound(String asset_path) async {
 //Update main directory of the AI
 Future<void> update_directive(BuildContext context, String? new_directive, {int min_length = 20}) async {
   if (new_directive == null || new_directive.trim().isEmpty || new_directive.trim().length < min_length) {
-    log_handler?.w("Attempted to update directive with null, empty, or too short string. Update skipped.");
+    log_handler?.w("[update_directive] Attempted to update directive with null, empty, or too short string. Update skipped.");
     return;
   }
 
@@ -276,11 +276,11 @@ Future<void> update_directive(BuildContext context, String? new_directive, {int 
   try {
     final is_valid = validate_user_input(context, new_directive);
     if (!is_valid) {
-      log_handler?.w("Directive failed validation. Update skipped.");
+      log_handler?.w("[update_directive] Directive failed validation. Update skipped.");
       return;
     }
   } on ArgumentError catch (e) {
-    log_handler?.w("Directive validation threw ArgumentError: ${e.message}. Update skipped.");
+    log_handler?.w("[update_directive] Directive validation threw ArgumentError: ${e.message}. Update skipped.");
     return;
   }
 
@@ -310,14 +310,14 @@ Future<void> update_color_value(String section_key, String color_input) async {
   //Case 1: Check if it's a known color name
   if (color_name_to_hex_map.containsKey(normalized_input)) {
     hex_color = color_name_to_hex_map[normalized_input];
-    log_handler?.d("Color name '$color_input' resolved to hex '$hex_color'.");
+    log_handler?.d("[update_color_value] Color name '$color_input' resolved to hex '$hex_color'.");
   }
   //Case 2: Check if it's a valid hex code
   else if (RegExp(r'^#?[A-Fa-f0-9]{6,8}$').hasMatch(color_input)) {
     hex_color = color_input.startsWith('#') ? color_input.toUpperCase() : '#${color_input.toUpperCase()}';
-    log_handler?.d("Using direct hex input: '$hex_color'.");
+    log_handler?.d("[update_color_value] Using direct hex input: '$hex_color'.");
   } else {
-    log_handler?.w("Invalid color input: '$color_input'. Update skipped.");
+    log_handler?.w("[update_color_value] Invalid color input: '$color_input'. Update skipped.");
     return;
   }
 
@@ -325,16 +325,16 @@ Future<void> update_color_value(String section_key, String color_input) async {
   if (raw_config_json['colors'].containsKey(section_key)) {
     raw_config_json['colors'][section_key] = hex_color;
     await file.writeAsString(jsonEncode(raw_config_json));
-    log_handler?.d("Color for '$section_key' updated to $hex_color.");
+    log_handler?.d("[update_color_value] Color for '$section_key' updated to $hex_color.");
   } else {
-    log_handler?.w("Section key '$section_key' not found in 'colors'. Update skipped.");
+    log_handler?.w("[update_color_value] Section key '$section_key' not found in 'colors'. Update skipped.");
   }
 }
 
 //Update user language
 Future<void> update_user_language(BuildContext context, String? new_language, {int min_length = 2}) async {
   if (new_language == null || new_language.trim().isEmpty || new_language.trim().length < min_length) {
-    log_handler?.w("Attempted to update language with null, empty, or too short string. Update skipped.");
+    log_handler?.w("[update_user_language] Attempted to update language with null, empty, or too short string. Update skipped.");
     return;
   }
 
@@ -342,11 +342,11 @@ Future<void> update_user_language(BuildContext context, String? new_language, {i
   try {
     final is_valid = validate_user_input(context, new_language);
     if (!is_valid) {
-      log_handler?.w("Language failed validation. Update skipped.");
+      log_handler?.w("[update_user_language] Language failed validation. Update skipped.");
       return;
     }
   } on ArgumentError catch (e) {
-    log_handler?.w("Language validation threw ArgumentError: ${e.message}. Update skipped.");
+    log_handler?.w("[update_user_language] Language validation threw ArgumentError: ${e.message}. Update skipped.");
     return;
   }
 
@@ -377,7 +377,7 @@ Future<void> send_feedback_by_email(BuildContext context, String feedback) async
         "Sorry, you can only send your feedback once per session, please restart "
             "the app to send your feedback.",
       );
-      log_handler?.w("No generated files found.");
+      log_handler?.w("[send_feedback_by_email] No generated files found.");
       return;
     }
 
@@ -409,22 +409,22 @@ Future<void> send_feedback_by_email(BuildContext context, String feedback) async
     for (var file in generated_files) {
       try {
         await file.delete();
-        log_handler?.i('Deleted file: ${file.path}');
+        log_handler?.i('[send_feedback_by_email] Deleted file: ${file.path}');
       } catch (e) {
-        log_handler?.e('Error deleting file ${file.path}: $e');
+        log_handler?.e('[send_feedback_by_email] Error deleting file ${file.path}: $e');
       }
     }
 
     // Delete ZIP file
     try {
       await zipFile.delete();
-      log_handler?.i('Deleted zip file: $zipFilePath');
+      log_handler?.i('[send_feedback_by_email] Deleted zip file: $zipFilePath');
     } catch (e) {
-      log_handler?.e('Error deleting zip file $zipFilePath: $e');
+      log_handler?.e('[send_feedback_by_email] Error deleting zip file $zipFilePath: $e');
     }
 
   } catch (e) {
-    log_handler?.e('Error sending feedback email: $e');
+    log_handler?.e('[send_feedback_by_email] Error sending feedback email: $e');
   }
 }
 
@@ -456,5 +456,5 @@ Future<void> test_ai(String api_key) async {
 
   final response = await model.generateContent([Content.text(user_prompt)]);
   log_handler?.d("---AI response succesful---");
-  log_handler?.d(response.text);
+  log_handler?.d("[test_ai] ${response.text}");
 }

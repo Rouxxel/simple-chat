@@ -31,12 +31,12 @@ Future<void> root_endpoint() async {
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      log_handler?.i("Backend running: ${data['message']}");
+      log_handler?.i("[root_endpoint] Backend running: ${data['message']}");
     } else {
-      log_handler?.w("Backend start up failed with status: ${response.statusCode}");
+      log_handler?.w("[root_endpoint] Backend start up failed with status: ${response.statusCode}");
     }
   } catch (e) {
-    log_handler?.e("Failed to connect to backend: $e");
+    log_handler?.e("[root_endpoint] Failed to connect to backend: $e");
   }
 }
 
@@ -88,7 +88,7 @@ Future<bool> check_user_exists(
       },
     );
   } on SocketException catch (e) {
-    log_handler?.e("Network error: $e");
+    log_handler?.e("[check_user_exists] Network error: $e");
     await build_informative_alert_dialog(
       context,
       "Ok",
@@ -99,7 +99,7 @@ Future<bool> check_user_exists(
   } on TimeoutException {
     return false;
   } catch (e) {
-    log_handler?.e("Unexpected error: $e");
+    log_handler?.e("[check_user_exists] Unexpected error: $e");
     await build_informative_alert_dialog(
       context,
       "Ok",
@@ -113,10 +113,10 @@ Future<bool> check_user_exists(
     switch (response.statusCode) {
       case 200:
         final data = jsonDecode(response.body);
-        log_handler?.i("User existence check success: exists=${data['exists']}");
+        log_handler?.i("[check_user_exists] User existence check success: exists=${data['exists']}");
         return data['exists'];
       case 400:
-        log_handler?.e("Invalid parameters: ${response.statusCode} - ${response.body}");
+        log_handler?.e("[check_user_exists] Invalid parameters: ${response.statusCode} - ${response.body}");
         await build_informative_alert_dialog(
           context,
           "Ok",
@@ -125,7 +125,7 @@ Future<bool> check_user_exists(
         );
         return false;
       case 401:
-        log_handler?.w("Unauthorized: ${response.statusCode} - ${response.body}");
+        log_handler?.w("[check_user_exists] Unauthorized: ${response.statusCode} - ${response.body}");
         await build_informative_alert_dialog(
           context,
           "Ok",
@@ -135,7 +135,7 @@ Future<bool> check_user_exists(
         );
         return false;
       case 422:
-        log_handler?.e("Validation error: ${response.statusCode} - ${response.body}");
+        log_handler?.e("[check_user_exists] Validation error: ${response.statusCode} - ${response.body}");
         await build_informative_alert_dialog(
           context,
           "Ok",
@@ -144,7 +144,7 @@ Future<bool> check_user_exists(
         );
         return false;
       case 429:
-        log_handler?.e("Rate limited: ${response.statusCode} - ${response.body}");
+        log_handler?.e("[check_user_exists] Rate limited: ${response.statusCode} - ${response.body}");
         await build_informative_alert_dialog(
           context,
           "Ok",
@@ -154,7 +154,7 @@ Future<bool> check_user_exists(
         return false;
       case 500:
       default:
-        log_handler?.w("Unhandled status code: ${response.statusCode} - ${response.body}");
+        log_handler?.w("[check_user_exists] Unhandled status code: ${response.statusCode} - ${response.body}");
         await build_informative_alert_dialog(
           context,
           "Ok",
@@ -164,7 +164,7 @@ Future<bool> check_user_exists(
         return false;
     }
   } catch (er) {
-    log_handler?.e("Error processing response: $er");
+    log_handler?.e("[check_user_exists] Error processing response: $er");
     return false;
   }
 }
@@ -211,7 +211,7 @@ Future<void> refresh_access(
       },
     );
   } on SocketException catch (e) {
-    log_handler?.e("Network error: $e");
+    log_handler?.e("[refresh_access] Network error: $e");
     await build_informative_alert_dialog(
       context,
       "Ok",
@@ -223,7 +223,7 @@ Future<void> refresh_access(
     // dialog already shown in onTimeout
     return;
   } catch (e) {
-    log_handler?.e("Unexpected error: $e");
+    log_handler?.e("[refresh_access] Unexpected error: $e");
     await build_informative_alert_dialog(
       context,
       "Ok",
@@ -237,7 +237,7 @@ Future<void> refresh_access(
     //---------- Status‑code handling ----------
     switch (response.statusCode) {
       case 200:
-        log_handler?.i("Backend response successful ${response.statusCode}");
+        log_handler?.i("[refresh_access] Backend response successful ${response.statusCode}");
         final data = jsonDecode(response.body);
 
         await AppStorage.save_token_related(
@@ -250,10 +250,10 @@ Future<void> refresh_access(
         //Start timer for token refresh watch dog
         //TokenWatchdog().start(context);
 
-        log_handler?.i("User token refreshed successfully");
+        log_handler?.i("[refresh_access] User token refreshed successfully");
         return;
       case 400:
-        log_handler?.e("Parameters error: ${response.statusCode} - ${response.body}");
+        log_handler?.e("[refresh_access] Parameters error: ${response.statusCode} - ${response.body}");
         await build_informative_alert_dialog(
           context,
           "Ok",
@@ -262,7 +262,7 @@ Future<void> refresh_access(
         );
         return;
       case 401:
-        log_handler?.w("Unauthorized access: ${response.statusCode} - ${response.body}");
+        log_handler?.w("[refresh_access] Unauthorized access: ${response.statusCode} - ${response.body}");
         await build_informative_alert_dialog(
           context,
           "Ok",
@@ -272,7 +272,7 @@ Future<void> refresh_access(
         );
         return;
       case 422:
-        log_handler?.e("Validation error: ${response.statusCode} - ${response.body}");
+        log_handler?.e("[refresh_access] Validation error: ${response.statusCode} - ${response.body}");
         await build_informative_alert_dialog(
           context,
           "Ok",
@@ -281,7 +281,7 @@ Future<void> refresh_access(
         );
         return;
       case 429:
-        log_handler?.e("Backend error: ${response.statusCode} - ${response.body}");
+        log_handler?.e("[refresh_access] Backend error: ${response.statusCode} - ${response.body}");
         await build_informative_alert_dialog(
           context,
           "Ok",
@@ -291,7 +291,7 @@ Future<void> refresh_access(
         return;
       case 500:
       default:
-        log_handler?.w("Unhandled status code: ${response.statusCode} - ${response.body}");
+        log_handler?.w("[refresh_access] Unhandled status code: ${response.statusCode} - ${response.body}");
         await build_informative_alert_dialog(
           context,
           "Ok",
@@ -301,7 +301,7 @@ Future<void> refresh_access(
         return;
     }
   } catch (er){
-    log_handler?.e("Error: $er");
+    log_handler?.e("[refresh_access] Error processing response: $er");
     return;
   }
 }
@@ -349,7 +349,7 @@ Future<void> log_out(
       },
     );
   } on SocketException catch (e) {
-    log_handler?.e("Network error: $e");
+    log_handler?.e("[log_out] Network error: $e");
     await build_informative_alert_dialog(
       context,
       "Ok",
@@ -361,7 +361,7 @@ Future<void> log_out(
     // dialog already shown in onTimeout
     return;
   } catch (e) {
-    log_handler?.e("Unexpected error: $e");
+    log_handler?.e("[log_out] Unexpected error: $e");
     await build_informative_alert_dialog(
       context,
       "Ok",
@@ -375,14 +375,14 @@ Future<void> log_out(
     //---------- Status‑code handling ----------
     switch (response.statusCode) {
       case 200:
-        log_handler?.i("Backend response successful ${response.statusCode}");
+        log_handler?.i("[log_out] Backend response successful ${response.statusCode}");
         //Remove all global variables
         await AppStorage.clear_tokens();
         //Stop watch dog for token refresh
         //TokenWatchdog().stop();
         return;
       case 400:
-        log_handler?.e("Parameters error: ${response.statusCode} - ${response.body}");
+        log_handler?.e("[log_out] Parameters error: ${response.statusCode} - ${response.body}");
         await build_informative_alert_dialog(
           context,
           "Ok",
@@ -391,7 +391,7 @@ Future<void> log_out(
         );
         return;
       case 401:
-        log_handler?.w("Unauthorized access: ${response.statusCode} - ${response.body}");
+        log_handler?.w("[log_out] Unauthorized access: ${response.statusCode} - ${response.body}");
         await build_informative_alert_dialog(
           context,
           "Ok",
@@ -401,7 +401,7 @@ Future<void> log_out(
         );
         return;
       case 422:
-        log_handler?.e("Validation error: ${response.statusCode} - ${response.body}");
+        log_handler?.e("[log_out] Validation error: ${response.statusCode} - ${response.body}");
         await build_informative_alert_dialog(
           context,
           "Ok",
@@ -410,7 +410,7 @@ Future<void> log_out(
         );
         return;
       case 429:
-        log_handler?.e("Backend error: ${response.statusCode} - ${response.body}");
+        log_handler?.e("[log_out] Backend error: ${response.statusCode} - ${response.body}");
         await build_informative_alert_dialog(
           context,
           "Ok",
@@ -420,7 +420,7 @@ Future<void> log_out(
         return;
       case 500:
       default:
-        log_handler?.w("Unhandled status code: ${response.statusCode} - ${response.body}");
+        log_handler?.w("[log_out] Unhandled status code: ${response.statusCode} - ${response.body}");
         await build_informative_alert_dialog(
           context,
           "Ok",
@@ -430,7 +430,7 @@ Future<void> log_out(
         return;
     }
   } catch (er){
-    log_handler?.e("Error: $er");
+    log_handler?.e("[log_out] Error processing response: $er");
     return;
   }
 }
@@ -483,7 +483,7 @@ Future<void> save_easter_egg_status(
       },
     );
   } on SocketException catch (e) {
-    log_handler?.e("Network error: $e");
+    log_handler?.e("[save_easter_egg_status] Network error: $e");
     await build_informative_alert_dialog(
       context,
       "Ok",
@@ -495,7 +495,7 @@ Future<void> save_easter_egg_status(
     // dialog already shown in onTimeout
     return;
   } catch (e) {
-    log_handler?.e("Unexpected error: $e");
+    log_handler?.e("[save_easter_egg_status] Unexpected error: $e");
     await build_informative_alert_dialog(
       context,
       "Ok",
@@ -509,10 +509,10 @@ Future<void> save_easter_egg_status(
     //---------- Status‑code handling ----------
     switch (response.statusCode) {
       case 200:
-        log_handler?.i("Backend response successful ${response.statusCode}");
+        log_handler?.i("[save_easter_egg_status] Backend response successful ${response.statusCode}");
         return;
       case 400:
-        log_handler?.e("Parameters error: ${response.statusCode} - ${response.body}");
+        log_handler?.e("[save_easter_egg_status] Parameters error: ${response.statusCode} - ${response.body}");
         await build_informative_alert_dialog(
           context,
           "Ok",
@@ -521,7 +521,7 @@ Future<void> save_easter_egg_status(
         );
         return;
       case 401:
-        log_handler?.w("Unauthorized access: ${response.statusCode} - ${response.body}");
+        log_handler?.w("[save_easter_egg_status] Unauthorized access: ${response.statusCode} - ${response.body}");
         await build_informative_alert_dialog(
           context,
           "Ok",
@@ -531,7 +531,7 @@ Future<void> save_easter_egg_status(
         );
         return;
       case 422:
-        log_handler?.e("Validation error: ${response.statusCode} - ${response.body}");
+        log_handler?.e("[save_easter_egg_status] Validation error: ${response.statusCode} - ${response.body}");
         await build_informative_alert_dialog(
           context,
           "Ok",
@@ -540,7 +540,7 @@ Future<void> save_easter_egg_status(
         );
         return;
       case 429:
-        log_handler?.e("Backend error: ${response.statusCode} - ${response.body}");
+        log_handler?.e("[save_easter_egg_status] Backend error: ${response.statusCode} - ${response.body}");
         await build_informative_alert_dialog(
           context,
           "Ok",
@@ -550,7 +550,7 @@ Future<void> save_easter_egg_status(
         return;
       case 500:
       default:
-        log_handler?.w("Unhandled status code: ${response.statusCode} - ${response.body}");
+        log_handler?.w("[save_easter_egg_status] Unhandled status code: ${response.statusCode} - ${response.body}");
         await build_informative_alert_dialog(
           context,
           "Ok",
@@ -560,7 +560,7 @@ Future<void> save_easter_egg_status(
         return;
     }
   } catch (er){
-    log_handler?.e("Error: $er");
+    log_handler?.e("[save_easter_egg_status] Error processing response: $er");
     return;
   }
 }
@@ -613,7 +613,7 @@ Future<Map<String, dynamic>> retrieve_user_preferences(
       },
     );
   } on SocketException catch (e) {
-    log_handler?.e("Network error: $e");
+    log_handler?.e("[retrieve_user_preferences] Network error: $e");
     await build_informative_alert_dialog(
       context,
       "Ok",
@@ -625,7 +625,7 @@ Future<Map<String, dynamic>> retrieve_user_preferences(
     // dialog already shown in onTimeout
     return {"Timeout exception":"Took too long time"};
   } catch (e) {
-    log_handler?.e("Unexpected error: $e");
+    log_handler?.e("[retrieve_user_preferences] Unexpected error: $e");
     await build_informative_alert_dialog(
       context,
       "Ok",
@@ -639,11 +639,11 @@ Future<Map<String, dynamic>> retrieve_user_preferences(
     //---------- Status‑code handling ----------
     switch (response.statusCode) {
       case 200:
-        log_handler?.i("Backend response successful ${response.statusCode}");
+        log_handler?.i("[retrieve_user_preferences] Backend response successful ${response.statusCode}");
         Map<String, dynamic> data = jsonDecode(response.body);
         return data;
       case 400:
-        log_handler?.e("Parameters error: ${response.statusCode} - ${response.body}");
+        log_handler?.e("[retrieve_user_preferences] Parameters error: ${response.statusCode} - ${response.body}");
         await build_informative_alert_dialog(
           context,
           "Ok",
@@ -652,7 +652,7 @@ Future<Map<String, dynamic>> retrieve_user_preferences(
         );
         return {"Error 400":"You have entered invalid values, please enter valid values"};
       case 401:
-        log_handler?.w("Unauthorized access: ${response.statusCode} - ${response.body}");
+        log_handler?.w("[retrieve_user_preferences] Unauthorized access: ${response.statusCode} - ${response.body}");
         await build_informative_alert_dialog(
           context,
           "Ok",
@@ -662,7 +662,7 @@ Future<Map<String, dynamic>> retrieve_user_preferences(
         );
         return {"Error 401":"User not found"};
       case 422:
-        log_handler?.e("Validation error: ${response.statusCode} - ${response.body}");
+        log_handler?.e("[retrieve_user_preferences] Validation error: ${response.statusCode} - ${response.body}");
         await build_informative_alert_dialog(
           context,
           "Ok",
@@ -671,7 +671,7 @@ Future<Map<String, dynamic>> retrieve_user_preferences(
         );
         return {"Error 422":"Unprocessable entity"};
       case 429:
-        log_handler?.e("Backend error: ${response.statusCode} - ${response.body}");
+        log_handler?.e("[retrieve_user_preferences] Backend error: ${response.statusCode} - ${response.body}");
         await build_informative_alert_dialog(
           context,
           "Ok",
@@ -681,7 +681,7 @@ Future<Map<String, dynamic>> retrieve_user_preferences(
         return {"Error 429":"Unexpected unknown server error"};
       case 500:
       default:
-        log_handler?.w("Unhandled status code: ${response.statusCode} - ${response.body}");
+        log_handler?.w("[retrieve_user_preferences] Unhandled status code: ${response.statusCode} - ${response.body}");
         await build_informative_alert_dialog(
           context,
           "Ok",
@@ -691,7 +691,7 @@ Future<Map<String, dynamic>> retrieve_user_preferences(
         return {"Error ${response.statusCode}":"Unexpected unknown error"};
     }
   } catch (er){
-    log_handler?.e("Error: $er");
+    log_handler?.e("[retrieve_user_preferences] Error processing response: $er");
     return {"Unhandled error":"$er"};
   }
 }
@@ -744,7 +744,7 @@ Future<Map<String, dynamic>> retrieve_all_user_title_chats(
       },
     );
   } on SocketException catch (e) {
-    log_handler?.e("Network error: $e");
+    log_handler?.e("[retrieve_all_user_title_chats] Network error: $e");
     await build_informative_alert_dialog(
       context,
       "Ok",
@@ -756,7 +756,7 @@ Future<Map<String, dynamic>> retrieve_all_user_title_chats(
     // dialog already shown in onTimeout
     return {"Timeout exception":"Took too long time"};
   } catch (e) {
-    log_handler?.e("Unexpected error: $e");
+    log_handler?.e("[retrieve_all_user_title_chats] Unexpected error: $e");
     await build_informative_alert_dialog(
       context,
       "Ok",
@@ -770,11 +770,11 @@ Future<Map<String, dynamic>> retrieve_all_user_title_chats(
     //---------- Status‑code handling ----------
     switch (response.statusCode) {
       case 200:
-        log_handler?.i("Backend response successful ${response.statusCode}");
+        log_handler?.i("[retrieve_all_user_title_chats] Backend response successful ${response.statusCode}");
         Map<String, dynamic> data = jsonDecode(response.body);
         return data;
       case 400:
-        log_handler?.e("Parameters error: ${response.statusCode} - ${response.body}");
+        log_handler?.e("[retrieve_all_user_title_chats] Parameters error: ${response.statusCode} - ${response.body}");
         await build_informative_alert_dialog(
           context,
           "Ok",
@@ -783,7 +783,7 @@ Future<Map<String, dynamic>> retrieve_all_user_title_chats(
         );
         return {"Error 400":"You have entered invalid values, please enter valid values"};
       case 401:
-        log_handler?.w("Unauthorized access: ${response.statusCode} - ${response.body}");
+        log_handler?.w("[retrieve_all_user_title_chats] Unauthorized access: ${response.statusCode} - ${response.body}");
         await build_informative_alert_dialog(
           context,
           "Ok",
@@ -793,7 +793,7 @@ Future<Map<String, dynamic>> retrieve_all_user_title_chats(
         );
         return {"Error 401":"User not found"};
       case 422:
-        log_handler?.e("Validation error: ${response.statusCode} - ${response.body}");
+        log_handler?.e("[retrieve_all_user_title_chats] Validation error: ${response.statusCode} - ${response.body}");
         await build_informative_alert_dialog(
           context,
           "Ok",
@@ -802,7 +802,7 @@ Future<Map<String, dynamic>> retrieve_all_user_title_chats(
         );
         return {"Error 422":"Unprocessable entity"};
       case 429:
-        log_handler?.e("Backend error: ${response.statusCode} - ${response.body}");
+        log_handler?.e("[retrieve_all_user_title_chats] Backend error: ${response.statusCode} - ${response.body}");
         await build_informative_alert_dialog(
           context,
           "Ok",
@@ -812,7 +812,7 @@ Future<Map<String, dynamic>> retrieve_all_user_title_chats(
         return {"Error 429":"Unexpected unknown server error"};
       case 500:
       default:
-        log_handler?.w("Unhandled status code: ${response.statusCode} - ${response.body}");
+        log_handler?.w("[retrieve_all_user_title_chats] Unhandled status code: ${response.statusCode} - ${response.body}");
         await build_informative_alert_dialog(
           context,
           "Ok",
@@ -822,7 +822,7 @@ Future<Map<String, dynamic>> retrieve_all_user_title_chats(
         return {"Error ${response.statusCode}":"Unexpected unknown error"};
     }
   } catch (er){
-    log_handler?.e("Error: $er");
+    log_handler?.e("[retrieve_all_user_title_chats] Error processing response: $er");
     return {"Unhandled error":"$er"};
   }
 }
@@ -877,7 +877,7 @@ Future<void> retrieve_specific_chat(
       },
     );
   } on SocketException catch (e) {
-    log_handler?.e("Network error: $e");
+    log_handler?.e("[retrieve_specific_chat] Network error: $e");
     await build_informative_alert_dialog(
       context,
       "Ok",
@@ -889,7 +889,7 @@ Future<void> retrieve_specific_chat(
     // dialog already shown in onTimeout
     return;
   } catch (e) {
-    log_handler?.e("Unexpected error: $e");
+    log_handler?.e("[retrieve_specific_chat] Unexpected error: $e");
     await build_informative_alert_dialog(
       context,
       "Ok",
@@ -904,7 +904,7 @@ Future<void> retrieve_specific_chat(
     switch (response.statusCode) {
       case 200:
         //Log and proceed
-        log_handler?.i("Backend response successful ${response.statusCode}");
+        log_handler?.i("[retrieve_specific_chat] Backend response successful ${response.statusCode}");
 
         final Map<String, dynamic> decoded = jsonDecode(response.body);
         final List<dynamic> raw_chat_list = decoded['chat'] ?? [];
@@ -920,11 +920,11 @@ Future<void> retrieve_specific_chat(
         CurrentChatCache.message_list = new_messages;
         CurrentChatCache.current_saved_chat_title = chat_title;
 
-        log_handler?.i("Chat retrieved and message list updated.");
+        log_handler?.i("[retrieve_specific_chat] Chat retrieved and message list updated.");
 
         return;
       case 400:
-        log_handler?.e("Parameters error: ${response.statusCode} - ${response.body}");
+        log_handler?.e("[retrieve_specific_chat] Parameters error: ${response.statusCode} - ${response.body}");
         await build_informative_alert_dialog(
           context,
           "Ok",
@@ -933,7 +933,7 @@ Future<void> retrieve_specific_chat(
         );
         return;
       case 401:
-        log_handler?.w("Unauthorized access: ${response.statusCode} - ${response.body}");
+        log_handler?.w("[retrieve_specific_chat] Unauthorized access: ${response.statusCode} - ${response.body}");
         await build_informative_alert_dialog(
           context,
           "Ok",
@@ -943,7 +943,7 @@ Future<void> retrieve_specific_chat(
         );
         return;
       case 422:
-        log_handler?.e("Validation error: ${response.statusCode} - ${response.body}");
+        log_handler?.e("[retrieve_specific_chat] Validation error: ${response.statusCode} - ${response.body}");
         await build_informative_alert_dialog(
           context,
           "Ok",
@@ -952,7 +952,7 @@ Future<void> retrieve_specific_chat(
         );
         return;
       case 429:
-        log_handler?.e("Backend error: ${response.statusCode} - ${response.body}");
+        log_handler?.e("[retrieve_specific_chat] Backend error: ${response.statusCode} - ${response.body}");
         await build_informative_alert_dialog(
           context,
           "Ok",
@@ -962,7 +962,7 @@ Future<void> retrieve_specific_chat(
         return;
       case 500:
       default:
-        log_handler?.w("Unhandled status code: ${response.statusCode} - ${response.body}");
+        log_handler?.w("[retrieve_specific_chat] Unhandled status code: ${response.statusCode} - ${response.body}");
         await build_informative_alert_dialog(
           context,
           "Ok",
@@ -972,7 +972,7 @@ Future<void> retrieve_specific_chat(
         return;
     }
   } catch (er){
-    log_handler?.e("Error: $er");
+    log_handler?.e("[retrieve_specific_chat] Error: $er");
     return;
   }
 }
@@ -1027,7 +1027,7 @@ Future<void> delete_specific_chat(
       },
     );
   } on SocketException catch (e) {
-    log_handler?.e("Network error: $e");
+    log_handler?.e("[delete_specific_chat] Network error: $e");
     await build_informative_alert_dialog(
       context,
       "Ok",
@@ -1039,7 +1039,7 @@ Future<void> delete_specific_chat(
     // dialog already shown in onTimeout
     return;
   } catch (e) {
-    log_handler?.e("Unexpected error: $e");
+    log_handler?.e("[delete_specific_chat] Unexpected error: $e");
     await build_informative_alert_dialog(
       context,
       "Ok",
@@ -1053,13 +1053,13 @@ Future<void> delete_specific_chat(
     //---------- Status‑code handling ----------
     switch (response.statusCode) {
       case 200:
-        log_handler?.i("Backend response successful ${response.statusCode}");
+        log_handler?.i("[delete_specific_chat] Backend response successful ${response.statusCode}");
 
         //Remove recently deleted chat from cache list
         ChatTitlesListCache.chat_titles_list_cache?.remove(chat_title);
         return;
       case 400:
-        log_handler?.e("Parameters error: ${response.statusCode} - ${response.body}");
+        log_handler?.e("[delete_specific_chat] Parameters error: ${response.statusCode} - ${response.body}");
         await build_informative_alert_dialog(
           context,
           "Ok",
@@ -1068,7 +1068,7 @@ Future<void> delete_specific_chat(
         );
         return;
       case 401:
-        log_handler?.w("Unauthorized access: ${response.statusCode} - ${response.body}");
+        log_handler?.w("[delete_specific_chat] Unauthorized access: ${response.statusCode} - ${response.body}");
         await build_informative_alert_dialog(
           context,
           "Ok",
@@ -1078,7 +1078,7 @@ Future<void> delete_specific_chat(
         );
         return;
       case 422:
-        log_handler?.e("Validation error: ${response.statusCode} - ${response.body}");
+        log_handler?.e("[delete_specific_chat] Validation error: ${response.statusCode} - ${response.body}");
         await build_informative_alert_dialog(
           context,
           "Ok",
@@ -1087,7 +1087,7 @@ Future<void> delete_specific_chat(
         );
         return;
       case 429:
-        log_handler?.e("Backend error: ${response.statusCode} - ${response.body}");
+        log_handler?.e("[delete_specific_chat] Backend error: ${response.statusCode} - ${response.body}");
         await build_informative_alert_dialog(
           context,
           "Ok",
@@ -1097,7 +1097,7 @@ Future<void> delete_specific_chat(
         return;
       case 500:
       default:
-        log_handler?.w("Unhandled status code: ${response.statusCode} - ${response.body}");
+        log_handler?.w("[delete_specific_chat] Unhandled status code: ${response.statusCode} - ${response.body}");
         await build_informative_alert_dialog(
           context,
           "Ok",
@@ -1107,7 +1107,7 @@ Future<void> delete_specific_chat(
         return;
     }
   } catch (er){
-    log_handler?.e("Error: $er");
+    log_handler?.e("[delete_specific_chat] Error: $er");
     return;
   }
 }
@@ -1134,7 +1134,7 @@ Future<bool> delete_user(
 
   //Validate password and email structure
   if(!is_valid_email(context, email) || !is_valid_password(context, password)) {
-    log_handler?.w("Invalid email or password: $email, $password");
+    log_handler?.w("[delete_user] Invalid email or password: $email, $password");
     await build_informative_alert_dialog(
       context,
       "Ok",
@@ -1147,7 +1147,7 @@ Future<bool> delete_user(
   //Ensure inputed email matches session email
   final String? session_email = await AppStorage.get_user_email();
   if(session_email != email){
-    log_handler?.w("Iputed email does not match with session email: $email vs $session_email");
+    log_handler?.w("[delete_user] Iputed email does not match with session email: $email vs $session_email");
     await build_informative_alert_dialog(
       context,
       "Ok",
@@ -1191,7 +1191,7 @@ Future<bool> delete_user(
       },
     );
   } on SocketException catch (e) {
-    log_handler?.e("Network error: $e");
+    log_handler?.e("[delete_user] Network error: $e");
     await build_informative_alert_dialog(
       context,
       "Ok",
@@ -1203,7 +1203,7 @@ Future<bool> delete_user(
     // dialog already shown in onTimeout
     return false;
   } catch (e) {
-    log_handler?.e("Unexpected error: $e");
+    log_handler?.e("[delete_user] Unexpected error: $e");
     await build_informative_alert_dialog(
       context,
       "Ok",
@@ -1217,7 +1217,7 @@ Future<bool> delete_user(
     //---------- Status‑code handling ----------
     switch (response.statusCode) {
       case 200:
-        log_handler?.i("Backend response successful ${response.statusCode}");
+        log_handler?.i("[delete_user] Backend response successful ${response.statusCode}");
         //Remove all global variables
         await AppStorage.clear_tokens();
         await build_informative_alert_dialog(
@@ -1229,7 +1229,7 @@ Future<bool> delete_user(
         );
         return true;
       case 400:
-        log_handler?.e("Parameters error: ${response.statusCode} - ${response.body}");
+        log_handler?.e("[delete_user] Parameters error: ${response.statusCode} - ${response.body}");
         await build_informative_alert_dialog(
           context,
           "Ok",
@@ -1238,7 +1238,7 @@ Future<bool> delete_user(
         );
         return false;
       case 401:
-        log_handler?.w("Unauthorized access: ${response.statusCode} - ${response.body}");
+        log_handler?.w("[delete_user] Unauthorized access: ${response.statusCode} - ${response.body}");
         await build_informative_alert_dialog(
           context,
           "Ok",
@@ -1248,7 +1248,7 @@ Future<bool> delete_user(
         );
         return false;
       case 422:
-        log_handler?.e("Validation error: ${response.statusCode} - ${response.body}");
+        log_handler?.e("[delete_user] Validation error: ${response.statusCode} - ${response.body}");
         await build_informative_alert_dialog(
           context,
           "Ok",
@@ -1257,7 +1257,7 @@ Future<bool> delete_user(
         );
         return false;
       case 429:
-        log_handler?.e("Backend error: ${response.statusCode} - ${response.body}");
+        log_handler?.e("[delete_user] Backend error: ${response.statusCode} - ${response.body}");
         await build_informative_alert_dialog(
           context,
           "Ok",
@@ -1267,7 +1267,7 @@ Future<bool> delete_user(
         return false;
       case 500:
       default:
-        log_handler?.w("Unhandled status code: ${response.statusCode} - ${response.body}");
+        log_handler?.w("[delete_user] Unhandled status code: ${response.statusCode} - ${response.body}");
         await build_informative_alert_dialog(
           context,
           "Ok",
@@ -1277,7 +1277,7 @@ Future<bool> delete_user(
         return false;
     }
   } catch (er){
-    log_handler?.e("Error: $er");
+    log_handler?.e("[delete_user] Error: $er");
     return false;
   }
 }
@@ -1342,7 +1342,7 @@ Future<void> save_current_chat(
       },
     );
   } on SocketException catch (e) {
-    log_handler?.e("Network error: $e");
+    log_handler?.e("[save_current_chat] Network error: $e");
     await build_informative_alert_dialog(
       context,
       "Ok",
@@ -1354,7 +1354,7 @@ Future<void> save_current_chat(
     // dialog already shown in onTimeout
     return;
   } catch (e) {
-    log_handler?.e("Unexpected error: $e");
+    log_handler?.e("[save_current_chat] Unexpected error: $e");
     await build_informative_alert_dialog(
       context,
       "Ok",
@@ -1368,7 +1368,7 @@ Future<void> save_current_chat(
     //---------- Status‑code handling ----------
     switch (response.statusCode) {
       case 200:
-        log_handler?.i("Backend response successful ${response.statusCode}");
+        log_handler?.i("[save_current_chat] Backend response successful ${response.statusCode}");
         await build_informative_alert_dialog(
             context,
             "Ok",
@@ -1378,7 +1378,7 @@ Future<void> save_current_chat(
         );
         return;
       case 400:
-        log_handler?.e("Parameters error: ${response.statusCode} - ${response.body}");
+        log_handler?.e("[save_current_chat] Parameters error: ${response.statusCode} - ${response.body}");
         await build_informative_alert_dialog(
           context,
           "Ok",
@@ -1387,7 +1387,7 @@ Future<void> save_current_chat(
         );
         return;
       case 401:
-        log_handler?.w("Unauthorized access: ${response.statusCode} - ${response.body}");
+        log_handler?.w("[save_current_chat] Unauthorized access: ${response.statusCode} - ${response.body}");
         await build_informative_alert_dialog(
           context,
           "Ok",
@@ -1397,7 +1397,7 @@ Future<void> save_current_chat(
         );
         return;
       case 422:
-        log_handler?.e("Validation error: ${response.statusCode} - ${response.body}");
+        log_handler?.e("[save_current_chat] Validation error: ${response.statusCode} - ${response.body}");
         await build_informative_alert_dialog(
           context,
           "Ok",
@@ -1406,7 +1406,7 @@ Future<void> save_current_chat(
         );
         return;
       case 429:
-        log_handler?.e("Backend error: ${response.statusCode} - ${response.body}");
+        log_handler?.e("[save_current_chat] Backend error: ${response.statusCode} - ${response.body}");
         await build_informative_alert_dialog(
           context,
           "Ok",
@@ -1416,7 +1416,7 @@ Future<void> save_current_chat(
         return;
       case 500:
       default:
-        log_handler?.w("Unhandled status code: ${response.statusCode} - ${response.body}");
+        log_handler?.w("[save_current_chat] Unhandled status code: ${response.statusCode} - ${response.body}");
         await build_informative_alert_dialog(
           context,
           "Ok",
@@ -1426,7 +1426,7 @@ Future<void> save_current_chat(
         return;
     }
   } catch (er){
-    log_handler?.e("Error: $er");
+    log_handler?.e("[save_current_chat] Error: $er");
     return;
   }
 }

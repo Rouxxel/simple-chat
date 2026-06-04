@@ -52,7 +52,7 @@ class Message {
     log_handler?.d("[------ai_query_and_response function executing------]");
     if (input_controller.text.isEmpty) {
       //No input to process
-      log_handler?.e("input_controller is empty");
+      log_handler?.e("[ai_query_and_response] input_controller is empty");
       return;
     }
 
@@ -100,10 +100,10 @@ class Message {
       switch(response.statusCode){
         case 200:
           //Log and proceed
-          log_handler?.i("Backend response successful ${response.statusCode}");
+          log_handler?.i("[ai_query_and_response] Backend response successful ${response.statusCode}");
           break;
         case 504:
-          log_handler?.e("AI timeout: ${response.statusCode} - ${response.body}");
+          log_handler?.e("[ai_query_and_response] AI timeout: ${response.statusCode} - ${response.body}");
           await build_informative_alert_dialog(
             context,
             "OK",
@@ -112,7 +112,7 @@ class Message {
           );
           return;
         case 422:
-          log_handler?.e("Validation error: ${response.statusCode} - ${response.body}");
+          log_handler?.e("[ai_query_and_response] Validation error: ${response.statusCode} - ${response.body}");
           await build_informative_alert_dialog(
             context,
             "Ok",
@@ -121,7 +121,7 @@ class Message {
           );
           return;
         case 429:
-          log_handler?.e("Backend error: ${response.statusCode} - ${response.body}");
+          log_handler?.e("[ai_query_and_response] Backend error: ${response.statusCode} - ${response.body}");
           await build_informative_alert_dialog(
             context,
             "Ok",
@@ -131,7 +131,7 @@ class Message {
           return;
         case 500:
         default:
-          log_handler?.w("Unexpected status code: ${response.statusCode} - ${response.body}");
+          log_handler?.w("[ai_query_and_response] Unexpected status code: ${response.statusCode} - ${response.body}");
           await build_informative_alert_dialog(
             context,
             "Ok",
@@ -159,9 +159,9 @@ class Message {
         });
       }
 
-      log_handler?.d("---AI successfully responded back---");
+      log_handler?.d("[ai_query_and_response] AI successfully responded back");
     } catch (er) {
-      log_handler?.e("Error: $er");
+      log_handler?.e("[ai_query_and_response] Error: $er");
       await build_informative_alert_dialog(
         context,
         "OK",

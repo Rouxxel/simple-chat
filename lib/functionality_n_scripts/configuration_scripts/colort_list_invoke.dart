@@ -17,5 +17,5 @@ Future<void> initialize_color_name_to_hex_map() async {
     return MapEntry(normalizedKey, value.toString());
   });
 
-  log_handler?.d("Loaded colors: ${color_name_to_hex_map.length}");
+  log_handler?.d("[colort_list_invoke] Loaded colors: ${color_name_to_hex_map.length}");
 }

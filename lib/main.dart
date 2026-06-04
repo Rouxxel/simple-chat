@@ -15,7 +15,7 @@ void main() async{
 
   //First, Initialize logger
   await init_logger();
-  log_handler?.i("Logger successfully initialized!");
+  log_handler?.i("[main] Logger successfully initialized!");
 
   //Load configurations
   await initialize_config();
@@ -26,7 +26,7 @@ void main() async{
   await root_endpoint(); //Ping the backend
 
   //Check loaded configuration_scripts (I know its horrible coding)
-  log_handler?.i(
+  log_handler?.i('[main] Config Data:\n'
       'directive: ${config_data.directive}\n'
           'default_directive: ${config_data.default_directive}\n'
           'default_image_path: ${config_data.default_background_image_path}\n'

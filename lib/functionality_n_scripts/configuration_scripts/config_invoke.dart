@@ -239,11 +239,11 @@ Future<Map<String, dynamic>?> read_data_json_asset(String file_path) async {
     return json_data;
 
   } on FlutterError catch (er) {
-    log_handler?.e("Error loading asset '$file_path': $er");
+    log_handler?.e("[read_data_json_asset] Error loading asset '$file_path': $er");
     return null;
 
   } on FormatException {
-    log_handler?.e("Error: The asset '$file_path' is not a valid JSON file.");
+    log_handler?.e("[read_data_json_asset] Error: The asset '$file_path' is not a valid JSON file.");
     return null;
   }
 }
@@ -289,5 +289,5 @@ Future<void> initialize_config() async {
 
   raw_config_json = json_data;
   config_data = app_configuration.fromJson(json_data);
-  log_handler?.d("Configuration loaded from local file.");
+  log_handler?.d("[initialize_config] Configuration loaded from local file.");
 }

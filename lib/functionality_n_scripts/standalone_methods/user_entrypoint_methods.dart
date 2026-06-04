@@ -28,7 +28,7 @@ Future<bool> sign_up(
   //Local validation
   if (email.isEmpty || password.isEmpty) {
     //No input to process
-    log_handler?.e("Controllers are empty");
+    log_handler?.e("[sign_up] Controllers are empty");
     return false;
   }
 
@@ -40,7 +40,7 @@ Future<bool> sign_up(
       "Invalid email",
       "The email you provided is invalid, please enter a valid email",
     );
-    log_handler?.w("Input not sent due to invalid email.");
+    log_handler?.w("[sign_up] Input not sent due to invalid email.");
     return false;
   }
   if(!is_valid_password(context, password)){
@@ -52,7 +52,7 @@ Future<bool> sign_up(
         "at least 8 characters, 1 upper case character, 1 lower case character, 1 number and "
         "1 number.",
     );
-    log_handler?.w("Input not sent due to invalid password.");
+    log_handler?.w("[sign_up] Input not sent due to invalid password.");
     return false;
   }
 
@@ -89,12 +89,12 @@ Future<bool> sign_up(
     //---------- Status‑code handling ----------
     final data = jsonDecode(response.body);
     final success = data["success"] ?? false;
-    log_handler?.w(data);
+    log_handler?.w("[sign_up] - ${data}");
 
     switch(response.statusCode){
       case 200:
         if (data["user_already_exists"] == true) {
-          log_handler?.i("Attempted to register an existing user.");
+          log_handler?.i("[sign_up] Attempted to register an existing user.");
 
           //Show alert and then navigate to login page
           await build_informative_alert_dialog(
@@ -113,7 +113,7 @@ Future<bool> sign_up(
 
         if (success) {
           final user = data["user"];
-          log_handler?.i("User successfully registered: ${user["email"]}");
+          log_handler?.i("[sign_up] User successfully registered: ${user["email"]}");
 
           await build_informative_alert_dialog(
             context,
@@ -124,7 +124,7 @@ Future<bool> sign_up(
           return true;
         }
 
-        log_handler?.w("Success false in 200 response.");
+        log_handler?.w("[sign_up] Success false in 200 response.");
         await build_informative_alert_dialog(
           context,
           "Ok",
@@ -133,7 +133,7 @@ Future<bool> sign_up(
         );
         return false;
       case 400:
-        log_handler?.e("Client error: ${response.body}");
+        log_handler?.e("[sign_up] Client error: ${response.body}");
         await build_informative_alert_dialog(
           context,
           "Ok",
@@ -142,7 +142,7 @@ Future<bool> sign_up(
         );
         return false;
       case 422:
-        log_handler?.e("Validation error: ${response.body}");
+        log_handler?.e("[sign_up] Validation error: ${response.body}");
         await build_informative_alert_dialog(
           context,
           "Ok",
@@ -151,7 +151,7 @@ Future<bool> sign_up(
         );
         return false;
       case 429:
-        log_handler?.e("Rate limit hit: ${response.body}");
+        log_handler?.e("[sign_up] Rate limit hit: ${response.body}");
         await build_informative_alert_dialog(
           context,
           "Ok",
@@ -161,7 +161,7 @@ Future<bool> sign_up(
         return false;
       case 500:
       default:
-        log_handler?.e("Server error (${response.statusCode}): ${response.body}");
+        log_handler?.e("[sign_up] Server error (${response.statusCode}): ${response.body}");
         await build_informative_alert_dialog(
           context,
           "Ok",
@@ -171,7 +171,7 @@ Future<bool> sign_up(
         return false;
     }
   } catch (e) {
-    log_handler?.e("Exception in sign-up: $e");
+    log_handler?.e("[sign_up] Exception in sign-up: $e");
     await build_informative_alert_dialog(
       context,
       "Ok",
@@ -207,7 +207,7 @@ Future<bool> log_in(
       "Invalid email",
       "The email you provided is invalid, please enter a valid email",
     );
-    log_handler?.w("Input not sent due to invalid email.");
+    log_handler?.w("[log_in] Input not sent due to invalid email.");
     return false;
   }
   if(!is_valid_password(context, password)){
@@ -219,7 +219,7 @@ Future<bool> log_in(
           "at least 8 characters, 1 upper case character, 1 lower case character, 1 number and "
           "1 number.",
     );
-    log_handler?.w("Input not sent due to invalid password.");
+    log_handler?.w("[log_in] Input not sent due to invalid password.");
     return false;
   }
 
@@ -253,7 +253,7 @@ Future<bool> log_in(
       },
     );
   } on SocketException catch (e) {
-    log_handler?.e("Network error: $e");
+    log_handler?.e("[log_in] Network error: $e");
     await build_informative_alert_dialog(
       context,
       "Ok",
@@ -265,7 +265,7 @@ Future<bool> log_in(
     // dialog already shown in onTimeout
     return false;
   } catch (e) {
-    log_handler?.e("Unexpected error: $e");
+    log_handler?.e("[log_in] Unexpected error: $e");
     await build_informative_alert_dialog(
       context,
       "Ok",
@@ -279,7 +279,7 @@ Future<bool> log_in(
     //---------- Status‑code handling ----------
     switch (response.statusCode) {
       case 200:
-        log_handler?.i("Backend response successful ${response.statusCode}");
+        log_handler?.i("[log_in] Backend response successful ${response.statusCode}");
         final data = jsonDecode(response.body);
 
         //Save token data for global use
@@ -300,7 +300,7 @@ Future<bool> log_in(
 
         return true;
       case 400:
-        log_handler?.e("Parameters error: ${response.statusCode} - ${response.body}");
+        log_handler?.e("[log_in] Parameters error: ${response.statusCode} - ${response.body}");
         await build_informative_alert_dialog(
           context,
           "Ok",
@@ -309,7 +309,7 @@ Future<bool> log_in(
         );
         return false;
       case 401:
-        log_handler?.w("Unauthorized access: ${response.statusCode} - ${response.body}");
+        log_handler?.w("[log_in] Unauthorized access: ${response.statusCode} - ${response.body}");
         await build_informative_alert_dialog(
           context,
           "Ok",
@@ -318,7 +318,7 @@ Future<bool> log_in(
         );
         return false;
       case 422:
-        log_handler?.e("Validation error: ${response.statusCode} - ${response.body}");
+        log_handler?.e("[log_in] Validation error: ${response.statusCode} - ${response.body}");
         await build_informative_alert_dialog(
           context,
           "Ok",
@@ -327,7 +327,7 @@ Future<bool> log_in(
         );
         return false;
       case 429:
-        log_handler?.e("Backend error: ${response.statusCode} - ${response.body}");
+        log_handler?.e("[log_in] Backend error: ${response.statusCode} - ${response.body}");
         await build_informative_alert_dialog(
           context,
           "Ok",
@@ -337,7 +337,7 @@ Future<bool> log_in(
         return false;
       case 500:
       default:
-        log_handler?.w("Unhandled status code: ${response.statusCode} - ${response.body}");
+        log_handler?.w("[log_in] Unhandled status code: ${response.statusCode} - ${response.body}");
         await build_informative_alert_dialog(
           context,
           "Ok",
@@ -347,7 +347,7 @@ Future<bool> log_in(
         return false;
     }
   } catch (er){
-    log_handler?.e("Error: $er");
+    log_handler?.e("[log_in] Error: $er");
     return false;
   }
 }
@@ -392,7 +392,7 @@ Future<bool> complete_user_profile(
       "Invalid email",
       "The email you provided is invalid, please enter a valid email",
     );
-    log_handler?.w("Input not sent due to invalid email.");
+    log_handler?.w("[complete_user_profile] Input not sent due to invalid email.");
     return false;
   }
 
@@ -439,7 +439,7 @@ Future<bool> complete_user_profile(
       },
     );
   } on SocketException catch (e) {
-    log_handler?.e("Network error: $e");
+    log_handler?.e("[complete_user_profile] Network error: $e");
     await build_informative_alert_dialog(
       context,
       "Ok",
@@ -451,7 +451,7 @@ Future<bool> complete_user_profile(
     // dialog already shown in onTimeout
     return false;
   } catch (e) {
-    log_handler?.e("Unexpected error: $e");
+    log_handler?.e("[complete_user_profile] Unexpected error: $e");
     await build_informative_alert_dialog(
       context,
       "Ok",
@@ -465,10 +465,10 @@ Future<bool> complete_user_profile(
     switch (response.statusCode) {
       case 200:
       case 201: //Just in case your backend returns 201 Created
-        log_handler?.i("Profile completion successful: ${response.statusCode}");
+        log_handler?.i("[complete_user_profile] Profile completion successful: ${response.statusCode}");
         return true;
       case 400:
-        log_handler?.e("Invalid parameters: ${response.statusCode} - ${response.body}");
+        log_handler?.e("[complete_user_profile] Invalid parameters: ${response.statusCode} - ${response.body}");
         await build_informative_alert_dialog(
           context,
           "Ok",
@@ -477,7 +477,7 @@ Future<bool> complete_user_profile(
         );
         return false;
       case 401:
-        log_handler?.w("Unauthorized: ${response.statusCode} - ${response.body}");
+        log_handler?.w("[complete_user_profile] Unauthorized: ${response.statusCode} - ${response.body}");
         await build_informative_alert_dialog(
           context,
           "Ok",
@@ -487,7 +487,7 @@ Future<bool> complete_user_profile(
         );
         return false;
       case 409:
-        log_handler?.w("Profile already exists: ${response.statusCode} - ${response.body}");
+        log_handler?.w("[complete_user_profile] Profile already exists: ${response.statusCode} - ${response.body}");
         await build_informative_alert_dialog(
           context,
           "Ok",
@@ -496,7 +496,7 @@ Future<bool> complete_user_profile(
         );
         return false;
       case 422:
-        log_handler?.e("Validation error: ${response.statusCode} - ${response.body}");
+        log_handler?.e("[complete_user_profile] Validation error: ${response.statusCode} - ${response.body}");
         await build_informative_alert_dialog(
           context,
           "Ok",
@@ -505,7 +505,7 @@ Future<bool> complete_user_profile(
         );
         return false;
       case 429:
-        log_handler?.e("Rate limited: ${response.statusCode} - ${response.body}");
+        log_handler?.e("[complete_user_profile] Rate limited: ${response.statusCode} - ${response.body}");
         await build_informative_alert_dialog(
           context,
           "Ok",
@@ -515,7 +515,7 @@ Future<bool> complete_user_profile(
         return false;
       case 500:
       default:
-        log_handler?.w("Unhandled status code: ${response.statusCode} - ${response.body}");
+        log_handler?.w("[complete_user_profile] Unhandled status code: ${response.statusCode} - ${response.body}");
         await build_informative_alert_dialog(
           context,
           "Ok",
@@ -525,7 +525,7 @@ Future<bool> complete_user_profile(
         return false;
     }
   } catch (er) {
-    log_handler?.e("Error processing response: $er");
+    log_handler?.e("[complete_user_profile] Error processing response: $er");
     return false;
   }
 }
@@ -554,7 +554,7 @@ Future<bool> reset_password(
       "Invalid email",
       "The email you provided is invalid, please enter a valid email",
     );
-    log_handler?.w("Input not sent due to invalid email.");
+    log_handler?.w("[reset_password] Input not sent due to invalid email.");
     return false;
   }
 
@@ -586,7 +586,7 @@ Future<bool> reset_password(
 
     switch (response.statusCode) {
       case 200:
-        log_handler?.i("Password reset email sent successfully.");
+        log_handler?.i("[reset_password] Password reset email sent successfully.");
         await build_informative_alert_dialog(
           context,
           "Ok",
@@ -595,7 +595,7 @@ Future<bool> reset_password(
         );
         return true;
       case 400:
-        log_handler?.e("Invalid email format: ${response.statusCode} - ${response.body}");
+        log_handler?.e("[reset_password] Invalid email format: ${response.statusCode} - ${response.body}");
         build_informative_alert_dialog(
           context,
           "Ok",
@@ -604,7 +604,7 @@ Future<bool> reset_password(
         );
         return false;
       case 404:
-        log_handler?.w("Email not registered: ${response.statusCode} - ${response.body}");
+        log_handler?.w("[reset_password] Email not registered: ${response.statusCode} - ${response.body}");
         build_informative_alert_dialog(
           context,
           "Ok",
@@ -614,7 +614,7 @@ Future<bool> reset_password(
         );
         return false;
       case 422:
-        log_handler?.e("Validation error: ${response.statusCode} - ${response.body}");
+        log_handler?.e("[reset_password] Validation error: ${response.statusCode} - ${response.body}");
         build_informative_alert_dialog(
           context,
           "Ok",
@@ -623,7 +623,7 @@ Future<bool> reset_password(
         );
         return false;
       case 429:
-        log_handler?.e("Rate limit hit: ${response.statusCode} - ${response.body}");
+        log_handler?.e("[reset_password] Rate limit hit: ${response.statusCode} - ${response.body}");
         build_informative_alert_dialog(
           context,
           "Ok",
@@ -633,7 +633,7 @@ Future<bool> reset_password(
         return false;
       case 500:
       default:
-        log_handler?.w("Unexpected status code: ${response.statusCode} - ${response.body}");
+        log_handler?.w("[reset_password] Unexpected status code: ${response.statusCode} - ${response.body}");
         build_informative_alert_dialog(
           context,
           "Ok",
@@ -643,7 +643,7 @@ Future<bool> reset_password(
         return false;
     }
   } on SocketException catch (e) {
-    log_handler?.e("Network error: $e");
+    log_handler?.e("[reset_password] Network error: $e");
     build_informative_alert_dialog(
       context,
       "Ok",
@@ -654,7 +654,7 @@ Future<bool> reset_password(
   } on TimeoutException {
     return false; // already handled
   } catch (e) {
-    log_handler?.e("Unexpected error: $e");
+    log_handler?.e("[reset_password] Unexpected error: $e");
     build_informative_alert_dialog(
       context,
       "Ok",

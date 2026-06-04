@@ -266,7 +266,7 @@ class _complete_profileState extends State<complete_profile> {
                                   !validate_user_input(context, country) ||
                                   !validate_user_input(context, country_code)
                               ) {
-                                log_handler?.w("Input not sent due to suspicious input by user.");
+                                log_handler?.w("[complete_profile_page] Input not sent due to suspicious input by user.");
                                 setState(() {_is_processing = false;});
                                 return;
                               }

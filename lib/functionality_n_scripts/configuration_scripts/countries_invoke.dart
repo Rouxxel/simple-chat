@@ -42,8 +42,8 @@ Future<void> initialize_countries() async {
         .map((countryJson) => countries.fromJson(countryJson))
         .toList();
 
-    log_handler?.d("Countries loaded: ${list_of_countries.length}");
+    log_handler?.d("[initialize_countries] Countries loaded: ${list_of_countries.length}");
   } catch (e) {
-    log_handler?.e("Failed to load countries: $e");
+    log_handler?.e("[initialize_countries] Failed to load countries: $e");
   }
 }
