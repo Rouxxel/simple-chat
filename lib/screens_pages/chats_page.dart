@@ -33,14 +33,14 @@ class _chats_listState extends State<chats_list> {
 
     //If already cached, no backend call needed
     if (ChatTitlesListCache.chat_titles_list_cache != null) {
-      log_handler?.i("Chat titles already cached. Skipping backend call.");
+      log_handler?.i("[chat_page] Chat titles already cached. Skipping backend call.");
       setState(() {
         _is_processing = false;
       });
       return;
     }
 
-    log_handler?.d("Fetching chat titles from backend...");
+    log_handler?.d("[chat_page] Fetching chat titles from backend...");
 
     final result = await retrieve_all_user_title_chats(context);
 
@@ -266,7 +266,7 @@ class _chats_listState extends State<chats_list> {
                                                     onPressed: _is_processing
                                                         ? null  //disables the button when true
                                                         : () async {
-                                                      log_handler?.i("Refresh icon pressed for chat: $title");
+                                                      log_handler?.i("[chat_page] Refresh icon pressed for chat: $title");
 
                                                       await play_effect_sound(config_data.button_pressed_effect);
 
@@ -285,7 +285,7 @@ class _chats_listState extends State<chats_list> {
                                                           _is_processing = true;
                                                         });
 
-                                                        log_handler?.d("User proceed with chat retrieval");
+                                                        log_handler?.d("[chat_page] User proceed with chat retrieval");
 
                                                         //Call retrieve endpoint
                                                         await retrieve_specific_chat(context, title);
@@ -294,7 +294,7 @@ class _chats_listState extends State<chats_list> {
                                                           _is_processing = false;
                                                         });
                                                       } else {
-                                                        log_handler?.d("User cancelled chat retrieval");
+                                                        log_handler?.d("[chat_page] User cancelled chat retrieval");
                                                       }
                                                     },
                                                   ),
@@ -304,7 +304,7 @@ class _chats_listState extends State<chats_list> {
                                                     onPressed: _is_processing
                                                         ? null // disables the button when processing
                                                         : () async {
-                                                      log_handler?.i("Delete icon pressed for chat: $title");
+                                                      log_handler?.i("[chat_page] Delete icon pressed for chat: $title");
 
                                                       await play_effect_sound(config_data.button_pressed_effect);
 
@@ -323,7 +323,7 @@ class _chats_listState extends State<chats_list> {
                                                           _is_processing = true;
                                                         });
 
-                                                        log_handler?.d("User proceed with chat deletion");
+                                                        log_handler?.d("[chat_page] User proceed with chat deletion");
 
                                                         //Store original length
                                                         final int original_length = ChatTitlesListCache.chat_titles_list_cache?.length ?? 0;
@@ -342,7 +342,7 @@ class _chats_listState extends State<chats_list> {
                                                           _is_processing = false;
                                                         });
                                                       } else {
-                                                        log_handler?.d("User cancelled chat deletion");
+                                                        log_handler?.d("[chat_page] User cancelled chat deletion");
                                                       }
                                                     },
                                                   ),

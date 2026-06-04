@@ -176,7 +176,7 @@ class _log_in_pageState extends State<log_in_page> {
                                   //Validate user inputs
                                   if (!validate_user_input(context, email) ||
                                       !validate_user_input(context, password)) {
-                                    log_handler?.w("Input not sent due to suspicious input by user.");
+                                    log_handler?.w("[log_in_page] Input not sent due to suspicious input by user.");
                                     return;
                                   }
 
@@ -197,7 +197,7 @@ class _log_in_pageState extends State<log_in_page> {
                                     final bool user_exists = await check_user_exists(context);
 
                                     if (user_exists){
-                                      log_handler?.i("User profile complete, move to landing page");
+                                      log_handler?.i("[log_in_page] User profile complete, move to landing page");
                                       //Navigate to landing page and remove entry point stack
                                       await Navigator.of(context).pushAndRemoveUntil(
                                         PageRouteBuilder(
@@ -213,7 +213,7 @@ class _log_in_pageState extends State<log_in_page> {
                                             (route) => false, //remove all previous routes
                                       );
                                     } else{
-                                      log_handler?.i("User profile incomplete, move to complete profile page");
+                                      log_handler?.i("[log_in_page] User profile incomplete, move to complete profile page");
                                       await Navigator.push(
                                         context,
                                         PageRouteBuilder(
@@ -277,7 +277,7 @@ class _log_in_pageState extends State<log_in_page> {
                                       recognizer: !_is_processing
                                           ? (TapGestureRecognizer()
                                         ..onTap = () async {
-                                          log_handler?.d("Navigate to sign-up page");
+                                          log_handler?.d("[log_in_page] Navigate to sign-up page");
                                           await Navigator.push(
                                             context,
                                             PageRouteBuilder(
@@ -306,7 +306,7 @@ class _log_in_pageState extends State<log_in_page> {
                                 onTap: _is_processing
                                     ? null                           // Disable while processing
                                     : () async {
-                                  log_handler?.d("Navigate to forgot password page");
+                                  log_handler?.d("[log_in_page] Navigate to forgot password page");
                                   await Navigator.push(
                                     context,
                                     PageRouteBuilder(

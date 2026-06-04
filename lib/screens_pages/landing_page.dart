@@ -66,7 +66,7 @@ class _landing_pageState extends State<landing_page> {
     });
 
     int last_index = CurrentChatCache.message_list.length - 1;
-    log_handler?.i("Loaded/saved directory: ${CurrentChatCache.message_list[last_index].text}");
+    log_handler?.i("[landing_page] Loaded/saved directory: ${CurrentChatCache.message_list[last_index].text}");
     // log_handler?.i(
     //     "Loaded messages (Bottom up):\n\n${CurrentChatCache.message_list.map((m) =>
     //         "${m.is_user}: ${m.text.replaceAll('\n', ' ')} | ${m.time_stamp}"
@@ -177,7 +177,7 @@ class _landing_pageState extends State<landing_page> {
                   );
 
                   //Handle 3 options
-                  log_handler?.d("Selected choice: $selected");
+                  log_handler?.d("[landing_page] Selected choice: $selected");
                   if (selected == "start_new_chat") {
                     //Notify the user
                     bool? user_decision = await build_yes_no_alert_dialog(
@@ -209,7 +209,7 @@ class _landing_pageState extends State<landing_page> {
 
                     //Ensure chat has been initiated
                     if(CurrentChatCache.message_list.length <= 1){
-                      log_handler?.w("Chat list 'empty', only main directory present "
+                      log_handler?.w("[landing_page] Chat list 'empty', only main directory present "
                           "${CurrentChatCache.message_list.length}");
                       await build_informative_alert_dialog(
                           context,
@@ -246,10 +246,10 @@ class _landing_pageState extends State<landing_page> {
                           final titles = List<String>.from(result["chat_titles"]);
 
                           ChatTitlesListCache.chat_titles_list_cache = titles;
-                          log_handler?.d("Chat cache updated");
+                          log_handler?.d("[landing_page] Chat cache updated");
                         }
                       } else {
-                        log_handler?.i("Chat saving was cancelled by the user.");
+                        log_handler?.i("[landing_page] Chat saving was cancelled by the user.");
                       }
 
                       setState(() => _is_processing = false);
@@ -280,7 +280,7 @@ class _landing_pageState extends State<landing_page> {
                       CurrentChatCache.current_saved_chat_title = chat_title;
                     } else {
                       //User cancelled
-                      log_handler?.i("Chat saving was cancelled by the user.");
+                      log_handler?.i("[landing_page] Chat saving was cancelled by the user.");
                     }
 
                     setState(() => _is_processing = false);
@@ -385,12 +385,12 @@ class _landing_pageState extends State<landing_page> {
                         await log_out(context);
                         //Stop watch dog for token refresh
                         TokenWatchdog().stop();
-                        log_handler?.i("User logged out. Returning to log in page");
+                        log_handler?.i("[landing_page] User logged out. Returning to log in page");
 
-                        log_handler?.w(CurrentChatCache.message_list);
+                        log_handler?.w("[landing_page] CurrentChatCache.message_list: ${CurrentChatCache.message_list}");
                         ChatTitlesListCache.clear(); //Nullify chat cache
                         CurrentChatCache.clear(); //Nullify current chat cache
-                        log_handler?.w(CurrentChatCache.message_list);
+                        log_handler?.w("[landing_page] CurrentChatCache.message_list: ${CurrentChatCache.message_list}");
                         EKeyCache.clear(); //Nullify e key cache
                         UserPreferencesCache.clear(); //Nullify user preferences cache
 
@@ -412,7 +412,7 @@ class _landing_pageState extends State<landing_page> {
                         );
                       } else {
                         //User cancelled or dismissed the dialog
-                        log_handler?.i("Logout cancelled by user");
+                        log_handler?.i("[landing_page] Logout cancelled by user");
                       }
                     },
                   ),
@@ -675,7 +675,7 @@ class _landing_pageState extends State<landing_page> {
                                   _is_processing = false;
                                 });//End processing
                               } else {
-                                log_handler?.w("Message not sent due to invalid input.");
+                                log_handler?.w("[landing_page] Message not sent due to invalid input.");
                               }
                             },
                           ),

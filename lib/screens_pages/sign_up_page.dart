@@ -184,14 +184,14 @@ class _sign_up_pageState extends State<sign_up_page> {
                                   if (!validate_user_input(context, email) ||
                                       !validate_user_input(context, password) ||
                                       !validate_user_input(context, confirm_password)) {
-                                    log_handler?.w("Input not sent due to suspicious input by user.");
+                                    log_handler?.w("[sign_up_page] Input not sent due to suspicious input by user.");
                                     setState(() {_is_processing = false;});
                                     return;
                                   }
 
                                   //Ensure passwords match
                                   if(password != confirm_password){
-                                    log_handler?.w("Password and password confirm are not the same");
+                                    log_handler?.w("[sign_up_page] Password and password confirm are not the same");
                                     await build_informative_alert_dialog(
                                       context,
                                       "Ok",
@@ -265,7 +265,7 @@ class _sign_up_pageState extends State<sign_up_page> {
                                 onTap: _is_processing
                                     ? null                           // Disable while processing
                                     : () async {
-                                  log_handler?.d("Navigate to log-in page");
+                                  log_handler?.d("[sign_up_page] Navigate to log-in page");
 
                                   await Navigator.push(
                                     context,

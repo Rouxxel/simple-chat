@@ -30,10 +30,10 @@ Future<String?> retrieve_e_public_key(
 
   //Check cache first
   if (EKeyCache.e_key_cache != null && EKeyCache.e_key_cache is String) {
-    log_handler?.i("Using cached E public key");
+    log_handler?.i("[retrieve_e_public_key] Using cached E public key");
     return EKeyCache.e_key_cache;
   } else {
-    log_handler?.i("Retrieving key for encryption, not yet cached");
+    log_handler?.i("[retrieve_e_public_key] Retrieving key for encryption, not yet cached");
   }
 
   http.Response response;
@@ -56,7 +56,7 @@ Future<String?> retrieve_e_public_key(
       },
     );
   } on SocketException catch (e) {
-    log_handler?.e("Network error: $e");
+    log_handler?.e("[retrieve_e_public_key] Network error: $e");
     await build_informative_alert_dialog(
       context,
       "Ok",
@@ -67,7 +67,7 @@ Future<String?> retrieve_e_public_key(
   } on TimeoutException {
     return null;
   } catch (e) {
-    log_handler?.e("Unexpected error: $e");
+    log_handler?.e("[retrieve_e_public_key] Unexpected error: $e");
     await build_informative_alert_dialog(
       context,
       "Ok",
@@ -81,14 +81,14 @@ Future<String?> retrieve_e_public_key(
     switch (response.statusCode) {
       case 200:
         final data = jsonDecode(response.body);
-        log_handler?.i("E public key successfully retrieved, 200");
+        log_handler?.i("[retrieve_e_public_key] E public key successfully retrieved, 200");
 
         //Cache the key
         EKeyCache.e_key_cache = data['public_key'] as String?;
-        log_handler?.i("E public key cached for the rest of the session");
+        log_handler?.i("[retrieve_e_public_key] E public key cached for the rest of the session");
         return data['public_key'];
       case 400:
-        log_handler?.e("Invalid parameters: ${response.statusCode} - ${response.body}");
+        log_handler?.e("[retrieve_e_public_key] Invalid parameters: ${response.statusCode} - ${response.body}");
         await build_informative_alert_dialog(
           context,
           "Ok",
@@ -97,7 +97,7 @@ Future<String?> retrieve_e_public_key(
         );
         return null;
       case 401:
-        log_handler?.w("Unauthorized: ${response.statusCode} - ${response.body}");
+        log_handler?.w("[retrieve_e_public_key] Unauthorized: ${response.statusCode} - ${response.body}");
         await build_informative_alert_dialog(
           context,
           "Ok",
@@ -107,7 +107,7 @@ Future<String?> retrieve_e_public_key(
         );
         return null;
       case 422:
-        log_handler?.e("Validation error: ${response.statusCode} - ${response.body}");
+        log_handler?.e("[retrieve_e_public_key] Validation error: ${response.statusCode} - ${response.body}");
         await build_informative_alert_dialog(
           context,
           "Ok",
@@ -116,7 +116,7 @@ Future<String?> retrieve_e_public_key(
         );
         return null;
       case 429:
-        log_handler?.e("Rate limited: ${response.statusCode} - ${response.body}");
+        log_handler?.e("[retrieve_e_public_key] Rate limited: ${response.statusCode} - ${response.body}");
         await build_informative_alert_dialog(
           context,
           "Ok",
@@ -126,7 +126,7 @@ Future<String?> retrieve_e_public_key(
         return null;
       case 500:
       default:
-        log_handler?.w("Unhandled status code: ${response.statusCode} - ${response.body}");
+        log_handler?.w("[retrieve_e_public_key] Unhandled status code: ${response.statusCode} - ${response.body}");
         await build_informative_alert_dialog(
           context,
           "Ok",
@@ -136,7 +136,7 @@ Future<String?> retrieve_e_public_key(
         return null;
     }
   } catch (er) {
-    log_handler?.e("Error processing response: $er");
+    log_handler?.e("[retrieve_e_public_key] Error processing response: $er");
     return null;
   }
 }

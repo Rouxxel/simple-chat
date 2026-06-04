@@ -232,7 +232,7 @@ class _settingsState extends State<settings> {
                                             _button_locked = false; //unlock after sound finishes
                                           });
                                           log_handler?.i(
-                                              "low button pressed, verbose: $_verbose_level_controller");
+                                              "[settings_page] low button pressed, verbose: $_verbose_level_controller");
                                         },
                                         child: Container(
                                           padding: const EdgeInsets.symmetric(vertical: 12),
@@ -285,7 +285,7 @@ class _settingsState extends State<settings> {
                                             _button_locked = false; //unlock after sound finishes
                                           });
                                           log_handler?.i(
-                                              "medium button pressed, verbose: $_verbose_level_controller");
+                                              "[settings_page] medium button pressed, verbose: $_verbose_level_controller");
                                         },
                                         child: Container(
                                           padding: const EdgeInsets.symmetric(vertical: 12),
@@ -334,7 +334,7 @@ class _settingsState extends State<settings> {
                                             _button_locked = false; //unlock after sound finishes
                                           });
                                           log_handler?.i(
-                                              "high button pressed, verbose: $_verbose_level_controller");
+                                              "[settings_page] high button pressed, verbose: $_verbose_level_controller");
                                         },
                                         child: Container(
                                           padding: const EdgeInsets.symmetric(
@@ -571,7 +571,7 @@ class _settingsState extends State<settings> {
                                       //play sound effect
                                       await play_effect_sound(config_data.miscellanous_effect);
                                       //TODO: add functionality to change background image
-                                      log_handler?.i("Update background image pressed despite big ahh warning");
+                                      log_handler?.i("[settings_page] Update background image pressed despite big ahh warning");
                                       await build_informative_alert_dialog(
                                         context,
                                         "Ok",
@@ -675,7 +675,7 @@ class _settingsState extends State<settings> {
                                             _button_locked = false; //unlock buttons
                                           });
                                           log_handler?.i(
-                                              "sound effects on button pressed, status: $_sound_effect_controller");
+                                              "[settings_page] sound effects on button pressed, status: $_sound_effect_controller");
                                         },
                                         child: Container(
                                           padding: const EdgeInsets.symmetric(vertical: 12),
@@ -728,7 +728,7 @@ class _settingsState extends State<settings> {
                                             _button_locked = false; //unlock buttons
                                           });
                                           log_handler?.i(
-                                              "sound effects off button pressed, status: $_sound_effect_controller");
+                                              "[settings_page] sound effects off button pressed, status: $_sound_effect_controller");
                                         },
                                         child: Container(
                                           padding: const EdgeInsets.symmetric(vertical: 12),
@@ -917,7 +917,7 @@ class _settingsState extends State<settings> {
                             config_data = app_configuration.fromJson(raw_config_json);
                           });
 
-                          log_handler?.i("Easter egg found");
+                          log_handler?.i("[settings_page] Easter egg found");
 
                           await build_informative_alert_dialog(
                             context,
@@ -929,7 +929,7 @@ class _settingsState extends State<settings> {
                           );
                         });
                       } else {
-                        log_handler?.d("Easter egg already found");
+                        log_handler?.d("[settings_page] Easter egg already found");
                       }
                     },
 
@@ -1102,7 +1102,7 @@ class _settingsState extends State<settings> {
                                             "this action will override all local changes",
                                       );
                                       if (user_decision != true) {
-                                        log_handler?.i("User cancelled profile preferences retrieval.");
+                                        log_handler?.i("[settings_page] User cancelled profile preferences retrieval.");
                                         return;
                                       }
 
@@ -1112,18 +1112,18 @@ class _settingsState extends State<settings> {
                                       //Choose between backend call and cache
                                       Map<String, dynamic> retrieved_data;
                                       if (UserPreferencesCache.user_preferences_cache == null) {
-                                        log_handler?.d("User preferences cache null, calling backend");
+                                        log_handler?.d("[settings_page] User preferences cache null, calling backend");
                                         retrieved_data = await retrieve_user_preferences(context);
                                         UserPreferencesCache.user_preferences_cache = retrieved_data;
                                       } else {
-                                        log_handler?.d("User preferences cache non-null, not calling backend");
+                                        log_handler?.d("[settings_page] User preferences cache non-null, not calling backend");
                                         retrieved_data = UserPreferencesCache.user_preferences_cache!;
                                       }
 
                                       //Check for null before proceeding
                                       if (retrieved_data == null ||
                                           retrieved_data.values.any((v) => v == null)) {
-                                        log_handler?.w("Retrieved data has at least a null value, showing alert dialog. \n"
+                                        log_handler?.w("[settings_page] Retrieved data has at least a null value, showing alert dialog. \n"
                                                       "${retrieved_data}");
                                         await build_informative_alert_dialog(
                                             context,
@@ -1157,7 +1157,9 @@ class _settingsState extends State<settings> {
                                       await update_sound_effect_status(retrieved_data["sound_effects_on"]);
 
                                       //Load easter egg status just in case
-                                      log_handler?.w(retrieved_data["easter_egg_status"]);
+                                      log_handler?.w("[settings_page] "
+                                          "Easter egg status: ${retrieved_data["easter_egg_status"]}"
+                                      );
                                       await update_easter_egg_found(retrieved_data["easter_egg_status"]);
 
                                       //Refresh config data and UI
@@ -1167,7 +1169,7 @@ class _settingsState extends State<settings> {
                                       });
 
                                       //Reload config_data for runtime reset changes
-                                      log_handler?.i("Load profile button pressed\n"
+                                      log_handler?.i("[settings_page] Load profile button pressed\n"
                                           "Loaded from cloud directory: ${config_data.directive}\n"
                                           "Loaded from cloud verbose: ${config_data.verbose}\n"
                                           "Loaded from cloud Background color: ${config_data.background_color}\n"
@@ -1244,7 +1246,7 @@ class _settingsState extends State<settings> {
                                       final String? provided_password = user_inputs?["Password"].toString();
 
                                       if (user_inputs == null) {
-                                        log_handler?.i("User cancelled profile deletion.");
+                                        log_handler?.i("[settings_page] User cancelled profile deletion.");
                                         return;
                                       } else {
                                         //Start load from cloud profile preferences request
@@ -1256,7 +1258,7 @@ class _settingsState extends State<settings> {
 
                                         if(deletion_succeded){
                                           //Reset everything to factory settings
-                                          log_handler?.w("User profile deletion successful");
+                                          log_handler?.w("[settings_page] User profile deletion successful");
                                           //Reset directive
                                           await update_directive(context, config_data.default_directive);
 
@@ -1281,7 +1283,7 @@ class _settingsState extends State<settings> {
 
                                           //Reload config_data for runtime reset changes
                                           config_data = app_configuration.fromJson(raw_config_json);
-                                          log_handler?.i("Reset button pressed\n"
+                                          log_handler?.i("[settings_page] Reset button pressed\n"
                                               "Reset directory: ${config_data.directive}\n"
                                               "Reset verbose: ${config_data.verbose}\n"
                                               "Reset Background color: ${config_data.background_color}\n"
@@ -1393,7 +1395,7 @@ class _settingsState extends State<settings> {
                         "AI personality, verbose level among others.",
                   );
                   if (user_decision != true) {
-                    log_handler?.i("User cancelled reset.");
+                    log_handler?.i("[settings_page] User cancelled reset.");
                     return;
                   }
 
@@ -1423,7 +1425,7 @@ class _settingsState extends State<settings> {
 
                     //Reload config_data for runtime reset changes
                     config_data = app_configuration.fromJson(raw_config_json);
-                    log_handler?.i("Reset button pressed\n"
+                    log_handler?.i("[settings_page] Reset button pressed\n"
                         "Reset directory: ${config_data.directive}\n"
                         "Reset verbose: ${config_data.verbose}\n"
                         "Reset Background color: ${config_data.background_color}\n"
@@ -1501,7 +1503,7 @@ class _settingsState extends State<settings> {
                         "fields you have selected.",
                   );
                   if (user_decision != true) {
-                    log_handler?.i("User cancelled saving.");
+                    log_handler?.i("[settings_page] User cancelled saving.");
                     return;
                   }
 
@@ -1512,7 +1514,7 @@ class _settingsState extends State<settings> {
                           context, _personality_controller.text);
                     } else {
                       log_handler?.w(
-                          "Skipped updating directive due to invalid input.");
+                          "[settings_page] Skipped updating directive due to invalid input.");
                     }
                     //Save AI verbose level
                     await update_verbose_level(_verbose_level_controller);
@@ -1530,7 +1532,7 @@ class _settingsState extends State<settings> {
                           context, _language_controller.text);
                     } else {
                       log_handler?.w(
-                          "Skipped updating language due to invalid input.");
+                          "[settings_page] Skipped updating language due to invalid input.");
                     }
 
                     //Save sound effect status
@@ -1538,7 +1540,7 @@ class _settingsState extends State<settings> {
 
                     //Reload config_data for runtime changes
                     config_data = app_configuration.fromJson(raw_config_json);
-                    log_handler?.i("Save button pressed\n"
+                    log_handler?.i("[settings_page] Save button pressed\n"
                         "Saved directory: ${config_data.directive}\n"
                         "Saved verbose: ${config_data.verbose}\n"
                         "Saved Background color: ${color_to_hex(config_data.background_color)}\n"
