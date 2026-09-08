@@ -15,7 +15,7 @@ import 'package:simple_chat/functionality_n_scripts/configuration_scripts/config
 import 'package:simple_chat/functionality_n_scripts/utils/logger_config.dart';
 import "package:simple_chat/functionality_n_scripts/message_related/message_class.dart";
 import "package:simple_chat/cache/current_chat_cache.dart";
-import "package:simple_chat/functionality_n_scripts//utils/encryption.dart";
+//import "package:simple_chat/functionality_n_scripts/utils/encryption.dart";
 
 //imports
 /////////////////////////////////////////////////////////////////////////////
@@ -59,8 +59,8 @@ Future<bool> check_user_exists(
     return false;
   }
 
-  //Encrypt required user id
-  String encrypted_user_id = await encrypt_in(context, user_id);
+  //Encrypt required user id NOTE: encrypt disabled for now
+  String encrypted_user_id = user_id; //await encrypt_in(context, user_id);
 
   final body = jsonEncode({
     "access_token": access_token.toString(),
@@ -454,8 +454,8 @@ Future<void> save_easter_egg_status(
     return;
   }
 
-  //Encrypt required user id
-  String encrypted_email = await encrypt_in(context, email);
+  //Encrypt required user id NOTE: encrypt disabled for now
+  String encrypted_email = email; //await encrypt_in(context, email);
 
   final body = jsonEncode({
     "access_token": access_token.toString(),
@@ -584,8 +584,8 @@ Future<Map<String, dynamic>> retrieve_user_preferences(
     return {"Invalid values":"Try again with valid values"};
   }
 
-  //Encrypt required user id
-  String encrypted_user_id= await encrypt_in(context, user_id);
+  //Encrypt required user id NOTE: encrypt disabled for now
+  String encrypted_user_id= user_id; //await encrypt_in(context, user_id);
 
   final body = jsonEncode({
     "access_token": access_token.toString(),
@@ -715,8 +715,8 @@ Future<Map<String, dynamic>> retrieve_all_user_title_chats(
     return {"Invalid values":"Try again with valid values"};
   }
 
-  //Encrypt required user id
-  String encrypted_user_id= await encrypt_in(context, user_id);
+  //Encrypt required user id NOTE: encrypt disabled for now
+  String encrypted_user_id= user_id; //await encrypt_in(context, user_id);
 
   final body = jsonEncode({
     "access_token": access_token.toString(),
@@ -846,9 +846,9 @@ Future<void> retrieve_specific_chat(
     return;
   }
 
-  //Encrypt required user id and title
-  String encrypted_user_id= await encrypt_in(context, user_id);
-  String encrypted_chat_title= await encrypt_in(context, chat_title);
+  //Encrypt required user id and title NOTE: encrypt disabled for now
+  String encrypted_user_id= user_id; //await encrypt_in(context, user_id);
+  String encrypted_chat_title= chat_title; //await encrypt_in(context, chat_title);
 
   final body = jsonEncode({
     "chat_title":encrypted_chat_title,
@@ -996,9 +996,9 @@ Future<void> delete_specific_chat(
     return;
   }
 
-  //Encrypt required user id and title
-  String encrypted_user_id= await encrypt_in(context, user_id);
-  String encrypted_chat_title= await encrypt_in(context, chat_title);
+  //Encrypt required user id and title NOTE: encrypt disabled for now
+  String encrypted_user_id= user_id; //await encrypt_in(context, user_id);
+  String encrypted_chat_title= chat_title; //await encrypt_in(context, chat_title);
 
   final body = jsonEncode({
     "chat_title": encrypted_chat_title,
@@ -1158,10 +1158,10 @@ Future<bool> delete_user(
     return false;
   }
 
-  //Encrypt required user id and title
-  String encrypted_user_id= await encrypt_in(context, user_id);
-  String encrypted_email= await encrypt_in(context, email);
-  String encrypted_password= await encrypt_in(context, password);
+  //Encrypt required user id and title NOTE: encrypt disabled for now
+  String encrypted_user_id= user_id; //await encrypt_in(context, user_id);
+  String encrypted_email= email; //await encrypt_in(context, email);
+  String encrypted_password= password; //await encrypt_in(context, password);
 
   final body = jsonEncode({
     "user_id": encrypted_user_id,
@@ -1308,9 +1308,9 @@ Future<void> save_current_chat(
   //Convert list of Messages to Maps
   List<Map> converted_list = Message.message_to_json_list(chat_list);
 
-  //Encrypt required user id and title
-  String encrypted_user_id= await encrypt_in(context, user_id);
-  String encrypted_chat_title= await encrypt_in(context, chat_title);
+  //Encrypt required user id and title NOTE: encrypt disabled for now
+  String encrypted_user_id= user_id; //await encrypt_in(context, user_id);
+  String encrypted_chat_title= chat_title; //await encrypt_in(context, chat_title);
   //TODO: Somehow decrypt whole conversation
   //String encrypted_converted_list= await encrypt_in(context, converted_list);
 

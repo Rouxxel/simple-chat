@@ -9,7 +9,7 @@ import "package:simple_chat/functionality_n_scripts/standalone_methods/general_m
 
 //Import alert dialogs and others
 import "package:simple_chat/widgets_and_ui_elements/alert_dialog_builders.dart";
-import "package:simple_chat/functionality_n_scripts/utils/encryption.dart";
+//import "package:simple_chat/functionality_n_scripts/utils/encryption.dart";
 import 'package:simple_chat/functionality_n_scripts/configuration_scripts/config_invoke.dart';
 import 'package:simple_chat/functionality_n_scripts/utils/logger_config.dart';
 
@@ -56,9 +56,9 @@ Future<bool> sign_up(
     return false;
   }
 
-  //Encrypt given data
-  String encrypted_email = await encrypt_in(context, email);
-  String encrypted_password = await encrypt_in(context, password);
+  //Encrypt given data NOTE: encrypt disabled for now
+  String encrypted_email = email; //await encrypt_in(context, email);
+  String encrypted_password = password; //await encrypt_in(context, password);
 
   final body = jsonEncode({
     "email": encrypted_email,
@@ -223,9 +223,9 @@ Future<bool> log_in(
     return false;
   }
 
-  //Encrypt given data
-  String encrypted_email = await encrypt_in(context, email);
-  String encrypted_password = await encrypt_in(context, password);
+  //Encrypt given data NOTE: encrypt disabled for now
+  String encrypted_email = email; //await encrypt_in(context, email);
+  String encrypted_password = password; //await encrypt_in(context, password);
 
   final body = jsonEncode({
     "email": encrypted_email,
@@ -396,14 +396,14 @@ Future<bool> complete_user_profile(
     return false;
   }
 
-  //Encrypt given data
-  String encrypted_email = await encrypt_in(context, email);
-  String encrypted_first_name = await encrypt_in(context, first_name);
-  String encrypted_last_name = await encrypt_in(context, last_name);
-  String encrypted_phone_number = await encrypt_in(context, phone_number);
-  String encrypted_date_birth = await encrypt_in(context, date_birth);
-  String encrypted_country = await encrypt_in(context, country);
-  String encrypted_country_code = await encrypt_in(context, country_code);
+  //Encrypt given data NOTE: encrypt disabled for now
+  String encrypted_email = email; //await encrypt_in(context, email);
+  String encrypted_first_name = first_name; //await encrypt_in(context, first_name);
+  String encrypted_last_name = last_name; //await encrypt_in(context, last_name);
+  String encrypted_phone_number = phone_number; //await encrypt_in(context, phone_number);
+  String encrypted_date_birth = date_birth; //await encrypt_in(context, date_birth);
+  String encrypted_country = country; //await encrypt_in(context, country);
+  String encrypted_country_code = country_code; //await encrypt_in(context, country_code);
 
   // Construct request body
   final body = jsonEncode({
@@ -558,8 +558,8 @@ Future<bool> reset_password(
     return false;
   }
 
-  //Encrypt given data
-  String encrypted_email = await encrypt_in(context, email);
+  //Encrypt given data NOTE: encrypt disabled for now
+  String encrypted_email = email; //await encrypt_in(context, email);
 
   //Prepare body
   final body = jsonEncode({"email": encrypted_email});
