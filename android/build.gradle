@@ -16,6 +16,18 @@ subprojects {
 subprojects {
     project.evaluationDependsOn(":app")
 }
+subprojects { subproject ->
+    subproject.pluginManager.withPlugin("com.android.library") {
+        subproject.android {
+            compileSdk = 36
+        }
+    }
+    subproject.pluginManager.withPlugin("com.android.application") {
+        subproject.android {
+            compileSdk = 36
+        }
+    }
+}
 
 tasks.register("clean", Delete) {
     delete rootProject.buildDir

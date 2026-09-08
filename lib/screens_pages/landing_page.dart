@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';   //Fonts
-import 'package:icons_flutter/icons_flutter.dart'; //Extra icons
 import 'package:intl/intl.dart'; //For date and time formatting
 import 'package:flutter_markdown/flutter_markdown.dart'; //For markdown
 import 'package:simple_chat/cache/e_key_cache.dart';
@@ -637,7 +636,7 @@ class _landing_pageState extends State<landing_page> {
                         width: 62,
                         child: Center(
                           child: IconButton(
-                            icon: const Icon(MaterialIcons.send),
+                            icon: const Icon(Icons.send),
                             alignment: Alignment.center,
                             iconSize: 40,
                             color: Colors.black,
