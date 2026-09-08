@@ -26,13 +26,13 @@ class _chats_listState extends State<chats_list> {
   bool _is_processing = false;
 
   //Manage cache as required
-  Future<void> _load_user_chats() async {
+  Future<void> _load_user_chats({bool forceRefresh = false}) async {
     setState(() {
       _is_processing = true;
     });
 
     //If already cached, no backend call needed
-    if (ChatTitlesListCache.chat_titles_list_cache != null) {
+    if (!forceRefresh && ChatTitlesListCache.chat_titles_list_cache != null) {
       log_handler?.i("[chat_page] Chat titles already cached. Skipping backend call.");
       setState(() {
         _is_processing = false;
@@ -95,6 +95,18 @@ class _chats_listState extends State<chats_list> {
 
           //auto-generated back button
           actions: [
+            IconButton(
+              icon: const Icon(Icons.refresh),
+              iconSize: 40,
+              color: Colors.black,
+              onPressed: _is_processing
+                  ? null
+                  : () async {
+                await play_effect_sound(config_data.button_pressed_effect);
+                log_handler?.i("[chat_page] Reload icon pressed, refreshing chat titles");
+                await _load_user_chats(forceRefresh: true);
+              },
+            ),
             IconButton(
               icon: const Icon(Icons.close_sharp),
               iconSize: 40,

@@ -8,6 +8,7 @@ import "dart:async";
 import 'package:simple_chat/functionality_n_scripts/standalone_methods/general_methods.dart';
 import 'package:simple_chat/functionality_n_scripts/configuration_scripts/config_invoke.dart';
 import "package:simple_chat/functionality_n_scripts/session_related/app_storage_class.dart";
+import "package:simple_chat/functionality_n_scripts/session_related/authenticated_http.dart";
 import 'package:simple_chat/functionality_n_scripts/utils/logger_config.dart';
 import "package:simple_chat/widgets_and_ui_elements/alert_dialog_builders.dart";
 
@@ -65,6 +66,17 @@ class Message {
       final String? user_id = await AppStorage.get_user_id();
       final String? access_token = await AppStorage.get_access_token();
 
+      if (access_token == null || access_token.trim().isEmpty) {
+        log_handler?.w("[ai_query_and_response] Missing access token");
+        await build_informative_alert_dialog(
+          context,
+          "Ok",
+          "Session expired",
+          "Please log out and log in again before sending messages.",
+        );
+        return;
+      }
+
       //Prepare request payload
       final body_for_backend = jsonEncode({
         "prompt": new_prompt,
@@ -77,23 +89,10 @@ class Message {
       //log_handler?.w(body_for_backend);
 
       //POST request to your backend URL
-      final response = await http
-          .post(
+      final response = await post_authenticated_json(
+        context,
         Uri.parse(config_data.backend_url + config_data.generate_ai_response_suffix),
-        headers: await AppStorage.get_authenticated_headers(),
-        body: body_for_backend,
-      )
-          .timeout(
-        Duration(seconds: config_data.max_api_response_time_limit + 5),
-        onTimeout: () async {
-          await build_informative_alert_dialog(
-            context,
-            "Ok",
-            "Error 227", //AI response took too long
-            "There was an error with the processing time, please try again later",
-          );
-          throw TimeoutException('AI response took too long');
-        },
+        body_for_backend,
       );
 
       //Check response status code
@@ -127,6 +126,15 @@ class Message {
             "Ok",
             "Error 230", //Server error
             "There has been an error with the server, please try again later",
+          );
+          return;
+        case 401:
+          log_handler?.w("[ai_query_and_response] Unauthorized: ${response.statusCode} - ${response.body}");
+          await build_informative_alert_dialog(
+            context,
+            "Ok",
+            "Session expired",
+            "Your session expired. Please log out and log in again.",
           );
           return;
         case 500:

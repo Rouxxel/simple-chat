@@ -15,7 +15,7 @@ import 'package:simple_chat/functionality_n_scripts/configuration_scripts/config
 import 'package:simple_chat/functionality_n_scripts/utils/logger_config.dart';
 import "package:simple_chat/functionality_n_scripts/message_related/message_class.dart";
 import "package:simple_chat/cache/current_chat_cache.dart";
-//import "package:simple_chat/functionality_n_scripts/utils/encryption.dart";
+import "package:simple_chat/functionality_n_scripts/session_related/authenticated_http.dart";
 
 //imports
 /////////////////////////////////////////////////////////////////////////////
@@ -169,7 +169,7 @@ Future<bool> check_user_exists(
   }
 }
 
-Future<void> refresh_access(
+Future<bool> refresh_access(
     BuildContext context,
     ) async {
   log_handler?.d("[------refresh_access function executing------]");
@@ -183,7 +183,7 @@ Future<void> refresh_access(
       "Invalid entered values",
       "You have entered invalid values, please enter valid values.",
     );
-    return;
+    return false;
   }
 
   final body = jsonEncode({
@@ -218,10 +218,10 @@ Future<void> refresh_access(
       "Error 234", //Network error
       "There has been an error with the network, please try again later",
     );
-    return;
+    return false;
   } on TimeoutException {
     // dialog already shown in onTimeout
-    return;
+    return false;
   } catch (e) {
     log_handler?.e("[refresh_access] Unexpected error: $e");
     await build_informative_alert_dialog(
@@ -230,7 +230,7 @@ Future<void> refresh_access(
       "Error 231", //Unexpected unknown server error
       "There has been an unexpected backend error, please try again later.",
     );
-    return;
+    return false;
   }
 
   try {
@@ -251,7 +251,7 @@ Future<void> refresh_access(
         //TokenWatchdog().start(context);
 
         log_handler?.i("[refresh_access] User token refreshed successfully");
-        return;
+        return true;
       case 400:
         log_handler?.e("[refresh_access] Parameters error: ${response.statusCode} - ${response.body}");
         await build_informative_alert_dialog(
@@ -260,7 +260,7 @@ Future<void> refresh_access(
           "Invalid entered values",
           "You have entered invalid values, please enter valid values.",
         );
-        return;
+        return false;
       case 401:
         log_handler?.w("[refresh_access] Unauthorized access: ${response.statusCode} - ${response.body}");
         await build_informative_alert_dialog(
@@ -270,7 +270,7 @@ Future<void> refresh_access(
           "We were not able to find your user, please ensure you have signed up and"
               "confirmed your email before trying again",
         );
-        return;
+        return false;
       case 422:
         log_handler?.e("[refresh_access] Validation error: ${response.statusCode} - ${response.body}");
         await build_informative_alert_dialog(
@@ -279,7 +279,7 @@ Future<void> refresh_access(
           "Error 245", //Unprocessable Entity
           "There was an issue with the data provided. Please try again later",
         );
-        return;
+        return false;
       case 429:
         log_handler?.e("[refresh_access] Backend error: ${response.statusCode} - ${response.body}");
         await build_informative_alert_dialog(
@@ -288,7 +288,7 @@ Future<void> refresh_access(
           "Error 231", //Unexpected unknown server error
           "There has been an unexpected backend error, please try again later.",
         );
-        return;
+        return false;
       case 500:
       default:
         log_handler?.w("[refresh_access] Unhandled status code: ${response.statusCode} - ${response.body}");
@@ -298,11 +298,11 @@ Future<void> refresh_access(
           "Error 231", //Unexpected unknown server error
           "There has been an unexpected backend error, please try again later.",
         );
-        return;
+        return false;
     }
   } catch (er){
     log_handler?.e("[refresh_access] Error processing response: $er");
-    return;
+    return false;
   }
 }
 
@@ -623,11 +623,11 @@ Future<Map<String, dynamic>> retrieve_user_preferences(
   }
 
   //Encrypt required user id NOTE: encrypt disabled for now
-  String encrypted_user_id= user_id; //await encrypt_in(context, user_id);
+  String encrypted_user_id = user_id; //await encrypt_in(context, user_id);
 
   final body = jsonEncode({
     "access_token": access_token.toString(),
-    "user_id":encrypted_user_id.toString(),
+    "user_id": encrypted_user_id.toString(),
   });
 
   http.Response response;
@@ -754,11 +754,11 @@ Future<Map<String, dynamic>> retrieve_all_user_title_chats(
   }
 
   //Encrypt required user id NOTE: encrypt disabled for now
-  String encrypted_user_id= user_id; //await encrypt_in(context, user_id);
+  String encrypted_user_id = user_id; //await encrypt_in(context, user_id);
 
   final body = jsonEncode({
     "access_token": access_token.toString(),
-    "user_id":encrypted_user_id.toString(),
+    "user_id": encrypted_user_id.toString(),
   });
 
   http.Response response;
@@ -884,9 +884,9 @@ Future<void> retrieve_specific_chat(
     return;
   }
 
-  //Encrypt required user id and title NOTE: encrypt disabled for now
-  String encrypted_user_id= user_id; //await encrypt_in(context, user_id);
-  String encrypted_chat_title= chat_title; //await encrypt_in(context, chat_title);
+  //Encrypt required user id and title
+  String encrypted_user_id = user_id; //await encrypt_in(context, user_id);
+  String encrypted_chat_title = chat_title; //await encrypt_in(context, chat_title);
 
   final body = jsonEncode({
     "chat_title":encrypted_chat_title,
@@ -1034,9 +1034,9 @@ Future<void> delete_specific_chat(
     return;
   }
 
-  //Encrypt required user id and title NOTE: encrypt disabled for now
-  String encrypted_user_id= user_id; //await encrypt_in(context, user_id);
-  String encrypted_chat_title= chat_title; //await encrypt_in(context, chat_title);
+  //Encrypt required user id and title
+  String encrypted_user_id = user_id; //await encrypt_in(context, user_id);
+  String encrypted_chat_title = chat_title; //await encrypt_in(context, chat_title);
 
   final body = jsonEncode({
     "chat_title": encrypted_chat_title,
@@ -1346,9 +1346,9 @@ Future<void> save_current_chat(
   //Convert list of Messages to Maps
   List<Map> converted_list = Message.message_to_json_list(chat_list);
 
-  //Encrypt required user id and title NOTE: encrypt disabled for now
-  String encrypted_user_id= user_id; //await encrypt_in(context, user_id);
-  String encrypted_chat_title= chat_title; //await encrypt_in(context, chat_title);
+  //Encrypt required user id and title
+  String encrypted_user_id = user_id; //await encrypt_in(context, user_id);
+  String encrypted_chat_title = chat_title; //await encrypt_in(context, chat_title);
   //TODO: Somehow decrypt whole conversation
   //String encrypted_converted_list= await encrypt_in(context, converted_list);
 
@@ -1361,23 +1361,10 @@ Future<void> save_current_chat(
 
   http.Response response;
   try {
-    response = await http
-        .post(
+    response = await post_authenticated_json(
+      context,
       Uri.parse(config_data.backend_url + config_data.user_chat_save_suffix),
-      headers: AppStorage.build_auth_headers(access_token),
-      body: body,
-    )
-        .timeout(
-      Duration(seconds: config_data.max_api_response_time_limit + 5),
-      onTimeout: () async {
-        await build_informative_alert_dialog(
-          context,
-          "Ok",
-          "Error 227", //AI response took too long
-          "There was an error with the processing time, please try again later",
-        );
-        throw TimeoutException('Server took too long');
-      },
+      body,
     );
   } on SocketException catch (e) {
     log_handler?.e("[save_current_chat] Network error: $e");

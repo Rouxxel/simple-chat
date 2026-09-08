@@ -1,4 +1,5 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:simple_chat/functionality_n_scripts/utils/logger_config.dart';
 
 class AppStorage {
   //Singleton instance of FlutterSecureStorage
@@ -82,19 +83,20 @@ class AppStorage {
     String accessToken, {
     String tokenType = 'Bearer',
   }) {
+    final scheme = tokenType.trim().isEmpty ? 'Bearer' : tokenType.trim();
     return {
       'Content-Type': 'application/json',
-      'Authorization': '${tokenType.trim()} ${accessToken.trim()}',
+      'Authorization': '$scheme ${accessToken.trim()}',
     };
   }
 
   static Future<Map<String, String>> get_authenticated_headers() async {
     final accessToken = await get_access_token();
-    final tokenType = await get_token_type();
-    return build_auth_headers(
-      accessToken ?? '',
-      tokenType: (tokenType == null || tokenType.trim().isEmpty) ? 'Bearer' : tokenType,
-    );
+    if (accessToken == null || accessToken.trim().isEmpty) {
+      log_handler?.w('[get_authenticated_headers] Access token is missing');
+      return jsonHeaders;
+    }
+    return build_auth_headers(accessToken);
   }
 
   //PANIC DELETER
