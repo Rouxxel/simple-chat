@@ -39,6 +39,53 @@ class LabeledTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final int effective_max_lines = obscure_text ? 1 : (max_lines ?? 1);
+    final int effective_min_lines = obscure_text ? 1 : (min_lines ?? 1);
+    final bool is_multiline = effective_max_lines > 1 || effective_min_lines > 1;
+
+    final textField = TextField(
+      controller: controller,
+      enabled: enabled,
+      readOnly: read_only,
+      onTap: on_tap,
+      maxLength: max_length,
+      maxLines: effective_max_lines,
+      minLines: is_multiline ? effective_min_lines : 1,
+      obscureText: obscure_text,
+      textAlignVertical: TextAlignVertical.top,
+      style: GoogleFonts.roboto(
+        textStyle: TextStyle(
+          fontSize: 18,
+          fontWeight: FontWeight.normal,
+          color: text_color,
+        ),
+      ),
+      decoration: InputDecoration(
+        hintText: hint_text,
+        filled: true,
+        fillColor: fill_color,
+        alignLabelWithHint: is_multiline,
+        contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+        hintStyle: GoogleFonts.roboto(
+          textStyle: TextStyle(
+            fontSize: 18,
+            fontStyle: FontStyle.italic,
+            color: hint_color,
+          ),
+        ),
+        border: const OutlineInputBorder(
+          borderRadius: BorderRadius.all(Radius.circular(5.0)),
+        ),
+        enabledBorder: const OutlineInputBorder(
+          borderRadius: BorderRadius.all(Radius.circular(5.0)),
+        ),
+        focusedBorder: const OutlineInputBorder(
+          borderRadius: BorderRadius.all(Radius.circular(5.0)),
+        ),
+      ),
+      cursorColor: Colors.black,
+    );
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -52,42 +99,14 @@ class LabeledTextField extends StatelessWidget {
             ),
           ),
         ),
-        SizedBox(
-          width: width ?? double.infinity,
-          height: height ?? 55,
-          child: TextField(
-            controller: controller,
-            enabled: enabled,
-            readOnly: read_only,
-            onTap: on_tap,
-            maxLength: max_length,
-            maxLines: obscure_text ? 1 : max_lines,
-            minLines: obscure_text ? 1 : min_lines,
-            obscureText: obscure_text,
-            style: GoogleFonts.roboto(
-              textStyle: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.normal,
-              ),
-            ),
-            decoration: InputDecoration(
-              hintText: hint_text,
-              filled: true,
-              fillColor: fill_color,
-              hintStyle: GoogleFonts.roboto(
-                textStyle: TextStyle(
-                  fontSize: 18,
-                  fontStyle: FontStyle.italic,
-                  color: hint_color,
-                ),
-              ),
-              border: const OutlineInputBorder(
-                borderRadius: BorderRadius.all(Radius.circular(5.0)),
-              ),
-            ),
-            cursorColor: Colors.black,
+        if (is_multiline)
+          textField
+        else
+          SizedBox(
+            width: width ?? double.infinity,
+            height: height ?? 55,
+            child: textField,
           ),
-        ),
       ],
     );
   }
