@@ -1,131 +1,350 @@
-# Simple Chat
+# simple-chat-backend
 
-A comprehensive Flutter chat application that integrates with the **Gemini 2.5 Flash API** to provide an AI-powered conversational experience. The app features a complete user management system, secure authentication, and a polished chat interface with "Montgomery" - an AI assistant with the refined manner of a British butler.
+This is a comprehensive backend API service implementing **Gemini 2.5 Flash API** for an AI chatbot with full user management, chat history, and security features. It supports receiving prompts and returning AI-generated responses via REST endpoints with complete authentication and user profile management.
 
-### Features:
-- **Multi-Screen Architecture**: Complete app flow with login, registration, profile setup, settings, and chat screens
-- **User Authentication System**: Secure email-based registration and login with JWT token management
-- **Profile Management**: User profiles with customizable preferences and settings
-- **Session Management**: Automatic token refresh and secure session handling
-- **Persistent Chat History**: Save and retrieve multiple chat conversations
-- **Secure Data Storage**: Encrypted storage for sensitive user data using Flutter Secure Storage
-- **Customizable UI**: Theme support with configurable colors and backgrounds
-- **Audio Effects**: Sound effects for interactions and hidden easter eggs
-- **Comprehensive Logging**: Detailed logging system for debugging and monitoring
-- **Backend Integration**: Full REST API integration with secure endpoints
+The backend is built using **FastAPI** with **async/await** for concurrent user support, designed to be consumed by a **Flutter frontend**, and deployed on **Render**. It handles authentication, AI prompt processing, chat history management, user preferences, and security features on the server side.
 
-### Libraries Used:
-- **cupertino_icons**: ^1.0.8 - iOS style icons
-- **icons_flutter**: ^0.0.4 - Additional icon sets
-- **intl**: ^0.20.2 - Internationalization and date formatting
-- **google_fonts**: ^6.2.1 - Easy font management and custom typography
-- **google_generative_ai**: ^0.4.6 - Gemini AI API integration
-- **logger**: ^2.5.0 - Comprehensive logging and debugging
-- **http**: ^1.4.0 - HTTP client for API communication
-- **flutter_markdown**: ^0.6.11 - Markdown rendering support
-- **path_provider**: ^2.1.1 - Access to device file system paths
-- **flutter_email_sender**: ^6.0.1 - Email functionality
-- **audioplayers**: ^5.2.1 - Audio playback for sound effects
-- **archive**: ^4.0.7 - File compression and archiving
-- **flutter_secure_storage**: ^9.2.4 - Secure data storage with encryption
-- **pointycastle**: ^4.0.0 - Cryptographic operations
-- **asn1lib**: ^1.6.5 - ASN.1 encoding/decoding for security
+---
 
-### Project Structure:
-The project follows a clean, modular architecture organized into logical folders:
+## ✅ Key Features
+
+- **🤖 AI Chatbot API**: RESTful endpoints using Gemini 2.5 Flash with multiple model support
+- **🔐 Complete Authentication System**: User signup, login, logout, token refresh, and password reset
+- **👤 User Profile Management**: Complete profile creation, retrieval, updates, and account deletion
+- **💬 Chat History Management**: Save, retrieve, delete chat conversations with title management
+- **🔒 Security Features**: Public key encryption, input validation, and secure token handling
+- **⚡ Async Architecture**: Full async/await implementation for concurrent user support
+- **🚦 Rate Limiting**: Configurable IP-based request throttling per endpoint
+- **📝 Advanced Logging**: Centralized logging system with configurable levels
+- **🏗️ Modular Router Architecture**: Clean separation with organized endpoint categories
+- **⚙️ Dynamic Configuration**: Comprehensive JSON-based configuration system
+- **🔑 Environment Security**: All sensitive data handled via environment variables
+- **🗄️ Database Integration**: Supabase integration for authentication and data persistence
+- **�️ UtilityS Tools**: Encryption, validation, cache cleaning, and version checking utilities
+
+---
+
+## 📁 Project Structure
 
 ```
-lib/
-├── cache/                              # Temporary data storage
-├── functionality_n_scripts/           # Core business logic
-│   ├── configuration_scripts/         # App configuration management
-│   ├── message_related/              # Chat message handling
-│   ├── session_related/              # User session management
-│   ├── standalone_methods/           # Utility and helper methods
-│   └── utils/                        # Common utilities and tools
-├── screens_pages/                     # UI screens and pages
-│   ├── chats_page.dart              # Main chat interface
-│   ├── complete_profile_page.dart    # Profile completion
-│   ├── landing_page.dart            # App landing screen
-│   ├── log_in_page.dart             # User authentication
-│   ├── settings_page.dart           # App settings
-│   └── sign_up_page.dart            # User registration
-├── widgets_and_ui_elements/          # Reusable UI components
-└── main.dart                         # Application entry point
-
-assets/
-├── audio/                            # Sound effects and audio files
-├── color_list.json                   # Color configuration
-├── config_file.json                  # Main app configuration
-└── countries_list.json               # Country data for forms
-
-fonts/                                # Custom font files
-images/                               # App images and backgrounds
+root/
+│
+├── .dockerignore
+├── .env                    # Environment variables (local)
+├── .gitignore
+├── .pylintrc              # Python linting configuration
+├── docker-compose.yml     # Docker composition
+├── DOCKERFILE            # Docker container configuration
+├── LICENSE
+├── main.py               # Application entrypoint
+├── private_key.pem       # RSA private key for encryption
+├── public_key.pem        # RSA public key for encryption
+├── render.yaml           # Deployment config for Render.com
+├── requirements.txt      # Python dependencies
+├── runtime.txt          # Python runtime version for deployment
+├── start.sh             # Start script
+├── test_gemini_models.py # Model testing utility
+│
+└── src/
+    ├── configuration/
+    │   ├── config_file.json    # Comprehensive app configuration
+    │   ├── config_loader.py    # Configuration loader
+    │   └── __init__.py
+    │
+    ├── data/
+    │   └── available_models.json   # Valid AI model configurations
+    │
+    ├── routers/
+    │   ├── ai/
+    │   │   └── ai_model_call.py         # AI model interaction endpoint
+    │   ├── auth/
+    │   │   ├── log_in.py                # User authentication
+    │   │   ├── log_out.py               # User logout
+    │   │   ├── refresh_token.py         # Token refresh
+    │   │   ├── reset_password.py        # Password reset
+    │   │   └── sign_up.py               # User registration
+    │   ├── chat/
+    │   │   ├── user_chat_delete.py      # Delete chat conversations
+    │   │   ├── user_chat_retrieve.py    # Retrieve chat history
+    │   │   ├── user_chat_save.py        # Save chat conversations
+    │   │   └── user_chat_titles_retrieve.py # Get chat titles
+    │   ├── miscellaneous/
+    │   │   └── easter_egg_found.py      # Easter egg endpoint
+    │   ├── security/
+    │   │   └── retrieve_public_key.py   # Public key retrieval
+    │   ├── user_profile/
+    │   │   ├── complete_profile.py      # Complete user profile
+    │   │   ├── user_delete_profile.py   # Delete user account
+    │   │   ├── user_exist.py            # Check user existence
+    │   │   ├── user_preferences.py      # User preferences management
+    │   │   └── user_retrieve_profile.py # Retrieve user profile
+    │   └── root_endpoint.py             # Health check endpoint
+    │
+    └── utils/
+        ├── custom_logger.py             # Advanced logging configuration
+        ├── en_de_crypt.py              # Encryption/decryption utilities
+        ├── keys_generator.py           # RSA key generation
+        ├── library_version_checker.py  # Dependency version checking
+        ├── limiter.py                  # Rate limiting configuration
+        ├── pycache_n_logs_deleter.py   # Cache and log cleanup
+        ├── request_limiter.py          # Rate limit exception handling
+        └── validators.py               # Input validation utilities
 ```
 
-### Backend Integration:
-The app connects to a secure backend service deployed on Render with the following endpoints:
-- **Authentication**: Sign up, login, logout, token refresh, password reset
-- **User Management**: Profile completion, preferences, user data retrieval
-- **Chat Management**: Save conversations, retrieve chat history, manage chat sessions
-- **Security**: Public key retrieval for encryption
-- **AI Integration**: Secure AI response generation
+---
 
-### Technical Highlights:
-- **Security First**: End-to-end encryption for sensitive data, secure token management
-- **Responsive Design**: Adaptive UI that works across different screen sizes
-- **Error Handling**: Comprehensive error handling and user feedback
-- **Performance Optimized**: Efficient state management and resource usage
-- **Configurable**: JSON-based configuration system for easy customization
-- **Extensible Architecture**: Modular design allows for easy feature additions
+## 🌍 Environment Variables
 
-### Current Features Implemented:
-✅ **User Authentication System** - Complete registration and login flow  
-✅ **Database Integration** - User data persistence and management  
-✅ **Multiple AI Model Support** - Currently using Gemini 2.5 Flash only  
-✅ **Chat History** - Save and retrieve conversation history  
-✅ **Profile Management** - User preferences and customization  
-✅ **Security Features** - Encrypted storage and secure communications  
-✅ **Audio System** - Sound effects and interactive audio elements  
+**Required Environment Variables:**
+- `CHAT_API_KEY`: Gemini API key for AI responses
+- `DB_KEY`: Supabase public API key for database access
+- `DB_LINK`: Supabase database URL
 
-### Future Improvements:
-- **Additional AI Models**: Integration with ChatGPT, Claude, and other AI services
-- **Enhanced UI/UX**: More customization options and themes
-- **Offline Mode**: Basic functionality when internet is unavailable
-- **Group Chats**: Multi-user conversation support
-- **File Sharing**: Image and document sharing in conversations
-- **Voice Integration**: Speech-to-text and text-to-speech capabilities
+**Optional Environment Variables:**
+- `PORT`: Server port (default: 5000)
+- `LOG_LEVEL`: Logging level (default: from config)
 
-### Development Environment:
-- **Flutter SDK**: ^3.5.2
-- **Dart**: Latest stable version
-- **Target Platforms**: Android, iOS
-- **Minimum SDK**: Android API 21+ / iOS 12+
+---
 
-### Testing Configuration:
-- **Emulator**: Pixel 8 Pro API 34
-- **OS**: Android 14.0 (UpsidedownCake)
-- **Physical Device**: Redmi Note 12 Pro 5G
+## ▶️ Running Locally
 
-### Getting Started:
-1. Clone the repository
-2. Run `flutter pub get` to install dependencies
-3. Configure your backend URL in `assets/config_file.json`
-4. Run `flutter run` to start the application
+1. **Install dependencies**
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-### Configuration:
-The app uses a comprehensive JSON configuration system located in `assets/config_file.json` that controls:
-- AI behavior and personality settings
-- Backend API endpoints
-- UI colors and themes
-- Audio settings
-- Security parameters
-- User defaults
+2. **Set environment variables** (Linux/macOS):
+   ```bash
+   export CHAT_API_KEY="your_gemini_api_key_here"
+   export DB_KEY="your_supabase_public_key_here"
+   export DB_LINK="your_supabase_url_here"
+   ```
 
-**Developed by: Sebastian Russo**  
-**Version**: 2.11.2  
-**License**: All rights reserved © 2025 Simple Chat
+   **Windows (PowerShell):**
+   ```powershell
+   $env:CHAT_API_KEY="your_gemini_api_key_here"
+   $env:DB_KEY="your_supabase_public_key_here"
+   $env:DB_LINK="your_supabase_url_here"
+   ```
 
-### Credit:
-- The **Butler** icon used in this app was created by **Freepik**. You can find it here:  
-  [Butler icons created by Freepik - Flaticon](https://www.flaticon.com/free-icons/butler)
+3. **Run the server:**
+   ```bash
+   python main.py
+   ```
+
+4. **Test the setup:**
+   ```bash
+   python test_gemini_models.py
+   ```
+
+---
+
+## 🚀 Deployment
+
+- **Render.com**: Configured for deployment using `render.yaml`
+- **Docker**: Full Docker support with `DOCKERFILE` and `docker-compose.yml`
+- **Environment**: Set all required environment variables in your deployment platform
+- **Port**: The app listens on the `PORT` environment variable (default: 5000)
+
+---
+
+## 📡 API Endpoints
+
+### 🏠 Health Check
+#### `GET /`
+**Health check endpoint** - Confirms API operational status
+- **Rate Limit**: 25 requests/minute
+- **Authentication**: ❌ Not required
+
+**Response:**
+```json
+{
+  "message": "Backend running successfully, ready to use other endpoints"
+}
+```
+
+---
+
+### 🔐 Authentication Endpoints (`/auth`)
+
+#### `POST /auth/sign_up_email`
+**User registration with email**
+- **Rate Limit**: 3 requests/minute
+- **Authentication**: ❌ Not required
+
+#### `POST /auth/log_in_email_pw`
+**User login with email and password**
+- **Rate Limit**: 3 requests/minute
+- **Authentication**: ❌ Not required
+
+#### `POST /auth/log_out`
+**User logout**
+- **Rate Limit**: 3 requests/minute
+- **Authentication**: ✅ Required
+
+#### `POST /auth/refresh_token`
+**Refresh access token**
+- **Rate Limit**: 2 requests/minute
+- **Authentication**: ✅ Required (refresh token)
+
+#### `POST /auth/reset_password`
+**Password reset request**
+- **Rate Limit**: 3 requests/minute
+- **Authentication**: ❌ Not required
+
+---
+
+### 👤 User Profile Endpoints (`/user_profile`)
+
+#### `POST /user_profile/complete_profile`
+**Complete user profile setup**
+- **Rate Limit**: 3 requests/minute
+- **Authentication**: ✅ Required
+
+#### `POST /user_profile/user_exists`
+**Check if user exists**
+- **Rate Limit**: 5 requests/minute
+- **Authentication**: ✅ Required
+
+#### `POST /user_profile/user_preferences`
+**Update user preferences**
+- **Rate Limit**: 10 requests/minute
+- **Authentication**: ✅ Required
+
+#### `POST /user_profile/user_retrieve_profile`
+**Retrieve user profile data**
+- **Rate Limit**: 10 requests/minute
+- **Authentication**: ✅ Required
+
+#### `POST /user_profile/user_delete_profile`
+**Delete user account permanently**
+- **Rate Limit**: 5 requests/minute
+- **Authentication**: ✅ Required
+
+---
+
+### 💬 Chat Management Endpoints (`/chat`)
+
+#### `POST /chat/user_chat_save`
+**Save chat conversation**
+- **Rate Limit**: 10 requests/minute
+- **Authentication**: ✅ Required
+
+#### `POST /chat/user_chat_retrieve`
+**Retrieve chat history**
+- **Rate Limit**: 5 requests/minute
+- **Authentication**: ✅ Required
+
+#### `POST /chat/user_chat_titles_retrieve`
+**Get chat conversation titles**
+- **Rate Limit**: 5 requests/minute
+- **Authentication**: ✅ Required
+
+#### `POST /chat/user_chat_delete`
+**Delete chat conversation**
+- **Rate Limit**: 3 requests/minute
+- **Authentication**: ✅ Required
+
+---
+
+### 🤖 AI Endpoints (`/ai`)
+
+#### `POST /ai/generate_ai_response`
+**Generate AI response using Gemini models**
+
+**Supported Models:**
+- `gemini-2.5-flash` (default)
+- `gemini-2.5-flash-lite`
+- `gemini-2.5-flash-preview-09-2025`
+- `gemini-2.5-flash-lite-preview-09-2025`
+
+- **Rate Limit**: 20 requests/minute
+- **Authentication**: ✅ Required
+
+**Request Body:**
+```json
+{
+  "prompt": "Hello, how are you?",
+  "ai_model": "gemini-2.5-flash",
+  "time_limit": 10.0,
+  "user_id": "user-uuid-here",
+  "access_token": "supabase-jwt-token"
+}
+```
+
+**Parameters:**
+- `prompt` (string, required): The message for the AI
+- `ai_model` (string, optional): AI model name (defaults to `gemini-2.5-flash`)
+- `time_limit` (float, optional): Response timeout in seconds (default: 10.0)
+- `user_id` (string, required): User UUID
+- `access_token` (string, required): Supabase JWT token
+
+**Responses:**
+- **200 OK:**
+  ```json
+  {
+    "ai_answer": "Hello! How can I help you today?"
+  }
+  ```
+- **401 Unauthorized:** Invalid token or user mismatch
+- **429 Too Many Requests:** AI service quota limits
+- **504 Gateway Timeout:** AI response timeout
+- **500 Internal Server Error:** Unexpected error
+
+---
+
+### 🔒 Security Endpoints (`/security`)
+
+#### `POST /security/retrieve_public_e_key`
+**Retrieve public encryption key**
+- **Rate Limit**: 15 requests/minute
+- **Authentication**: ❌ Not required
+
+---
+
+### 🎯 Miscellaneous Endpoints (`/miscellaneous`)
+
+#### `POST /miscellaneous/easter_egg_found`
+**Easter egg discovery endpoint**
+- **Rate Limit**: 15 requests/minute
+- **Authentication**: ✅ Required
+
+---
+
+## 🔧 Configuration
+
+The application uses a comprehensive JSON configuration system (`src/configuration/config_file.json`) that controls:
+
+- **Default AI model and response timeouts**
+- **Logging levels and file management**
+- **Email validation rules**
+- **Network and server settings**
+- **Individual endpoint rate limits**
+- **Request routing and tagging**
+
+---
+
+## 🛠️ Development Tools
+
+- **`test_gemini_models.py`**: Test which Gemini models work with your API key
+- **Logging**: Centralized logging with configurable levels
+- **Rate Limiting**: Per-endpoint configurable rate limits
+- **Input Validation**: Comprehensive input validation utilities
+- **Encryption**: RSA encryption utilities for sensitive data
+- **Cache Management**: Automatic cleanup of Python cache and log files
+
+---
+
+## 🔄 Recent Updates
+
+- **✅ Full Async Architecture**: All endpoints converted to async/await for concurrent user support
+- **✅ Gemini 2.5 Model Support**: Updated to use latest free-tier Gemini models
+- **✅ Enhanced Error Handling**: Better error messages and quota limit handling
+- **✅ Modular Router Structure**: Organized endpoints into logical categories
+- **✅ Comprehensive Chat Management**: Full chat history and conversation management
+- **✅ Advanced Security**: Encryption, validation, and secure token handling
+
+---
+
+## 👨‍💻 Author
+**Sebastian Russo** - 2025
