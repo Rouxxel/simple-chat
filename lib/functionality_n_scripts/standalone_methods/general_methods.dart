@@ -437,10 +437,32 @@ Future<void> update_sound_effect_status(bool sound_effect_status) async {
 }
 
 //Update easter egg found
-Future<void> update_easter_egg_found(bool easter_egg_found) async {
+bool? parse_bool_preference(dynamic value) {
+  if (value == null) return null;
+  if (value is bool) return value;
+  if (value is num) return value != 0;
+  if (value is String) {
+    switch (value.trim().toLowerCase()) {
+      case 'true':
+      case '1':
+      case 'yes':
+        return true;
+      case 'false':
+      case '0':
+      case 'no':
+        return false;
+    }
+  }
+  return null;
+}
+
+Future<void> update_easter_egg_found(dynamic easter_egg_found) async {
+  final parsed = parse_bool_preference(easter_egg_found);
+  if (parsed == null) return;
+
   final file = await get_local_config_file();
 
-  raw_config_json['audio']['easter_egg_found'] = easter_egg_found;
+  raw_config_json['audio']['easter_egg_found'] = parsed;
   await file.writeAsString(jsonEncode(raw_config_json));
 }
 

@@ -221,7 +221,7 @@ class app_configuration {
       sound_effects_status: audio_paths["sound_effects_status"] ?? false,
       default_sound_effects_status: audio_paths["default_sound_effects_status"] ?? false,
       easter_egg: audio_paths["easter_egg"] ?? 'not_found',
-      easter_egg_found: audio_paths["easter_egg_found"] ?? false,
+      easter_egg_found: _read_bool(audio_paths["easter_egg_found"], fallback: false),
 
       app_version: app_info['version'] ?? 'version',
       legal_notice: app_info['legal_notice'] ?? 'legal_notice',
@@ -262,6 +262,24 @@ String color_to_hex(Color color) {
       '${color.red.toRadixString(16).padLeft(2, '0').toUpperCase()}'
       '${color.green.toRadixString(16).padLeft(2, '0').toUpperCase()}'
       '${color.blue.toRadixString(16).padLeft(2, '0').toUpperCase()}';
+}
+
+bool _read_bool(dynamic value, {required bool fallback}) {
+  if (value is bool) return value;
+  if (value is num) return value != 0;
+  if (value is String) {
+    switch (value.trim().toLowerCase()) {
+      case 'true':
+      case '1':
+      case 'yes':
+        return true;
+      case 'false':
+      case '0':
+      case 'no':
+        return false;
+    }
+  }
+  return fallback;
 }
 
 //To load configuration_scripts once

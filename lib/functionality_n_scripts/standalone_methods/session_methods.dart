@@ -565,6 +565,44 @@ Future<void> save_easter_egg_status(
   }
 }
 
+Future<Map<String, dynamic>?> retrieve_user_preferences_silent() async {
+  final String? access_token = await AppStorage.get_access_token();
+  final String? user_id = await AppStorage.get_user_id();
+
+  if (access_token == null ||
+      access_token.trim().isEmpty ||
+      user_id == null ||
+      user_id.trim().isEmpty) {
+    return null;
+  }
+
+  try {
+    final response = await http
+        .post(
+      Uri.parse(config_data.backend_url + config_data.retrieve_user_preferences_suffix),
+      headers: AppStorage.build_auth_headers(access_token),
+      body: jsonEncode({
+        "access_token": access_token,
+        "user_id": user_id,
+      }),
+    )
+        .timeout(Duration(seconds: config_data.max_api_response_time_limit + 5));
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body) as Map<String, dynamic>;
+    }
+
+    log_handler?.w(
+      "[retrieve_user_preferences_silent] Unhandled status code: "
+      "${response.statusCode} - ${response.body}",
+    );
+  } catch (e) {
+    log_handler?.w("[retrieve_user_preferences_silent] Failed to sync preferences: $e");
+  }
+
+  return null;
+}
+
 Future<Map<String, dynamic>> retrieve_user_preferences(
     BuildContext context,
     ) async {

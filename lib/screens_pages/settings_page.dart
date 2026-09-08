@@ -68,6 +68,39 @@ class _settingsState extends State<settings> {
     }
   }
 
+  Future<void> _sync_easter_egg_status_from_cloud() async {
+    Map<String, dynamic>? prefs = UserPreferencesCache.user_preferences_cache;
+    prefs ??= await retrieve_user_preferences_silent();
+    if (prefs == null || !mounted) return;
+
+    final bool? status = parse_bool_preference(
+      prefs['easter_egg_status'] ?? prefs['easter_egg_found'],
+    );
+    if (status == null || status == config_data.easter_egg_found) return;
+
+    await update_easter_egg_found(status);
+    if (!mounted) return;
+
+    setState(() {
+      _easter_egg_found_controller = status;
+      config_data = app_configuration.fromJson(raw_config_json);
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _sync_easter_egg_status_from_cloud();
+    });
+  }
+
+  @override
+  void dispose() {
+    _tap_timer?.cancel();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -772,7 +805,7 @@ class _settingsState extends State<settings> {
 
                                 if (config_data.easter_egg_found)
                                   EasterEggPlayerInline(
-                                    asset_path: 'audio/unfinished.mp3',
+                                    asset_path: config_data.easter_egg,
                                     text_color: config_data.text_color,
                                   ),
                               ],
@@ -906,14 +939,13 @@ class _settingsState extends State<settings> {
                     onTap: () async {
                       if (!config_data.easter_egg_found) {
                         await _handle_ten_taps_gesture(() async {
-                          // Save easter egg flag first
                           _easter_egg_found_controller = true;
-                          await update_easter_egg_found(_easter_egg_found_controller);
+                          await update_easter_egg_found(true);
                           await save_easter_egg_status(context);
 
-                          //Reload config and trigger UI refresh
+                          if (!mounted) return;
+
                           setState(() {
-                            raw_config_json["easter_egg_found"] = true;
                             config_data = app_configuration.fromJson(raw_config_json);
                           });
 
@@ -923,13 +955,17 @@ class _settingsState extends State<settings> {
                             context,
                             "Ok",
                             "You discovered the easter egg!!!",
-                            "Congratulations!, either by chance, luck or consciously, you have "
-                                "discovered the easter egg in this app. Enjoy it in the sound "
-                                "effects section in the settings.",
+                            "Congratulations! Scroll to the Sound Effects section "
+                                "and press play on the hidden track.",
                           );
                         });
                       } else {
-                        log_handler?.d("[settings_page] Easter egg already found");
+                        await build_informative_alert_dialog(
+                          context,
+                          "Ok",
+                          "Easter egg already unlocked",
+                          "Scroll to the Sound Effects section to play the hidden track.",
+                        );
                       }
                     },
 
@@ -1160,11 +1196,15 @@ class _settingsState extends State<settings> {
                                       log_handler?.w("[settings_page] "
                                           "Easter egg status: ${retrieved_data["easter_egg_status"]}"
                                       );
-                                      await update_easter_egg_found(retrieved_data["easter_egg_status"]);
+                                      await update_easter_egg_found(
+                                        retrieved_data["easter_egg_status"] ??
+                                            retrieved_data["easter_egg_found"],
+                                      );
 
                                       //Refresh config data and UI
                                       setState(() {
                                         config_data = app_configuration.fromJson(raw_config_json);
+                                        _easter_egg_found_controller = config_data.easter_egg_found;
                                         _is_processing = false;
                                       });
 
