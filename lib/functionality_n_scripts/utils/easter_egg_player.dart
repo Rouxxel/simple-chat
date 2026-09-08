@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -19,6 +21,9 @@ class EasterEggPlayerInline extends StatefulWidget {
 
 class _EasterEggPlayerInlineState extends State<EasterEggPlayerInline> {
   late AudioPlayer _player;
+  late StreamSubscription<Duration> _duration_subscription;
+  late StreamSubscription<Duration> _position_subscription;
+  late StreamSubscription<PlayerState> _state_subscription;
   bool _is_playing = false;
   Duration _total_duration = Duration.zero;
   Duration _current_position = Duration.zero;
@@ -29,19 +34,22 @@ class _EasterEggPlayerInlineState extends State<EasterEggPlayerInline> {
 
     _player = AudioPlayer();
 
-    _player.onDurationChanged.listen((duration) {
+    _duration_subscription = _player.onDurationChanged.listen((duration) {
+      if (!mounted) return;
       setState(() {
         _total_duration = duration;
       });
     });
 
-    _player.onPositionChanged.listen((position) {
+    _position_subscription = _player.onPositionChanged.listen((position) {
+      if (!mounted) return;
       setState(() {
         _current_position = position;
       });
     });
 
-    _player.onPlayerStateChanged.listen((state) {
+    _state_subscription = _player.onPlayerStateChanged.listen((state) {
+      if (!mounted) return;
       setState(() {
         _is_playing = state == PlayerState.playing;
       });
@@ -65,6 +73,9 @@ class _EasterEggPlayerInlineState extends State<EasterEggPlayerInline> {
 
   @override
   void dispose() {
+    _duration_subscription.cancel();
+    _position_subscription.cancel();
+    _state_subscription.cancel();
     _player.dispose();
     super.dispose();
   }
