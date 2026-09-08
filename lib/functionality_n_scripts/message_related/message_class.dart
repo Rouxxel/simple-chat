@@ -80,7 +80,7 @@ class Message {
       final response = await http
           .post(
         Uri.parse(config_data.backend_url + config_data.generate_ai_response_suffix),
-        headers: {"Content-Type": "application/json"},
+        headers: await AppStorage.get_authenticated_headers(),
         body: body_for_backend,
       )
           .timeout(

@@ -72,7 +72,7 @@ Future<bool> check_user_exists(
     response = await http
         .post(
       Uri.parse(config_data.backend_url + config_data.check_user_exists_suffix),
-      headers: {"Content-Type": "application/json"},
+      headers: AppStorage.build_auth_headers(access_token),
       body: body,
     )
         .timeout(
@@ -195,7 +195,7 @@ Future<void> refresh_access(
     response = await http
         .post(
       Uri.parse(config_data.backend_url + config_data.refresh_token_suffix),
-      headers: {"Content-Type": "application/json"},
+      headers: AppStorage.jsonHeaders,
       body: body,
     )
         .timeout(
@@ -333,7 +333,7 @@ Future<void> log_out(
     response = await http
         .post(
       Uri.parse(config_data.backend_url + config_data.log_out_suffix),
-      headers: {"Content-Type": "application/json"},
+      headers: AppStorage.build_auth_headers(access_token),
       body: body,
     )
         .timeout(
@@ -467,7 +467,7 @@ Future<void> save_easter_egg_status(
     response = await http
         .post(
       Uri.parse(config_data.backend_url + config_data.easter_egg_status_suffix),
-      headers: {"Content-Type": "application/json"},
+      headers: AppStorage.build_auth_headers(access_token),
       body: body,
     )
         .timeout(
@@ -597,7 +597,7 @@ Future<Map<String, dynamic>> retrieve_user_preferences(
     response = await http
         .post(
       Uri.parse(config_data.backend_url + config_data.retrieve_user_preferences_suffix),
-      headers: {"Content-Type": "application/json"},
+      headers: AppStorage.build_auth_headers(access_token),
       body: body,
     )
         .timeout(
@@ -728,7 +728,7 @@ Future<Map<String, dynamic>> retrieve_all_user_title_chats(
     response = await http
         .post(
       Uri.parse(config_data.backend_url + config_data.user_chat_titles_retrieve),
-      headers: {"Content-Type": "application/json"},
+      headers: AppStorage.build_auth_headers(access_token),
       body: body,
     )
         .timeout(
@@ -861,7 +861,7 @@ Future<void> retrieve_specific_chat(
     response = await http
         .post(
       Uri.parse(config_data.backend_url + config_data.user_chat_retrieve),
-      headers: {"Content-Type": "application/json"},
+      headers: AppStorage.build_auth_headers(access_token),
       body: body,
     )
         .timeout(
@@ -1011,7 +1011,7 @@ Future<void> delete_specific_chat(
     response = await http
         .post(
       Uri.parse(config_data.backend_url + config_data.user_chat_delete),
-      headers: {"Content-Type": "application/json"},
+      headers: AppStorage.build_auth_headers(access_token),
       body: body,
     )
         .timeout(
@@ -1175,7 +1175,7 @@ Future<bool> delete_user(
     response = await http
         .post(
       Uri.parse(config_data.backend_url + config_data.user_delete_profile),
-      headers: {"Content-Type": "application/json"},
+      headers: AppStorage.build_auth_headers(access_token),
       body: body,
     )
         .timeout(
@@ -1326,7 +1326,7 @@ Future<void> save_current_chat(
     response = await http
         .post(
       Uri.parse(config_data.backend_url + config_data.user_chat_save_suffix),
-      headers: {"Content-Type": "application/json"},
+      headers: AppStorage.build_auth_headers(access_token),
       body: body,
     )
         .timeout(

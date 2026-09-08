@@ -70,7 +70,7 @@ Future<bool> sign_up(
     final response = await http
         .post(
       Uri.parse(config_data.backend_url + config_data.sign_up_suffix),
-      headers: {"Content-Type": "application/json"},
+      headers: AppStorage.jsonHeaders,
       body: body,
     )
         .timeout(
@@ -237,7 +237,7 @@ Future<bool> log_in(
     response = await http
         .post(
       Uri.parse(config_data.backend_url + config_data.log_in_suffix),
-      headers: {"Content-Type": "application/json"},
+      headers: AppStorage.jsonHeaders,
       body: body,
     )
         .timeout(
@@ -423,7 +423,7 @@ Future<bool> complete_user_profile(
     response = await http
         .post(
       Uri.parse(config_data.backend_url + config_data.complete_profile_suffix),
-      headers: {"Content-Type": "application/json"},
+      headers: AppStorage.build_auth_headers(access_token),
       body: body,
     )
         .timeout(
@@ -568,7 +568,7 @@ Future<bool> reset_password(
     final response = await http
         .post(
       Uri.parse(config_data.backend_url + config_data.reset_password_suffix),
-      headers: {"Content-Type": "application/json"},
+      headers: AppStorage.jsonHeaders,
       body: body,
     )
         .timeout(

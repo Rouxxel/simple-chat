@@ -74,6 +74,29 @@ class AppStorage {
     return await _storage.read(key: _user_email_key);
   }
 
+  static const Map<String, String> jsonHeaders = {
+    'Content-Type': 'application/json',
+  };
+
+  static Map<String, String> build_auth_headers(
+    String accessToken, {
+    String tokenType = 'Bearer',
+  }) {
+    return {
+      'Content-Type': 'application/json',
+      'Authorization': '${tokenType.trim()} ${accessToken.trim()}',
+    };
+  }
+
+  static Future<Map<String, String>> get_authenticated_headers() async {
+    final accessToken = await get_access_token();
+    final tokenType = await get_token_type();
+    return build_auth_headers(
+      accessToken ?? '',
+      tokenType: (tokenType == null || tokenType.trim().isEmpty) ? 'Bearer' : tokenType,
+    );
+  }
+
   //PANIC DELETER
   //Delete all tokens
   static Future<void> clear_tokens() async {

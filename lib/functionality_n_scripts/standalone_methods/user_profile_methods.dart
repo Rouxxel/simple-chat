@@ -9,6 +9,7 @@ import 'package:http/http.dart' as http;
 //Import alert dialogs and others
 import "package:simple_chat/widgets_and_ui_elements/alert_dialog_builders.dart";
 import 'package:simple_chat/functionality_n_scripts/configuration_scripts/config_invoke.dart';
+import 'package:simple_chat/functionality_n_scripts/session_related/app_storage_class.dart';
 import 'package:simple_chat/functionality_n_scripts/utils/logger_config.dart';
 //import "package:simple_chat/functionality_n_scripts/utils/encryption.dart";
 
@@ -70,7 +71,7 @@ Future<bool> save_user_preferences(
     response = await http
         .post(
       Uri.parse(config_data.backend_url + config_data.user_preferences_suffix),
-      headers: {"Content-Type": "application/json"},
+      headers: AppStorage.build_auth_headers(access_token),
       body: payload_body,
     )
         .timeout(
